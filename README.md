@@ -1,1 +1,37 @@
-IyBJbmRpYW5hIEZTU0EgU2VhcmNoIChTbGltKQoKQSBmYXN0LCBtb2JpbGUtZnJpZW5kbHkgc2VhcmNoIGVuZ2luZSBmb3IgSW5kaWFuYSdzIEZhbWlseSBhbmQgU29jaWFsIFNlcnZpY2VzIEFkbWluaXN0cmF0aW9uIChGU1NBKSB3ZWJzaXRlLiBTZWFyY2ggOTA4IGRvY3VtZW50cyBpbmNsdWRpbmcgcHJvZ3JhbSBwYWdlcywgYXBwbGljYXRpb24gZm9ybXMsIGFuZCByZWZlcmVuY2UgZ3VpZGVzLCBhbGwgZnJvbSBhIHNpbmdsZSBIVE1MIGZpbGUgd2l0aCBubyBzZXJ2ZXIgcmVxdWlyZWQuCgoqKkxpdmUgc2l0ZToqKiBodHRwczovL2phbWVzY29yZHJleS1vcHMuZ2l0aHViLmlvL2Zzc2EtbWVkaWNhaWQtc2VhcmNoLwoKVGhpcyBpcyB0aGUgc2xpbSB2ZXJzaW9uLiBGb3IgdGhlIGZ1bGwgdmVyc2lvbiB3aXRoIGNvbXBsZXRlIGRvY3VtZW50IHRleHRzLCBzZWUgW2Zzc2EtbWVkaWNhaWQtc2VhcmNoLWZ1bGxdKGh0dHBzOi8vZ2l0aHViLmNvbS9qYW1lc2NvcmRyZXktb3BzL2Zzc2EtbWVkaWNhaWQtc2VhcmNoLWZ1bGwpLgoKIyMgV2hhdCdzIEluc2lkZQoKLSAqKjg3MSBGU1NBIHdlYnNpdGUgcGFnZXMqKiDigJQgZXZlcnkgcHVibGljIHBhZ2Ugb24gaW4uZ292L2Zzc2EgYWNyb3NzIGFsbCBkaXZpc2lvbnMgKERGUiwgT01QUCwgRERBUlMsIERNSEEsIE9FQ09TTCkKLSAqKjM0IGFwcGxpY2F0aW9uIGZvcm1zKiog4oCUIG9mZmljaWFsIFBERnMgYW5kIGZvcm0gcGFnZXMgd2l0aCBkaXJlY3QgZG93bmxvYWQgbGlua3MsIGVhY2ggVVJMIHZlcmlmaWVkIGJ5IGRvd25sb2FkCi0gKioyIHJlZmVyZW5jZSBub3RlcyoqIOKAlCBkaXN0aWxsZWQgZ3VpZGVzIHRvIHRoZSBGU1NBIHNpdGUgc3RydWN0dXJlIGFuZCB0aGUgSENCUyB3YWl2ZXIgbWFudWFsCi0gKioxIHdhaXZlciBtYW51YWwqKiDigJQgdGhlIEREQVJTIEhvbWUtIGFuZCBDb21tdW5pdHktQmFzZWQgU2VydmljZXMgd2FpdmVyIG1hbnVhbAoKIyMgTWV0aG9kb2xvZ3kKCioqRGF0YSBjb2xsZWN0aW9uIChPY3RvYmVyIDksIDIwMjYpOioqIFRoZSBGU1NBIHdlYnNpdGUgd2FzIHNjcmFwZWQgdXNpbmcgYSBwb2xpdGUgcGxhaW4tSFRUUCBjcmF3bGVyICgyLjUtc2Vjb25kIGRlbGF5IGJldHdlZW4gcmVxdWVzdHMsIHNlZWRlZCBmcm9tIHRoZSBzaXRlIHNpdGVtYXApLiBNYWluIGFydGljbGUgdGV4dCB3YXMgZXh0cmFjdGVkIGZyb20gZWFjaCBwYWdlOyBuYXZpZ2F0aW9uLCBoZWFkZXJzLCBhbmQgZm9vdGVycyB3ZXJlIHN0cmlwcGVkLiBKYXZhU2NyaXB0LW9ubHkgZGFzaGJvYXJkcyBhbmQgaW50ZXJhY3RpdmUgdG9vbHMgcmV0dXJuZWQgZW1wdHkgYW5kIGFyZSBub3RlZCBhcyBnYXBzLiBBcm91bmQgNzQgZGVhZCBsaW5rcyAoNDA0cykgd2VyZSBmb3VuZCBhbmQgZXhjbHVkZWQuCgoqKkFwcGxpY2F0aW9uIGZvcm1zOioqIEFsbCAzNCBmb3JtIFBERnMgd2VyZSBsb2NhdGVkIG9uIG9mZmljaWFsIGluLmdvdiBVUkxzIGFuZCBlYWNoIHdhcyB2ZXJpZmllZCBieSBkb3dubG9hZGluZyBpdC4gVHdvIGZvcm1zIGNvdWxkIG5vdCBiZSBsb2NhdGVkIGFzIFBERnMgKHRoZSBwcm9ncmFtIGhhZCBtb3ZlZCB0byB3ZWItYmFzZWQgcmVmZXJyYWxzKTsgdGhvc2UgbGluayB0byB0aGUgb2ZmaWNpYWwgcHJvZ3JhbSBwYWdlIGluc3RlYWQuCgoqKlNlYXJjaCBpbmRleDoqKiBBIGNsaWVudC1zaWRlIGludmVydGVkIGluZGV4IG1hcHMgZXZlcnkgd29yZCB0byB0aGUgZG9jdW1lbnRzIGNvbnRhaW5pbmcgaXQsIHdpdGggdGVybS1mcmVxdWVuY3kgc2NvcmluZy4gTXVsdGktd29yZCBxdWVyaWVzIHVzZSBBTkQgbG9naWMuIENvbW1vbiBzdG9wIHdvcmRzIGFyZSBleGNsdWRlZCBmcm9tIHRoZSBpbmRleCB0byBzYXZlIHNwYWNlLgoKKipTbGltIHZlcnNpb246KiogVG8ga2VlcCB0aGUgZmlsZSB1bmRlciAyTUIgZm9yIHJlbGlhYmxlIG1vYmlsZSB1cGxvYWRzLCB0aGUgc2VhcmNoIGluZGV4IHVzZXMgYSBjb21wYWN0IGVuY29kaW5nIChzYW1lIHdvcmRzLCBsZXNzIHNwYWNlKSBhbmQgZG9jdW1lbnQgdGV4dHMgYXJlIHRyaW1tZWQgdG8gMjUwLWNoYXJhY3RlciBwcmV2aWV3cy4gRXZlcnkgd29yZCByZW1haW5zIHNlYXJjaGFibGUuIFRhcHBpbmcgYSByZXN1bHQncyBleHRlcm5hbCBsaW5rIG9wZW5zIHRoZSBmdWxsIHRleHQgb24gdGhlIG9mZmljaWFsIHNpdGUuCgojIyBGZWF0dXJlcwoKLSBGdWxsLXRleHQgc2VhcmNoIHdpdGggaGlnaGxpZ2h0ZWQgc25pcHBldHMKLSBGaWx0ZXIgYnkgc291cmNlOiBGU1NBIHdlYnNpdGUsIGFwcGxpY2F0aW9uIGZvcm1zLCByZWZlcmVuY2Ugbm90ZXMKLSBUb3BpYyB0YWdzIGZvciBjb21tb24gc3ViamVjdHMgKFNOQVAsIEhJUCwgd2FpdmVycywgZXRjLikKLSBBbnN3ZXIgY2FyZHMgZm9yIGZyZXF1ZW50IHF1ZXN0aW9ucwotIFRhcCBhbnkgcmVzdWx0IHRvIHByZXZpZXcgaXQgaW4gdGhlIGluLWFwcCByZWFkZXIKLSBXb3JrcyBvZmZsaW5lIG9uY2UgbG9hZGVkOyBubyB0cmFja2luZywgbm8gc2VydmVyCgojIyBUZWNoCgpTaW5nbGUgc2VsZi1jb250YWluZWQgSFRNTCBmaWxlLiBObyBidWlsZCBzdGVwLCBubyBkZXBlbmRlbmNpZXMsIG5vIGJhY2tlbmQuIFNlYXJjaCBydW5zIGVudGlyZWx5IGluIHRoZSBicm93c2VyIHVzaW5nIHZhbmlsbGEgSmF2YVNjcmlwdC4K
+# Indiana FSSA Search (Slim)
+
+A fast, mobile-friendly search engine for Indiana's Family and Social Services Administration (FSSA) website. Search 908 documents including program pages, application forms, and reference guides, all from a single HTML file with no server required.
+
+**Live site:** https://jamescordrey-ops.github.io/fssa-medicaid-search/
+
+This is the slim version. For the full version with complete document texts, see [fssa-medicaid-search-full](https://github.com/jamescordrey-ops/fssa-medicaid-search-full).
+
+## What's Inside
+
+- **871 FSSA website pages** — every public page on in.gov/fssa across all divisions (DFR, OMPP, DDARS, DMHA, OECOSL)
+- **34 application forms** — official PDFs and form pages with direct download links, each URL verified by download
+- **2 reference notes** — distilled guides to the FSSA site structure and the HCBS waiver manual
+- **1 waiver manual** — the DDARS Home- and Community-Based Services waiver manual
+
+## Methodology
+
+**Data collection (October 9, 2026):** The FSSA website was scraped using a polite plain-HTTP crawler (2.5-second delay between requests, seeded from the site sitemap). Main article text was extracted from each page; navigation, headers, and footers were stripped. JavaScript-only dashboards and interactive tools returned empty and are noted as gaps. Around 74 dead links (404s) were found and excluded.
+
+**Application forms:** All 34 form PDFs were located on official in.gov URLs and each was verified by downloading it. Two forms could not be located as PDFs (the program had moved to web-based referrals); those link to the official program page instead.
+
+**Search index:** A client-side inverted index maps every word to the documents containing it, with term-frequency scoring. Multi-word queries use AND logic. Common stop words are excluded from the index to save space.
+
+**Slim version:** To keep the file under 2MB for reliable mobile uploads, the search index uses a compact encoding (same words, less space) and document texts are trimmed to 250-character previews. Every word remains searchable. Tapping a result's external link opens the full text on the official site.
+
+## Features
+
+- Full-text search with highlighted snippets
+- Filter by source: FSSA website, application forms, reference notes
+- Topic tags for common subjects (SNAP, HIP, waivers, etc.)
+- Answer cards for frequent questions
+- Tap any result to preview it in the in-app reader
+- Works offline once loaded; no tracking, no server
+
+## Tech
+
+Single self-contained HTML file. No build step, no dependencies, no backend. Search runs entirely in the browser using vanilla JavaScript.
