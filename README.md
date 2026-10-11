@@ -35,3 +35,7 @@ This is the slim version. For the full version with complete document texts, see
 ## Tech
 
 Single self-contained HTML file. No build step, no dependencies, no backend. Search runs entirely in the browser using vanilla JavaScript.
+
+## Design
+
+Restyled October 10, 2026 with the house design system: Inter type, one blue accent, hairline borders instead of shadows, 4px spacing scale, and light/dark mode support.
