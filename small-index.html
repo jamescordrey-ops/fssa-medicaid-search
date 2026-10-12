@@ -701,7 +701,7 @@ var COMMON={}; (DB.common||[]).forEach(function(t){COMMON[t]=1;});
 var SITE_HOME="https://www.in.gov/fssa/";
 var MATCH=Element.prototype.matches||Element.prototype.webkitMatchesSelector||Element.prototype.msMatchesSelector;
 var lookup={}, selTag="";
-function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function terms(q){var m=q.toLowerCase().match(/[a-z0-9]{2,}/g);return m?m.filter(function(t,i,a){return a.indexOf(t)===i;}):[];}
 function has(o,k){return Object.prototype.hasOwnProperty.call(o,k);}
 function closestEl(el,sel){while(el&&el.nodeType===1){if(MATCH.call(el,sel))return el;el=el.parentNode;}return null;}
