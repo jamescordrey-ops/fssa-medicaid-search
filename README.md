@@ -1,41 +1,27 @@
-# Indiana FSSA Search (Slim)
+# FSSA Medicaid Search
 
-A fast, mobile-friendly search engine for Indiana's Family and Social Services Administration (FSSA) website. Search 908 documents including program pages, application forms, and reference guides, all from a single HTML file with no server required.
+A fast, offline search engine for Indiana Medicaid and federal Medicaid reference documents. Two pages, both single HTML files with no server required.
 
-**Live site:** https://jamescordrey-ops.github.io/fssa-medicaid-search/
-
-This is the slim version. For the full version with complete document texts, see [fssa-medicaid-search-full](https://github.com/jamescordrey-ops/fssa-medicaid-search-full).
+**Live sites:**
+- Full: https://jamescordrey-ops.github.io/fssa-medicaid-search/
+- Mobile: https://jamescordrey-ops.github.io/fssa-medicaid-search/small-index.html
 
 ## What's Inside
 
-- **871 FSSA website pages** — every public page on in.gov/fssa across all divisions (DFR, OMPP, DDARS, DMHA, OECOSL)
-- **34 application forms** — official PDFs and form pages with direct download links, each URL verified by download
-- **2 reference notes** — distilled guides to the FSSA site structure and the HCBS waiver manual
-- **1 waiver manual** — the DDARS Home- and Community-Based Services waiver manual
+**1,634 documents** (rebuilt October 11, 2026):
+
+- **1,236 Indiana documents** - every public page under in.gov/fssa and in.gov/medicaid across all divisions (DFR, OMPP, DDARS, DMHA, OECOSL), plus application forms and the DDARS HCBS waiver manual
+- **440 federal documents** - CMS and federal Medicaid reference materials
+
+## Pages
+
+- **index.html** (12MB) - full version with complete document text and excerpts
+- **small-index.html** (12MB) - mobile-optimized version, same data
 
 ## Methodology
 
-**Data collection (October 9, 2026):** The FSSA website was scraped using a polite plain-HTTP crawler (2.5-second delay between requests, seeded from the site sitemap). Main article text was extracted from each page; navigation, headers, and footers were stripped. JavaScript-only dashboards and interactive tools returned empty and are noted as gaps. Around 74 dead links (404s) were found and excluded.
+**Data collection (October 2026):** Indiana pages scraped with a polite plain-HTTP crawler (2.5-second delay, seeded from sitemaps). Main article text extracted; navigation, headers, and footers stripped. Short-text pages filtered out. Federal corpus from CMS reference sources.
 
-**Application forms:** All 34 form PDFs were located on official in.gov URLs and each was verified by downloading it. Two forms could not be located as PDFs (the program had moved to web-based referrals); those link to the official program page instead.
+## Rebuilding
 
-**Search index:** A client-side inverted index maps every word to the documents containing it, with term-frequency scoring. Multi-word queries use AND logic. Common stop words are excluded from the index to save space.
-
-**Slim version:** To keep the file under 2MB for reliable mobile uploads, the search index uses a compact encoding (same words, less space) and document texts are trimmed to 250-character previews. Every word remains searchable. Tapping a result's external link opens the full text on the official site.
-
-## Features
-
-- Full-text search with highlighted snippets
-- Filter by source: FSSA website, application forms, reference notes
-- Topic tags for common subjects (SNAP, HIP, waivers, etc.)
-- Answer cards for frequent questions
-- Tap any result to preview it in the in-app reader
-- Works offline once loaded; no tracking, no server
-
-## Tech
-
-Single self-contained HTML file. No build step, no dependencies, no backend. Search runs entirely in the browser using vanilla JavaScript.
-
-## Design
-
-Restyled October 10, 2026 with the house design system: Inter type, one blue accent, hairline borders instead of shadows, 4px spacing scale, and light/dark mode support.
+The pages are generated from the search corpora using `rebuild-fssa-pages.py` (extracts the HTML template from the existing page and rebuilds the embedded search index). After rebuilding, commit and push to update the live site.
