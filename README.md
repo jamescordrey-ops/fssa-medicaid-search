@@ -20,21 +20,25 @@ policy text in seconds.
 
 ## What's inside
 
-**4,476 documents** (rebuilt October 12, 2026), drawn from a 4,518-document
+**5,169 documents** (rebuilt October 13, 2026), drawn from a 5,211-document
 corpus (42 very short documents are excluded from the page index):
 
 - **Indiana** - FSSA and DFR policy manuals (including the DFR chapter
-  PDFs), Medicaid program and member pages, waiver documents
+  PDFs), Medicaid program and member pages, waiver documents, PathWays
+  pages, and a year of IHCP provider bulletins
 - **Federal** - Medicaid.gov and CMS guidance, including spousal
   impoverishment standards
 - **Social Security** - SSI rules and the Understanding SSI series, the
   Red Book work-incentive guide, Ticket to Work / Choose Work beneficiary
-  pages, appeals and representative payee rules (added October 12, 2026)
+  pages, appeals and representative payee rules (added October 12, 2026);
+  529 sections of SSA's POMS operations manual, overpayment process
+  pages, the IRS difficulty-of-care guidance, and SNAP
+  categorical-eligibility rules (added October 13, 2026)
 
 ## Pages
 
-- **index.html** (about 35MB) - full version with complete document text
-- **small-index.html** (about 14MB) - lighter build for phones, same
+- **index.html** (about 43MB) - full version with complete document text
+- **small-index.html** (about 17MB) - lighter build for phones, same
   document set
 
 ## Companion project
