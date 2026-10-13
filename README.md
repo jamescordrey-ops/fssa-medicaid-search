@@ -1,27 +1,58 @@
 # FSSA Medicaid Search
 
-A fast, offline search engine for Indiana Medicaid and federal Medicaid reference documents. Two pages, both single HTML files with no server required.
+A fast, fully offline search engine for Indiana Medicaid and federal
+benefits policy documents. Two single-file HTML pages: no server, no
+account, nothing to install. Open the page and search.
 
 **Live sites:**
+
 - Full: https://jamescordrey-ops.github.io/fssa-medicaid-search/
 - Mobile: https://jamescordrey-ops.github.io/fssa-medicaid-search/small-index.html
 
-## What's Inside
+## What this is for
 
-**1,634 documents** (rebuilt October 11, 2026):
+The rules that govern Medicaid waiver life are scattered across hundreds
+of manuals, PDFs, and agency pages that do not talk to each other. This
+page puts the document set in one searchable place, so questions like
+burial trusts, vehicle exclusions, community spouse allowances, disaster
+payments, and the 5-year lookback can be checked against the actual
+policy text in seconds.
 
-- **1,236 Indiana documents** - every public page under in.gov/fssa and in.gov/medicaid across all divisions (DFR, OMPP, DDARS, DMHA, OECOSL), plus application forms and the DDARS HCBS waiver manual
-- **440 federal documents** - CMS and federal Medicaid reference materials
+## What's inside
+
+**4,476 documents** (rebuilt October 12, 2026), drawn from a 4,518-document
+corpus (42 very short documents are excluded from the page index):
+
+- **Indiana** - FSSA and DFR policy manuals (including the DFR chapter
+  PDFs), Medicaid program and member pages, waiver documents
+- **Federal** - Medicaid.gov and CMS guidance, including spousal
+  impoverishment standards
+- **Social Security** - SSI rules and the Understanding SSI series, the
+  Red Book work-incentive guide, Ticket to Work / Choose Work beneficiary
+  pages, appeals and representative payee rules (added October 12, 2026)
 
 ## Pages
 
-- **index.html** (12MB) - full version with complete document text and excerpts
-- **small-index.html** (12MB) - mobile-optimized version, same data
+- **index.html** (about 35MB) - full version with complete document text
+- **small-index.html** (about 14MB) - lighter build for phones, same
+  document set
 
-## Methodology
+## Companion project
 
-**Data collection (October 2026):** Indiana pages scraped with a polite plain-HTTP crawler (2.5-second delay, seeded from sitemaps). Main article text extracted; navigation, headers, and footers stripped. Short-text pages filtered out. Federal corpus from CMS reference sources.
+For question-answering (not just search), the same corpus powers a local
+Q&A server with cited answers, hybrid keyword + vector retrieval, and a
+local or Gemini model:
+https://github.com/jamescordrey-ops/fssa-search-server
 
 ## Rebuilding
 
-The pages are generated from the search corpora using `rebuild-fssa-pages.py` (extracts the HTML template from the existing page and rebuilds the embedded search index). After rebuilding, commit and push to update the live site.
+The pages are generated from the corpora with `rebuild-fssa-pages.py`
+(full build) and `build-fssa-small.py` (mobile build) in the maintainer's
+workspace, then committed and pushed here; GitHub Pages serves the result
+within a few minutes (browser caches may hold the previous build for
+about 10 minutes).
+
+## Limits
+
+The documents are a snapshot from October 2026. Anything affecting
+benefits or eligibility should be confirmed with a caseworker or FSSA.
