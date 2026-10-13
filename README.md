@@ -20,7 +20,7 @@ policy text in seconds.
 
 ## What's inside
 
-**5,169 documents** (rebuilt October 13, 2026), drawn from a 5,211-document
+**5,192 documents** (rebuilt October 13, 2026), drawn from a 5,234-document
 corpus (42 very short documents are excluded from the page index):
 
 - **Indiana** - FSSA and DFR policy manuals (including the DFR chapter
