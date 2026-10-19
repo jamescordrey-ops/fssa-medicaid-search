@@ -1,5 +1,7 @@
 # FSSA Medicaid Search
 
+[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 6,200](https://img.shields.io/badge/documents-6%2C200-blue) ![corpus: g0010 · Oct 18, 2026](https://img.shields.io/badge/corpus-g0010_%C2%B7_Oct_18%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue)
+
 A fast, fully offline search engine for Indiana Medicaid and federal
 benefits policy documents. Two single-file HTML pages: no server, no
 account, nothing to install. Open the page and search.
@@ -47,12 +49,16 @@ documents are excluded from the page index):
   document set and the same full-text search index (the on-page reader
   shows a capped excerpt of each document)
 
-## Companion project
+## The Q&A server (included in this repo)
 
-For question-answering (not just search), the same corpus powers a local
-Q&A server with cited answers, hybrid keyword + vector retrieval, and a
-local or Gemini model:
-https://github.com/jamescordrey-ops/fssa-search-server
+This repo is all-in-one: alongside the offline pages above, it holds the
+source of SARA, the local question-answering server that works over the
+same corpus, under [`server/`](server/). Where the pages search, the
+server answers: cited answers built from hybrid keyword + vector
+retrieval, a deterministic front door for the most common computations,
+and a model drafting chain with checks. It runs on the owner's PC
+(port 8471). The pages are the always-available half of the project;
+the server is the half that answers questions in sentences.
 
 ## Rebuilding
 
