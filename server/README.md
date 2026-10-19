@@ -1,11 +1,13 @@
-# SARA server source
+# SARA: the server half of the Indiana FSSA, Medicaid, and Medicare search tool
 
 This folder holds the source of SARA (Search And Retrieval Assistant),
-the local question-answering server for the same corpus the offline
-pages in this repo are built from. It answers questions with cited
-answers: hybrid keyword + vector retrieval, a deterministic front door
-for the most common computations, and a model drafting chain with
-checker and jurisdiction rules.
+the server half of the Indiana FSSA, Medicaid, and Medicare search
+tool in this repo. The other half is the offline website (the pages at
+the repo root), which searches the same document set; SARA answers
+questions about it in sentences, with citations. It uses hybrid
+keyword + vector retrieval, a deterministic front door for the most
+common computations, and a model drafting chain with checker and
+jurisdiction rules.
 
 ## Files
 
