@@ -1,0 +1,66 @@
+{
+ "_note": "v21 seed registrations (WS3c), hand-written from the two 2026-10-14 production failures and the v14 QIT bridge vocabulary. Format: concept (matched as a substring of the lowercased question/query) -> corpus terms or section numbers the concept lives under. The server reads this file once at boot (FSSA_GROWTH_TERMS overrides the path); the growth-loop runner's staged additions merge here only by a human act.",
+ "divisor": [
+  "3006.00.00"
+ ],
+ "eyeglasses": [
+  "vision",
+  "promod00051"
+ ],
+ "miller trust": [
+  "2615.75.15",
+  "qualified income trust"
+ ],
+ "penalty divisor": [
+  "divisor",
+  "3006.00.00",
+  "average monthly cost"
+ ],
+ "qualified income trust": [
+  "2615.75.15",
+  "miller trust"
+ ],
+ "hoosier healthwise": [
+  "chip",
+  "childrens health insurance program"
+ ],
+ "healthwise": [
+  "chip",
+  "childrens health insurance program"
+ ],
+ "healthy indiana plan": [
+  "hip"
+ ],
+ "food stamps": [
+  "snap",
+  "supplemental nutrition assistance program",
+  "food assistance"
+ ],
+ "food assistance": [
+  "snap"
+ ],
+ "how long until": [
+  "reasonable useful lifetime",
+  "replacement"
+ ],
+ "worn out": [
+  "reasonable useful lifetime",
+  "replacement",
+  "irreparable wear"
+ ],
+ "falling apart": [
+  "reasonable useful lifetime",
+  "replacement",
+  "irreparable damage"
+ ],
+ "new order": [
+  "standard written order"
+ ],
+ "doctor visit": [
+  "face-to-face encounter"
+ ],
+ "breathing machine": [
+  "continuous positive airway pressure",
+  "cpap"
+ ]
+}

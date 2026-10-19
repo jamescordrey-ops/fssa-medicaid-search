@@ -1,0 +1,6358 @@
+{
+ "schema": 1,
+ "generated": "2026-10-16",
+ "notes": "Front door rows: the v27.1/v27.2 WIRED set plus the v29 wiring of every DRAFTED row that re-traced clean in the v29 data review (v29/FRONT_DOOR_REVIEW.md). Every row traces to FRONT_DOOR_DATA.md in the v27.1 tree plus its v29 trace; the 15 UNVERIFIED topics are absent on purpose. fs_annual_cap is flagged general: the router's specificity guard keeps it from claiming a question that names a service or topic another row covers. v29.1: paid_relative_cap corrected and the parent-of-own-child territory split into parent_guardian_minor_bar + parent_paid_own_child (v29.1/BUGS.md). v29.2: Battery 2 free-layer defect pass (v29.2/BUGS.md): trigger, exclude, and one conditions change only; every row's facts are byte-identical to v29.1.",
+ "rows": [
+  {
+   "id": "csra",
+   "engine": "split_and_clamp",
+   "topic": "P1-7",
+   "title": "Community Spouse Resource Allowance (CSRA)",
+   "values": {
+    "fraction": 0.5,
+    "min": 32532,
+    "max": 162660,
+    "example_assets": 120000
+   },
+   "source": "CMS 2026 spousal impoverishment standards (server registry entry csra)",
+   "effective": {
+    "from": "2026-01-01",
+    "to": "2026-12-31"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "my wife",
+      "my husband",
+      "my spouse",
+      "spouse",
+      "community spouse",
+      "csra",
+      "community spouse resource allowance",
+      "spouse resource allowance",
+      "spousal resource allowance",
+      "going into a nursing home",
+      "entering a nursing home",
+      "goes into a nursing home",
+      "going in a nursing home",
+      "husband's entering",
+      "wife's entering",
+      "as his wife",
+      "as her husband"
+     ],
+     [
+      "savings",
+      "assets",
+      "asset",
+      "resources",
+      "resource",
+      "countable",
+      "money",
+      "our money",
+      "bank",
+      "bank account",
+      "bank accounts",
+      "accounts",
+      "funds",
+      "investments",
+      "savings account",
+      "checking account",
+      "retirement accounts",
+      "saved"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "If I go into a nursing home, how much of our savings can my wife keep?",
+     "expect": [
+      "$32,532",
+      "$162,660",
+      "one half"
+     ]
+    },
+    {
+     "q": "Our countable assets are $120,000. If I go into a nursing home, what is my wife's CSRA?",
+     "expect": [
+      "$60,000",
+      "$120,000"
+     ]
+    },
+    {
+     "q": "We have $40,000 in countable assets. How much can my husband keep as the community spouse?",
+     "expect": [
+      "$32,532"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "spousal_liability",
+   "engine": "liability",
+   "topic": "P1-8/9/12",
+   "title": "Spousal allocation (MMMNA) and patient liability",
+   "values": {
+    "pna": 52,
+    "mmmna_min": 2705,
+    "mmmna_max": 4066.5,
+    "shelter_standard": 811.5
+   },
+   "source": "CMS 2026 spousal impoverishment standards; IHCPPM 3010.20.10 (shelter standard printed as $812; CMS component $811.50); personal needs allowance $52, IHCPPM post-eligibility (battery key B04)",
+   "effective": {
+    "from": "2026-07-01",
+    "to": "2026-12-31"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "liability",
+      "patient liability",
+      "my liability",
+      "his liability",
+      "her liability",
+      "their liability",
+      "liability amount",
+      "mmmna",
+      "mmna",
+      "monthly maintenance",
+      "monthly maintenance needs",
+      "maintenance needs allowance",
+      "maintenance allowance",
+      "minimum monthly maintenance",
+      "spousal allocation",
+      "spouse allocation",
+      "allocation",
+      "spousal impoverishment",
+      "income allowance",
+      "owe the nursing home",
+      "owe the nursing",
+      "how much will i owe",
+      "how much do i owe",
+      "how much does he owe",
+      "how much does she owe",
+      "how much will he owe",
+      "how much will she owe",
+      "amount i owe",
+      "pay the nursing home",
+      "pay for nursing home",
+      "nursing home bill",
+      "nursing home gets",
+      "goes to the nursing home",
+      "go to the nursing home",
+      "cost of the nursing home",
+      "share of cost",
+      "share toward",
+      "contribute toward",
+      "contribution toward",
+      "keep from my income",
+      "keep from his income",
+      "keep from her income",
+      "of my income can",
+      "of his income can",
+      "of her income can",
+      "going into a nursing home",
+      "entering a nursing home",
+      "going into care",
+      "of his money can",
+      "of her money can",
+      "what's left for the home",
+      "left for the home"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "I am in a nursing home. My income is $2,600 a month. My wife's income is $900 a month. What is my patient liability?",
+     "expect": [
+      "$1,805",
+      "$743",
+      "$52",
+      "$2,705"
+     ]
+    },
+    {
+     "q": "What is the MMMNA my wife can keep each month?",
+     "expect": [
+      "$2,705",
+      "$4,066.50"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "transfer_penalty",
+   "engine": "penalty",
+   "topic": "P1-13/14",
+   "title": "Transfer penalty period (divisor by application date)",
+   "values": {
+    "lookback_months": 60,
+    "divisors": [
+     {
+      "from": "2026-07-01",
+      "divisor": 8027
+     },
+     {
+      "from": null,
+      "divisor": 7651
+     }
+    ]
+   },
+   "source": "IHCPPM 3006.00.00, average monthly cost of private nursing facility care (fetched successor text, v27/sources/01)",
+   "effective": {
+    "from": "2026-07-01",
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "transfer",
+      "transferred",
+      "transferring",
+      "transfers",
+      "gave",
+      "give",
+      "giving",
+      "give away",
+      "giving away",
+      "gave away",
+      "given away",
+      "gives away",
+      "gifted",
+      "gift",
+      "signed over",
+      "signed the house over",
+      "deeded",
+      "deeded over",
+      "put the house in",
+      "sold for less",
+      "sold below",
+      "handed over",
+      "donated",
+      "donation"
+     ],
+     [
+      "penalty",
+      "penalized",
+      "penalty period",
+      "medicaid",
+      "nursing home",
+      "long-term care",
+      "long term care",
+      "waiver",
+      "benefits",
+      "apply",
+      "applying",
+      "lookback",
+      "look-back",
+      "look back",
+      "ineligibility",
+      "disqualified",
+      "disqualify",
+      "how long",
+      "waiting period",
+      "wait",
+      "qualify for medicaid",
+      "get medicaid",
+      "before applying",
+      "five year",
+      "five-year",
+      "5 year",
+      "5-year"
+     ]
+    ]
+   },
+   "exclude": [
+    "give me",
+    "gives me",
+    "giving me",
+    "give us",
+    "gives us",
+    "giving us",
+    "wants to give me",
+    "going to give me",
+    "will give me",
+    "will give us",
+    "gift to me",
+    "inherit",
+    "inherited",
+    "inheritance"
+   ],
+   "golden": [
+    {
+     "q": "I gave my daughter $40,135 eight months ago and I am applying for Medicaid now. How long will my transfer penalty be?",
+     "expect": [
+      "5.0 months",
+      "$8,027",
+      "60-month"
+     ]
+    },
+    {
+     "q": "What is the transfer penalty divisor for a Medicaid application filed in October 2026?",
+     "expect": [
+      "$8,027"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "able_contribution",
+   "engine": "year_indexed",
+   "topic": "P16-1",
+   "title": "ABLE account annual contribution limit",
+   "values": {
+    "table": {
+     "2025": {
+      "amount": 19000
+     },
+     "2026": {
+      "amount": 20000
+     }
+    },
+    "field_labels": {
+     "amount": "Annual contribution limit"
+    }
+   },
+   "source": "SSA POMS SI 01130.740 (annual contribution limit by calendar year); IRS newsroom",
+   "effective": {
+    "from": "2025-01-01",
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "able",
+      "able account",
+      "able accounts",
+      "my able",
+      "an able",
+      "the able",
+      "indiana able",
+      "investable",
+      "529a",
+      "able plan"
+     ],
+     [
+      "contribution",
+      "contributions",
+      "contribute",
+      "contribution limit",
+      "put in",
+      "put into",
+      "put money",
+      "add money",
+      "add to",
+      "deposit",
+      "deposit limit",
+      "limit",
+      "cap",
+      "annual",
+      "annual limit",
+      "yearly",
+      "yearly limit",
+      "per year",
+      "each year",
+      "a year",
+      "max",
+      "maximum contribution",
+      "how much can i put",
+      "how much can we put",
+      "most i can put",
+      "allowed to contribute",
+      "allowed to put"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "What was the maximum ABLE account contribution for 2025?",
+     "expect": [
+      "$19,000",
+      "2025"
+     ]
+    },
+    {
+     "q": "How much can I contribute to my ABLE account in 2026?",
+     "expect": [
+      "$20,000",
+      "2026"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "waiver_income_cap",
+   "engine": "year_indexed",
+   "topic": "P1-1",
+   "title": "HCBS waiver income cap (Special Income Level)",
+   "values": {
+    "table": {
+     "2026": {
+      "amount": 2982,
+      "note": "a Qualified Income Trust (Miller trust) can route income over the cap so the person may still qualify"
+     }
+    },
+    "field_labels": {
+     "amount": "Monthly income cap",
+     "note": "Over the cap"
+    }
+   },
+   "source": "Indiana HCBS waiver standards 2026: 300% of the SSI federal benefit rate (server registry entry waiver_income_cap). The 2027 cap had not been posted by Indiana as of October 2026.",
+   "effective": {
+    "from": "2026-01-01",
+    "to": "2026-12-31"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "waiver",
+      "medicaid waiver",
+      "hcbs waiver",
+      "hcbs",
+      "home and community waiver",
+      "family supports waiver",
+      "cih waiver",
+      "health and wellness waiver"
+     ],
+     [
+      "income limit",
+      "income cap",
+      "monthly income limit",
+      "gross income limit",
+      "how much income",
+      "income allowed",
+      "income i can have",
+      "income can i have",
+      "income can he have",
+      "income can she have",
+      "allowed to earn",
+      "allowed to make",
+      "how much can i earn",
+      "how much can i make",
+      "how much money can i make",
+      "how much money can i earn",
+      "earn and still",
+      "make and still",
+      "earn too much",
+      "make too much",
+      "too much income",
+      "over the income",
+      "income can",
+      "income test",
+      "special income level",
+      "income qualification",
+      "qualify on income",
+      "300 percent",
+      "300%"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "What is the income limit for a Medicaid waiver in Indiana?",
+     "expect": [
+      "$2,982"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "home_equity_limit",
+   "engine": "lookup",
+   "topic": "P1-10",
+   "title": "Medicaid home equity limit (2026)",
+   "values": {
+    "facts": [
+     {
+      "label": "Home equity limit",
+      "value": "$752,000"
+     },
+     {
+      "label": "Applies when",
+      "value": "the applicant's equity interest in the home exceeds the limit (long-term care eligibility); exceptions include a spouse, minor or disabled child, or a sibling with an equity interest lawfully living in the home"
+     }
+    ]
+   },
+   "source": "IHCPPM 3005.10.05 (Indiana $752,000 limit, eff. 1/1/2026); CMS 2026 home equity range",
+   "effective": {
+    "from": "2026-01-01",
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "home equity",
+      "home equity limit",
+      "how much equity",
+      "equity can i have",
+      "equity can we have",
+      "equity can he have",
+      "equity can she have",
+      "equity allowed",
+      "equity in my home",
+      "equity in our home",
+      "equity in the home",
+      "equity in his home",
+      "equity in her home",
+      "equity in their home",
+      "equity in your home",
+      "equity in a home",
+      "equity limit",
+      "equity cap",
+      "equity ceiling",
+      "too much equity",
+      "value of my home",
+      "value of our home",
+      "value of his home",
+      "value of her home",
+      "my home is worth",
+      "our home is worth",
+      "home is worth",
+      "house is worth",
+      "house worth"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "What is the home equity limit for Medicaid long-term care in Indiana?",
+     "expect": [
+      "$752,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "asset_limit",
+   "engine": "lookup",
+   "topic": "P1-2",
+   "title": "The $2,000 individual asset (resource) limit",
+   "values": {
+    "facts": [
+     {
+      "label": "Individual asset limit",
+      "value": "$2,000"
+     },
+     {
+      "label": "Couple asset limit",
+      "value": "$3,000"
+     },
+     {
+      "label": "Counted as of",
+      "value": "the first moment of the month"
+     }
+    ]
+   },
+   "source": "SSA SSI resource limits; POMS SI 01110.600 (first-of-the-month counting)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "asset limit",
+      "resource limit",
+      "asset test",
+      "resource test",
+      "asset cap",
+      "resource cap",
+      "maximum assets",
+      "max assets",
+      "assets can i have",
+      "assets can i keep",
+      "assets am i allowed",
+      "resources am i allowed",
+      "money in the bank",
+      "money can i keep",
+      "savings can i have",
+      "savings can i keep",
+      "in the bank and still",
+      "how much can i have in the bank",
+      "keep in the bank",
+      "how much money can i have",
+      "how much cash",
+      "cash can i have",
+      "how much am i allowed to have",
+      "am i allowed to keep",
+      "allowed to keep in the bank",
+      "bank balance",
+      "have in savings",
+      "in savings and still",
+      "keep in savings",
+      "money in savings",
+      "count as assets",
+      "countable asset limit",
+      "assets and still qualify",
+      "assets and still get"
+     ]
+    ]
+   },
+   "exclude": [
+    "snap",
+    "food stamps",
+    "food assistance",
+    "qmb",
+    "slmb",
+    "qualified medicare",
+    "medicare savings",
+    "community spouse",
+    "csra",
+    "alabama",
+    "alaska",
+    "arizona",
+    "arkansas",
+    "california",
+    "colorado",
+    "connecticut",
+    "delaware",
+    "florida",
+    "georgia",
+    "hawaii",
+    "idaho",
+    "illinois",
+    "iowa",
+    "kansas",
+    "kentucky",
+    "louisiana",
+    "maine",
+    "maryland",
+    "massachusetts",
+    "michigan",
+    "minnesota",
+    "mississippi",
+    "missouri",
+    "montana",
+    "nebraska",
+    "nevada",
+    "new hampshire",
+    "new jersey",
+    "new mexico",
+    "new york",
+    "north carolina",
+    "north dakota",
+    "ohio",
+    "oklahoma",
+    "oregon",
+    "pennsylvania",
+    "rhode island",
+    "south carolina",
+    "south dakota",
+    "tennessee",
+    "texas",
+    "utah",
+    "vermont",
+    "virginia",
+    "washington",
+    "west virginia",
+    "wisconsin",
+    "wyoming",
+    "part of his money can",
+    "part of her money can",
+    "of his money can i keep",
+    "of her money can i keep",
+    "of his income can i keep",
+    "of her income can i keep"
+   ],
+   "golden": [
+    {
+     "q": "How much money can I have in the bank and still get Medicaid?",
+     "expect": [
+      "$2,000",
+      "$3,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pna",
+   "engine": "lookup",
+   "topic": "P1-12",
+   "title": "Personal needs allowance ($52)",
+   "values": {
+    "facts": [
+     {
+      "label": "Personal needs allowance",
+      "value": "$52 per month"
+     },
+     {
+      "label": "Who gets it",
+      "value": "a person in a nursing facility or on an HCBS waiver keeps this amount of income each month for personal needs (the waiver allowance equals the Special Income Level personal needs standard)"
+     }
+    ]
+   },
+   "source": "IHCPPM post-eligibility (personal needs allowance); battery key B04",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "personal needs allowance",
+      "personal needs",
+      "personal needs money",
+      "personal allowance",
+      "needs allowance",
+      "pna",
+      "money for personal needs",
+      "spending money",
+      "keep for personal needs",
+      "keep for myself",
+      "keep for himself",
+      "keep for herself",
+      "how much do i keep",
+      "how much can i keep",
+      "how much does he keep",
+      "how much does she keep",
+      "how much will i keep",
+      "how much of my income do i keep",
+      "how much of my check",
+      "keep from my check",
+      "keep from his check",
+      "keep from her check",
+      "allowance in the nursing home",
+      "nursing home allowance",
+      "monthly allowance"
+     ]
+    ]
+   },
+   "exclude": [
+    "allocated",
+    "nursing home get",
+    "nursing home gets"
+   ],
+   "golden": [
+    {
+     "q": "What is the personal needs allowance for someone on a Medicaid waiver?",
+     "expect": [
+      "$52"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "snap_resource_limit",
+   "engine": "lookup",
+   "topic": "P8-3",
+   "title": "Indiana SNAP resource limit ($5,000 under BBCE)",
+   "values": {
+    "facts": [
+     {
+      "label": "Indiana SNAP resource limit",
+      "value": "$5,000"
+     },
+     {
+      "label": "Basis",
+      "value": "broad-based categorical eligibility (BBCE); the $3,000 federal general limit is not the Indiana figure"
+     }
+    ]
+   },
+   "source": "FNS SNAP state page for Indiana (BBCE)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "snap",
+      "snap benefits",
+      "snap program",
+      "my snap",
+      "indiana snap",
+      "food stamps",
+      "food stamp",
+      "food assistance",
+      "ebt"
+     ],
+     [
+      "resource",
+      "asset",
+      "limit",
+      "bank",
+      "savings",
+      "money",
+      "cash",
+      "in the bank",
+      "have in savings",
+      "how much can i have",
+      "allowed to have",
+      "counts toward",
+      "count toward",
+      "counts against"
+     ]
+    ]
+   },
+   "exclude": [
+    "abawd",
+    "work requirement",
+    "work requirements",
+    "time limit",
+    "time limits",
+    "settlement",
+    "lump sum",
+    "lump-sum"
+   ],
+   "golden": [
+    {
+     "q": "What is the SNAP resource limit in Indiana?",
+     "expect": [
+      "$5,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fs_annual_cap",
+   "engine": "coverage",
+   "topic": "P2-3",
+   "general": true,
+   "title": "Family Supports Waiver annual cap",
+   "values": {
+    "covered": true,
+    "program": "Family Supports (FS) Waiver",
+    "cap": {
+     "amount": 26482,
+     "period": "per year"
+    },
+    "conditions": "Spending on FS Waiver services is capped for the plan year; needs past the cap are a CIH / other-funding conversation with the case manager."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Section 3.6",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "family supports",
+      "family supports waiver",
+      "the family supports",
+      "family support waiver",
+      "fs waiver",
+      "fs program"
+     ],
+     [
+      "cap",
+      "limit",
+      "per year",
+      "each year",
+      "spending",
+      "spending cap",
+      "spending limit",
+      "budget",
+      "total budget",
+      "overall cap",
+      "overall budget",
+      "how much",
+      "annual",
+      "annual cap",
+      "yearly",
+      "yearly cap",
+      "a year",
+      "in a year",
+      "for the year",
+      "spend",
+      "maximum",
+      "max",
+      "allowed",
+      "per plan year",
+      "plan year",
+      "each plan year"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "What is the Family Supports Waiver annual spending cap?",
+     "expect": [
+      "$26,482",
+      "per year"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pest_control_hw",
+   "engine": "coverage",
+   "topic": "P3-21",
+   "title": "Pest Control (Health & Wellness / TBI waivers)",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers",
+    "cap": {
+     "amount": 4000,
+     "period": "per plan year"
+    },
+    "conditions": "Covered as a waiver service under the manual's Pest Control section."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Section 11.23",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "pest control",
+      "pest control service",
+      "pest control treatment",
+      "pest",
+      "pests",
+      "pest service",
+      "pest treatment",
+      "pest removal",
+      "exterminator",
+      "exterminators",
+      "bugs",
+      "bed bugs",
+      "bedbugs",
+      "bed bug",
+      "roaches",
+      "cockroach",
+      "cockroaches",
+      "ant problem",
+      "mice",
+      "rats",
+      "rodent",
+      "rodents",
+      "termites",
+      "termite",
+      "infestation",
+      "infested",
+      "spray for bugs",
+      "bug problem",
+      "insects"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "get rid of",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover pest control?",
+     "expect": [
+      "Yes",
+      "$4,000",
+      "plan year"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "vehicle_mods_fs_cih",
+   "engine": "coverage",
+   "topic": "P2-43",
+   "title": "Vehicle Modifications (FS / CIH waivers)",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers",
+    "cap": {
+     "amount": 15000,
+     "period": "per vehicle per 10 years"
+    },
+    "conditions": "Modifications beyond the cap in the 10-year window are not covered under this service."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Sections 9.32 and 10.3",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "vehicle modification",
+      "vehicle modifications",
+      "van modification",
+      "van modifications",
+      "car modification",
+      "car modifications",
+      "modify my vehicle",
+      "modify our vehicle",
+      "modify a vehicle",
+      "modify the vehicle",
+      "modify my van",
+      "modify our van",
+      "modify a van",
+      "modify the van",
+      "modify my car",
+      "modify our car",
+      "modify a car",
+      "modify the car",
+      "modifying a vehicle",
+      "modifying my vehicle",
+      "modifying the vehicle",
+      "modifying my van",
+      "vehicle mods",
+      "van mods",
+      "car mods",
+      "adapt a vehicle",
+      "adapt the vehicle",
+      "adapt my vehicle",
+      "adapt our vehicle",
+      "adapt a van",
+      "adapt my van",
+      "adapt our van",
+      "adapt a car",
+      "vehicle adaptation",
+      "vehicle adaptations",
+      "van adaptation",
+      "vehicle conversion",
+      "van conversion",
+      "wheelchair van conversion",
+      "accessible van conversion",
+      "make my van accessible",
+      "make our van accessible",
+      "make my vehicle accessible",
+      "make a vehicle accessible",
+      "make my car accessible",
+      "wheelchair lift",
+      "lift for my van",
+      "lift for our van",
+      "lift for my vehicle",
+      "lift in my van",
+      "ramp for my van",
+      "vehicle ramp",
+      "lowered floor",
+      "raised roof",
+      "power transfer seat",
+      "transfer seat",
+      "tie-downs",
+      "tie downs",
+      "wheelchair hoist",
+      "scooter hoist",
+      "hand controls",
+      "hand control",
+      "wheelchair accesible",
+      "weelchair",
+      "accesible",
+      "vehical modification",
+      "vehical modifications",
+      "modify my vehical",
+      "modify a vehical",
+      "adapt my vehical"
+     ],
+     [
+      "waiver",
+      "cih",
+      "family supports",
+      "medicaid",
+      "cover",
+      "covered",
+      "cap",
+      "limit",
+      "cost",
+      "pay for",
+      "pay",
+      "pays",
+      "will pay",
+      "would pay",
+      "help pay",
+      "help with the cost",
+      "how much",
+      "how often",
+      "again",
+      "every",
+      "once every",
+      "cost of",
+      "price",
+      "program",
+      "does the waiver",
+      "through the waiver",
+      "on the waiver"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "What is the vehicle modification cap on the CIH waiver?",
+     "expect": [
+      "Yes",
+      "$15,000",
+      "10 years"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "paid_relative_cap",
+   "engine": "coverage",
+   "topic": "P2-11",
+   "title": "Relatives as paid providers (40-hour weekly cap)",
+   "values": {
+    "covered": true,
+    "program": "DD waivers (FS / CIH)",
+    "cap": {
+     "amount": 40,
+     "period": "hours per week",
+     "plain": true
+    },
+    "conditions": "A relative may be paid only when employed by, or a contractor of, a DDARS-approved provider agency, with the choice justified in the PCISP. The 40-hour cap is on residential habilitation services (Participant Assistance and Care on Family Supports, Residential Habilitation and Support on CIH) furnished to an ADULT waiver individual, per paid relative or legal guardian caregiver. Two exceptions: a spouse may be paid only under Structured Family Caregiving, and a parent, stepparent, or legal guardian of a child under 18 may not be paid for any waiver-funded service to that child."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Section 6.9",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "exclude": [
+    "own child",
+    "their child",
+    "her child",
+    "his child",
+    "my child",
+    "own children",
+    "their children",
+    "her children",
+    "his children",
+    "my children",
+    "their son",
+    "their daughter",
+    "her son",
+    "her daughter",
+    "his son",
+    "his daughter",
+    "their adult child",
+    "her adult child",
+    "his adult child",
+    "their adult son",
+    "their adult daughter",
+    "her adult son",
+    "her adult daughter",
+    "his adult son",
+    "his adult daughter",
+    "minor child",
+    "minor son",
+    "minor daughter",
+    "minor children",
+    "under 18",
+    "under the age of 18",
+    "year-old son",
+    "year-old daughter",
+    "year-old child",
+    "teenage son",
+    "teenage daughter",
+    "teenage child",
+    "legal guardian",
+    "guardian",
+    "medicare",
+    "on hip",
+    "hip program",
+    "hip plan",
+    "healthy indiana",
+    "work requirement",
+    "work requirements",
+    "work rules",
+    "in a nursing home",
+    "nursing home gets",
+    "nursing home get",
+    "is allocated",
+    "allocated $",
+    "inheritance",
+    "inherited",
+    "windfall",
+    "lump sum",
+    "passed away",
+    "just passed",
+    "penalty",
+    "penaliz",
+    "transferred",
+    "gave away",
+    "signed over",
+    "deeded",
+    "lookback",
+    "look-back",
+    "gave me",
+    "take care of my own",
+    "care of my own",
+    "care for my own"
+   ],
+   "triggers": {
+    "all": [
+     [
+      "relative",
+      "a relative",
+      "family member",
+      "family members",
+      "member of my family",
+      "someone in my family",
+      "daughter",
+      "my daughter",
+      "son",
+      "my son",
+      "parent",
+      "brother",
+      "my brother",
+      "sister",
+      "my sister",
+      "mother",
+      "my mother",
+      "father",
+      "my father",
+      "mom",
+      "my mom",
+      "dad",
+      "my dad",
+      "granddaughter",
+      "my granddaughter",
+      "grandson",
+      "my grandson",
+      "niece",
+      "my niece",
+      "nephew",
+      "my nephew",
+      "aunt",
+      "my aunt",
+      "uncle",
+      "my uncle",
+      "cousin",
+      "my cousin"
+     ],
+     [
+      "paid",
+      "pay",
+      "get paid",
+      "be paid",
+      "paid to care",
+      "paid caregiver",
+      "hours",
+      "hours a week",
+      "hours per week",
+      "hours each week",
+      "a week",
+      "per week",
+      "weekly",
+      "caregiver",
+      "work as",
+      "working as",
+      "care for me",
+      "take care of me",
+      "care for him",
+      "care for her",
+      "help me at home",
+      "provide care",
+      "hire",
+      "hired"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Can my daughter be a paid caregiver for me on the CIH waiver, and how many hours a week can she work?",
+     "expect": [
+      "40",
+      "hours per week"
+     ]
+    },
+    {
+     "q": "Can my brother be paid to care for me on the Family Supports waiver?",
+     "expect": [
+      "40",
+      "hours per week"
+     ]
+    },
+    {
+     "q": "Can my adult daughter be paid to care for me on the FS waiver, and how many hours a week?",
+     "expect": [
+      "40",
+      "hours per week"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nemt_booking",
+   "engine": "lookup",
+   "topic": "P18",
+   "title": "Booking a Medicaid ride (Verida, fee-for-service)",
+   "values": {
+    "facts": [
+     {
+      "label": "Broker",
+      "value": "Verida (formerly Southeastrans)"
+     },
+     {
+      "label": "Book ahead",
+      "value": "at least 3 calendar days before the trip, up to 30 days ahead"
+     },
+     {
+      "label": "Phone",
+      "value": "1-855-325-7586"
+     },
+     {
+      "label": "Urgent trips",
+      "value": "available 24/7"
+     },
+     {
+      "label": "Trip allowance",
+      "value": "the fee-for-service benefit starts at 20 one-way trips per 12 months"
+     }
+    ]
+   },
+   "source": "Verida Indiana NEMT member rules (fetched 2026-10-16, v27/sources/02); battery key B36",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "nemt",
+      "verida",
+      "verida ride",
+      "verida rides",
+      "southeastrans",
+      "book a ride",
+      "book my ride",
+      "booking a ride",
+      "booking my ride",
+      "book rides",
+      "schedule a ride",
+      "schedule my ride",
+      "schedule rides",
+      "arrange a ride",
+      "arrange my ride",
+      "get a ride",
+      "getting a ride",
+      "ride to my appointment",
+      "a ride to my appointment",
+      "rides to my appointments",
+      "ride to appointments",
+      "rides to appointments",
+      "medical transportation",
+      "non-emergency medical transportation",
+      "nonemergency medical transportation",
+      "non-emergency transportation",
+      "transportation to my appointment",
+      "transportation to appointments",
+      "transportation to the doctor",
+      "book transportation",
+      "schedule transportation",
+      "ride to the doctor",
+      "rides to the doctor",
+      "ride to the hospital",
+      "ride to dialysis",
+      "ride to my dialysis",
+      "ride to my doctor",
+      "medical ride",
+      "medical rides",
+      "ride benefit",
+      "rides benefit",
+      "ride service",
+      "appointment ride",
+      "doctor ride",
+      "dialysis ride",
+      "trip to my appointment",
+      "trips to my appointments"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "How do I book a ride to my appointment through Medicaid, and how far ahead do I need to book?",
+     "expect": [
+      "Verida",
+      "3 calendar days",
+      "1-855-325-7586"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dd_appeal_clocks",
+   "engine": "lookup",
+   "topic": "P11-1/2",
+   "title": "DD waiver appeal deadlines (calendar days)",
+   "values": {
+    "facts": [
+     {
+      "label": "Waiver service authorization appeal",
+      "value": "33 calendar days"
+     },
+     {
+      "label": "CIH allocation (OBA) appeal",
+      "value": "30 calendar days"
+     },
+     {
+      "label": "DD eligibility appeal",
+      "value": "15 calendar days"
+     },
+     {
+      "label": "Level-of-care appeal",
+      "value": "15 calendar days"
+     },
+     {
+      "label": "Reserved-capacity denial appeal",
+      "value": "18 calendar days"
+     },
+     {
+      "label": "Counted from",
+      "value": "the decision / service authorization date on the notice"
+     }
+    ]
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Section 7.3 (Appeal Process)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "appeal",
+      "appeals",
+      "appealing",
+      "appealed",
+      "appeal process",
+      "file an appeal",
+      "filing an appeal",
+      "dispute",
+      "contest a decision",
+      "challenge the decision"
+     ],
+     [
+      "how long",
+      "how many days",
+      "how much time",
+      "days",
+      "days do i have",
+      "days to appeal",
+      "days to file",
+      "deadline",
+      "appeal deadline",
+      "filing deadline",
+      "file by",
+      "time to appeal",
+      "time limit",
+      "time frame",
+      "timeframe",
+      "window to appeal",
+      "calendar days",
+      "from the notice",
+      "notice date",
+      "date on the notice",
+      "decision date",
+      "service authorization",
+      "reserved capacity",
+      "allocation",
+      "level of care",
+      "denied",
+      "denial",
+      "service denial",
+      "services denied",
+      "waiver decision",
+      "waiver service",
+      "eligibility decision",
+      "oba",
+      "dd eligibility",
+      "days after"
+     ]
+    ]
+   },
+   "exclude": [
+    "snap",
+    "food stamps",
+    "food assistance"
+   ],
+   "golden": [
+    {
+     "q": "How long do I have to appeal a waiver service authorization decision?",
+     "expect": [
+      "33 calendar days",
+      "30 calendar days",
+      "15 calendar days",
+      "18 calendar days"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qmb_limits",
+   "engine": "lookup",
+   "topic": "P13-1",
+   "title": "Qualified Medicare Beneficiary (QMB) limits, 2026",
+   "values": {
+    "facts": [
+     {
+      "label": "QMB income limit (2026)",
+      "value": "$1,350 per month"
+     },
+     {
+      "label": "QMB asset limit (2026)",
+      "value": "$9,950"
+     },
+     {
+      "label": "What QMB pays",
+      "value": "the Medicare Part B premium and Medicare cost-sharing"
+     }
+    ]
+   },
+   "source": "Medicaid.gov Medicare Savings Program standards table (2026); battery key B26",
+   "effective": {
+    "from": "2026-01-01",
+    "to": "2026-12-31"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "qmb",
+      "qmb program",
+      "qmb plan",
+      "qmb limits",
+      "qmb in indiana",
+      "qmb eligibility",
+      "qualify for qmb",
+      "the qmb",
+      "qualified medicare beneficiary",
+      "qualified medicare beneficiaries"
+     ]
+    ]
+   },
+   "exclude": [
+    "slmb",
+    "difference between",
+    "versus",
+    " vs "
+   ],
+   "golden": [
+    {
+     "q": "What are the QMB income and asset limits for 2026?",
+     "expect": [
+      "$1,350",
+      "$9,950"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hip_work_requirement",
+   "engine": "lookup",
+   "topic": "P5-3",
+   "title": "HIP work requirements (from January 1, 2027)",
+   "values": {
+    "facts": [
+     {
+      "label": "Work activity requirement",
+      "value": "80 hours per month"
+     },
+     {
+      "label": "Earnings alternative",
+      "value": "$580 per month in earnings"
+     },
+     {
+      "label": "Enforcement starts",
+      "value": "January 1, 2027"
+     }
+    ]
+   },
+   "source": "FSSA Healthy Indiana Plan work requirements page (staging registry topic hip_work_requirements)",
+   "effective": {
+    "from": "2026-01-01",
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "hip",
+      "hip program",
+      "hip plan",
+      "my hip",
+      "the hip",
+      "indiana hip",
+      "healthy indiana",
+      "healthy indiana plan"
+     ],
+     [
+      "work requirement",
+      "work requirements",
+      "hours do i have to work",
+      "work rules",
+      "working requirement",
+      "have to work",
+      "need to work",
+      "required to work",
+      "must work",
+      "work activity",
+      "work activities",
+      "job requirement",
+      "employment requirement",
+      "hours of work",
+      "hours worked",
+      "work or earn",
+      "earn to keep",
+      "keep my hip",
+      "keep hip",
+      "lose my hip",
+      "gateway to work",
+      "community engagement"
+     ]
+    ]
+   },
+   "exclude": [
+    "exempt",
+    "exemption",
+    "excused",
+    "how much can i earn",
+    "how much can i make",
+    "how much money can i earn",
+    "income limit",
+    "income cap"
+   ],
+   "golden": [
+    {
+     "q": "What are the HIP work requirements for 2027?",
+     "expect": [
+      "80 hours",
+      "$580",
+      "January 1, 2027"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "able_onset_age",
+   "engine": "lookup",
+   "topic": "P16-2",
+   "title": "ABLE account onset age (before 46)",
+   "values": {
+    "facts": [
+     {
+      "label": "Disability onset must be before",
+      "value": "age 46"
+     },
+     {
+      "label": "Changed by",
+      "value": "the ABLE Age Adjustment Act, effective January 1, 2026 (the older before-26 rule is stale)"
+     }
+    ]
+   },
+   "source": "IRS ABLE guidance (age 46, 2026)",
+   "effective": {
+    "from": "2026-01-01",
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "able",
+      "able account",
+      "able accounts",
+      "my able",
+      "an able",
+      "the able"
+     ],
+     [
+      "onset",
+      "onset age",
+      "age of onset",
+      "became disabled",
+      "disability started",
+      "disability began",
+      "how old",
+      "old was i",
+      "old could i be",
+      "old could i have been",
+      "age when",
+      "age i became",
+      "age he became",
+      "age she became",
+      "became disabled at",
+      "disabled at",
+      "oldest age",
+      "age limit",
+      "age my disability",
+      "before age",
+      "turn 46",
+      "age 46",
+      "age 26",
+      "qualify for an able",
+      "eligible for an able",
+      "open an able",
+      "who can open",
+      "who qualifies"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "What is the ABLE account onset age? How old could I have been when my disability started?",
+     "expect": [
+      "46"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "able_ssi_disregard",
+   "engine": "lookup",
+   "topic": "P16-3",
+   "title": "ABLE balance disregard for SSI ($100,000)",
+   "values": {
+    "facts": [
+     {
+      "label": "Disregarded for SSI",
+      "value": "the first $100,000 in an ABLE account"
+     },
+     {
+      "label": "Above that",
+      "value": "amounts over $100,000 count as a resource for SSI"
+     }
+    ]
+   },
+   "source": "SSA POMS ABLE sections (registry entry able_onset_age statement)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "exclude": [
+    "inherit"
+   ],
+   "triggers": {
+    "all": [
+     [
+      "able account",
+      "able accounts",
+      "my able",
+      "an able",
+      "the able",
+      "able balance",
+      "able savings"
+     ],
+     [
+      "ssi",
+      "disregard",
+      "disregarded",
+      "balance",
+      "count against",
+      "count toward",
+      "against my ssi",
+      "against ssi",
+      "affect ssi",
+      "affect my ssi",
+      "affect my benefits",
+      "ssi benefits",
+      "ssi check",
+      "lose my ssi",
+      "lose ssi",
+      "resource for ssi",
+      "ssi resource",
+      "ssi limit",
+      "does ssi count",
+      "will ssi count",
+      "can ssi count",
+      "ignored by ssi",
+      "ssi ignore",
+      "excluded for ssi",
+      "exempt for ssi",
+      "over the limit",
+      "too much in my able",
+      "how much can i have in my able",
+      "saved in my able",
+      "money in my able"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the money in my ABLE account count against my SSI?",
+     "expect": [
+      "$100,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ssa_2027",
+   "engine": "year_indexed",
+   "topic": "P14-4/5",
+   "title": "Social Security amounts for 2027",
+   "values": {
+    "table": {
+     "2027": {
+      "cola_pct": 3.6,
+      "fbr_individual": 1029,
+      "fbr_couple": 1544,
+      "sga_nonblind": 1770,
+      "sga_blind": 2950,
+      "twp": 1270
+     }
+    },
+    "field_labels": {
+     "cola_pct": "Cost-of-living increase (percent)",
+     "fbr_individual": "SSI federal benefit rate, individual (per month)",
+     "fbr_couple": "SSI federal benefit rate, couple (per month)",
+     "sga_nonblind": "Substantial gainful activity, non-blind (per month)",
+     "sga_blind": "Substantial gainful activity, blind (per month)",
+     "twp": "Trial work period threshold (per month)"
+    }
+   },
+   "source": "SSA press release and 2027 COLA fact sheet, October 14, 2026",
+   "effective": {
+    "from": "2026-10-14",
+    "to": "2027-12-31"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-03-01",
+   "triggers": {
+    "all": [
+     [
+      "2027",
+      "in 2027",
+      "for 2027",
+      "next year",
+      "coming year"
+     ],
+     [
+      "social security",
+      "social security amount",
+      "social security increase",
+      "ssi",
+      "ssi amount",
+      "ssi payment",
+      "ssi check",
+      "ssdi",
+      "ssdi amount",
+      "cola",
+      "cola increase",
+      "cost-of-living",
+      "cost of living",
+      "cost-of-living increase",
+      "cost of living increase",
+      "substantial gainful",
+      "gainful activity",
+      "trial work",
+      "trial work period",
+      "twp",
+      "federal benefit",
+      "federal benefit rate",
+      "benefit rate",
+      "fbr",
+      "benefit amount",
+      "payment standard",
+      "how much is ssi",
+      "how much will ssi",
+      "increase for ssi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "What is the SSI federal benefit rate for 2027?",
+     "expect": [
+      "$1,029",
+      "3.6%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sfc_spouse_rule",
+   "engine": "coverage",
+   "topic": "P2-41/P3-26",
+   "title": "A spouse as paid caregiver: Structured Family Caregiving only",
+   "values": {
+    "covered": true,
+    "program": "CIH Waiver and Health & Wellness / TBI waivers (not a Family Supports Waiver service)",
+    "cap": null,
+    "conditions": "A spouse, or a parent of a minor, is a legally responsible individual and may be paid ONLY under Structured Family Caregiving: a per diem paid through a DDARS-approved provider agency, never directly, and only for extraordinary care beyond what the spouse would ordinarily provide. A spouse may NOT be paid under Attendant Care, Home and Community Assistance, Respite, or Participant-Directed Home Care. Claim notes must show the true spouse relationship. Under the service definition, Structured Family Caregiving is a caregiving arrangement in which the participant lives with the primary caregiver, who provides daily care and support to the participant in the private home of the participant or the caregiver."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Sections 9.30 and 11.28 (Structured Family Caregiving; legally responsible individuals)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "my wife",
+      "my husband",
+      "my spouse",
+      "wife",
+      "husband",
+      "spouse"
+     ],
+     [
+      "paid",
+      "pay",
+      "get paid",
+      "be paid",
+      "paid for caring",
+      "paid for care",
+      "pay her",
+      "pay him",
+      "pay my wife",
+      "pay my husband",
+      "pay my spouse",
+      "caregiver",
+      "caregiver pay",
+      "caregiving",
+      "paid through",
+      "per diem",
+      "structured family",
+      "sfc",
+      "care for",
+      "care for him",
+      "care for her",
+      "take care",
+      "take care of him",
+      "take care of her",
+      "look after me",
+      "look after him",
+      "look after her",
+      "help me at home",
+      "helps me at home"
+     ]
+    ]
+   },
+   "exclude": [
+    "hip",
+    "healthy indiana",
+    "tax",
+    "inheritance",
+    "inherited",
+    "windfall",
+    "lump sum",
+    "passed away",
+    "just passed",
+    "own kid",
+    "own child",
+    "my kid",
+    "respite"
+   ],
+   "golden": [
+    {
+     "q": "Can my wife get paid to take care of me on my waiver?",
+     "expect": [
+      "Structured Family Caregiving",
+      "only",
+      "agency"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_adult_day",
+   "engine": "coverage",
+   "topic": "P2-14",
+   "title": "Adult Day Services",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.3",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "adult day services",
+      "adult day service",
+      "adult day"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover adult day services?",
+     "expect": [
+      "Yes",
+      "Family Supports and CIH"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_behavioral_support",
+   "engine": "coverage",
+   "topic": "P2-15",
+   "title": "Behavioral Support Services",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.4",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "behavioral support services",
+      "behavioral support",
+      "behavior support services",
+      "behavior support"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover behavioral support services?",
+     "expect": [
+      "Yes",
+      "Behavioral Support Services"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_career_exploration",
+   "engine": "coverage",
+   "topic": "P2-16",
+   "title": "Career Exploration and Planning",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.5",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "career exploration and planning",
+      "career exploration",
+      "career planning"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover career exploration and planning?",
+     "expect": [
+      "Yes",
+      "Career Exploration and Planning"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_case_management",
+   "engine": "coverage",
+   "topic": "P2-17",
+   "title": "Case Management",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.6",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "case management",
+      "case manager"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover case management?",
+     "expect": [
+      "Yes",
+      "Case Management"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_community_transition",
+   "engine": "coverage",
+   "topic": "P2-18",
+   "title": "Community Transition",
+   "values": {
+    "covered": true,
+    "program": "CIH Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.7",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "community transition",
+      "community transition services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover community transition services?",
+     "expect": [
+      "Yes",
+      "CIH Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_day_habilitation",
+   "engine": "coverage",
+   "topic": "P2-19",
+   "title": "Day Habilitation",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.8",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "day habilitation",
+      "day hab"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover day habilitation?",
+     "expect": [
+      "Yes",
+      "Day Habilitation"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_extended_services",
+   "engine": "coverage",
+   "topic": "P2-20",
+   "title": "Extended Services",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.9",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "extended services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover extended services?",
+     "expect": [
+      "Yes",
+      "Extended Services"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_facility_based",
+   "engine": "coverage",
+   "topic": "P2-21",
+   "title": "Facility-Based Support",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.10",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "facility-based support",
+      "facility based support",
+      "facility-based services",
+      "facility based services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover facility-based support?",
+     "expect": [
+      "Yes",
+      "Facility-Based Support"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_family_training",
+   "engine": "coverage",
+   "topic": "P2-22",
+   "title": "Family and Caregiver Training",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.11",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "family and caregiver training",
+      "family caregiver training",
+      "caregiver training",
+      "family training"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover family and caregiver training?",
+     "expect": [
+      "Yes",
+      "Family and Caregiver Training"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_home_mod_assessment",
+   "engine": "coverage",
+   "topic": "P2-23",
+   "title": "Home Modification Assessment",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.12",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "home modification assessment",
+      "home mod assessment"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover a home modification assessment?",
+     "expect": [
+      "Yes",
+      "Home Modification Assessment"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_home_modifications",
+   "engine": "coverage",
+   "topic": "P2-24",
+   "title": "Home Modifications",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.13",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "home modifications",
+      "home modification",
+      "modify my home",
+      "modify our home",
+      "modify the home"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover home modifications?",
+     "expect": [
+      "Yes",
+      "Home Modifications"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_ibi",
+   "engine": "coverage",
+   "topic": "P2-25",
+   "title": "Intensive Behavioral Intervention",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.14",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "intensive behavioral intervention",
+      "ibi services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover intensive behavioral intervention?",
+     "expect": [
+      "Yes",
+      "Intensive Behavioral Intervention"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_music_therapy",
+   "engine": "coverage",
+   "topic": "P2-26",
+   "title": "Music Therapy",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.15",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "music therapy"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover music therapy?",
+     "expect": [
+      "Yes",
+      "Music Therapy"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_ot",
+   "engine": "coverage",
+   "topic": "P2-27",
+   "title": "Occupational Therapy",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.16",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "occupational therapy",
+      "occupational therapist"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover occupational therapy?",
+     "expect": [
+      "Yes",
+      "Occupational Therapy"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_pac",
+   "engine": "coverage",
+   "topic": "P2-28",
+   "title": "Participant Assistance and Care",
+   "values": {
+    "covered": true,
+    "program": "Family Supports (FS) Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.17",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "participant assistance and care",
+      "participant assistance",
+      "pac services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover Participant Assistance and Care?",
+     "expect": [
+      "Yes",
+      "Family Supports (FS) Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_pers",
+   "engine": "coverage",
+   "topic": "P2-29",
+   "title": "Personal Emergency Response System",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.18",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "personal emergency response system",
+      "personal emergency response",
+      "emergency response system",
+      "life alert",
+      "medical alert system"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover a personal emergency response system?",
+     "expect": [
+      "Yes",
+      "Family Supports and CIH"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_pt",
+   "engine": "coverage",
+   "topic": "P2-30",
+   "title": "Physical Therapy",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.19",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "physical therapy",
+      "physical therapist"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover physical therapy?",
+     "expect": [
+      "Yes",
+      "Physical Therapy"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_prevocational",
+   "engine": "coverage",
+   "topic": "P2-31",
+   "title": "Prevocational Services",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.20",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "prevocational services",
+      "prevocational",
+      "pre-vocational services",
+      "pre-vocational"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover prevocational services?",
+     "expect": [
+      "Yes",
+      "Prevocational Services"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_psych_therapy",
+   "engine": "coverage",
+   "topic": "P2-32",
+   "title": "Psychological Therapy",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.21",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "psychological therapy",
+      "psychological services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover psychological therapy?",
+     "expect": [
+      "Yes",
+      "Psychological Therapy"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_rec_therapy",
+   "engine": "coverage",
+   "topic": "P2-33",
+   "title": "Recreational Therapy",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.22",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "recreational therapy"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover recreational therapy?",
+     "expect": [
+      "Yes",
+      "Recreational Therapy"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_remote_supports",
+   "engine": "coverage",
+   "topic": "P2-34",
+   "title": "Remote Supports",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.23",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "remote supports",
+      "remote support services",
+      "remote support"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover remote supports?",
+     "expect": [
+      "Yes",
+      "Remote Supports"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_rent_food",
+   "engine": "coverage",
+   "topic": "P2-35",
+   "title": "Rent and Food for Unrelated Live-in Caregiver",
+   "values": {
+    "covered": true,
+    "program": "CIH Waiver",
+    "conditions": "The caregiver must be unrelated to the person and live in the same home."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.24",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "rent and food",
+      "rent & food",
+      "unrelated live-in caregiver",
+      "live-in caregiver",
+      "rent for my caregiver",
+      "caregiver's rent",
+      "caregiver rent and food"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover rent and food for an unrelated live-in caregiver?",
+     "expect": [
+      "Yes",
+      "CIH Waiver",
+      "unrelated"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_rhs_hourly",
+   "engine": "coverage",
+   "topic": "P2-36",
+   "title": "Residential Habilitation and Support (hourly)",
+   "values": {
+    "covered": true,
+    "program": "CIH Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.25",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "residential habilitation and support",
+      "residential habilitation",
+      "hourly residential",
+      "residential habilitation hourly",
+      "habilitation hourly",
+      "support hourly"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover hourly residential habilitation and support?",
+     "expect": [
+      "Yes",
+      "CIH Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_rhs_daily",
+   "engine": "coverage",
+   "topic": "P2-37",
+   "title": "Residential Habilitation and Support (daily)",
+   "values": {
+    "covered": true,
+    "program": "CIH Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.26",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "residential habilitation and support",
+      "residential habilitation",
+      "daily residential",
+      "residential habilitation daily",
+      "habilitation daily",
+      "support daily"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover daily residential habilitation and support?",
+     "expect": [
+      "Yes",
+      "CIH Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_respite",
+   "engine": "coverage",
+   "topic": "P2-38",
+   "title": "Respite",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers",
+    "conditions": "Not available while Structured Family Caregiving is being furnished to the individual. Respite also may not be furnished in a nursing facility, and may not be provided by a spouse, or by a parent, stepparent, or legal guardian of a minor."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.27",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "respite",
+      "respite care",
+      "respite services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover respite care?",
+     "expect": [
+      "Yes",
+      "Family Supports and CIH"
+     ]
+    }
+   ],
+   "exclude": [
+    "structured family caregiving",
+    "structured family",
+    "sfc"
+   ]
+  },
+  {
+   "id": "cov_dd_smes",
+   "engine": "coverage",
+   "topic": "P2-39",
+   "title": "Specialized Medical Equipment and Supplies",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.28",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "specialized medical equipment and supplies",
+      "specialized medical equipment",
+      "medical equipment",
+      "medical supplies"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover specialized medical equipment and supplies?",
+     "expect": [
+      "Yes",
+      "Family Supports and CIH"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_speech",
+   "engine": "coverage",
+   "topic": "P2-40",
+   "title": "Speech/Language Therapy",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.29",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "speech/language therapy",
+      "speech language therapy",
+      "speech therapy",
+      "speech therapist"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover speech therapy?",
+     "expect": [
+      "Yes",
+      "Speech/Language Therapy"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_transportation",
+   "engine": "coverage",
+   "topic": "P2-42",
+   "title": "Transportation",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.31",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "transportation",
+      "transportation services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover transportation?",
+     "expect": [
+      "Yes",
+      "Family Supports and CIH"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_wellness",
+   "engine": "coverage",
+   "topic": "P2-44",
+   "title": "Wellness Coordination",
+   "values": {
+    "covered": true,
+    "program": "CIH Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.33",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "wellness coordination"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the CIH Waiver cover wellness coordination?",
+     "expect": [
+      "Yes",
+      "Wellness Coordination"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_dd_workplace",
+   "engine": "coverage",
+   "topic": "P2-45",
+   "title": "Workplace Assistance",
+   "values": {
+    "covered": true,
+    "program": "Family Supports and CIH waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 9.34",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "workplace assistance"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "family supports",
+      "fs waiver",
+      "cih"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver cover workplace assistance?",
+     "expect": [
+      "Yes",
+      "Workplace Assistance"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_adult_day",
+   "engine": "coverage",
+   "topic": "P3-6",
+   "title": "Adult Day Services",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.7",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "adult day services",
+      "adult day service",
+      "adult day"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover adult day services?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_adult_family_care",
+   "engine": "coverage",
+   "topic": "P3-7",
+   "title": "Adult Family Care",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.8",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "adult family care"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover adult family care?",
+     "expect": [
+      "Yes",
+      "Adult Family Care"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_assisted_living",
+   "engine": "coverage",
+   "topic": "P3-8",
+   "title": "Assisted Living",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.9",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "assisted living"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the TBI Waiver cover assisted living?",
+     "expect": [
+      "Yes",
+      "Assisted Living"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_attendant_care",
+   "engine": "coverage",
+   "topic": "P3-9",
+   "title": "Attendant Care",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.10",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "attendant care"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover attendant care?",
+     "expect": [
+      "Yes",
+      "Attendant Care"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_behavior_mgmt",
+   "engine": "coverage",
+   "topic": "P3-10",
+   "title": "Behavior Management / Behavior Program and Counseling",
+   "values": {
+    "covered": true,
+    "program": "TBI Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.11",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "behavior management",
+      "behavior program and counseling",
+      "behavior program",
+      "behavioral management"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the TBI Waiver cover behavior management?",
+     "expect": [
+      "Yes",
+      "TBI Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_caregiver_coaching",
+   "engine": "coverage",
+   "topic": "P3-11",
+   "title": "Caregiver Coaching",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness (H&W) Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.13",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "caregiver coaching"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover caregiver coaching?",
+     "expect": [
+      "Yes",
+      "Health & Wellness (H&W) Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_community_transition",
+   "engine": "coverage",
+   "topic": "P3-12",
+   "title": "Community Transition",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.14",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "community transition",
+      "community transition services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover community transition services?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_home_community_assistance",
+   "engine": "coverage",
+   "topic": "P3-13",
+   "title": "Home and Community Assistance",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.15",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "home and community assistance",
+      "home & community assistance"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover home and community assistance?",
+     "expect": [
+      "Yes",
+      "Home and Community Assistance"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_home_delivered_meals",
+   "engine": "coverage",
+   "topic": "P3-14",
+   "title": "Home-Delivered Meals",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.16",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "home-delivered meals",
+      "home delivered meals",
+      "meals delivered to my home",
+      "meal delivery"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover home-delivered meals?",
+     "expect": [
+      "Yes",
+      "Home-Delivered Meals"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_home_mod_assessment",
+   "engine": "coverage",
+   "topic": "P3-15",
+   "title": "Home Modification Assessment",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.17",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "home modification assessment",
+      "home mod assessment"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover a home modification assessment?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_home_modifications",
+   "engine": "coverage",
+   "topic": "P3-16",
+   "title": "Home Modifications",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.18",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "home modifications",
+      "home modification",
+      "modify my home",
+      "modify our home",
+      "modify the home"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover home modifications?",
+     "expect": [
+      "Yes",
+      "Home Modifications"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_ihcc",
+   "engine": "coverage",
+   "topic": "P3-17",
+   "title": "Integrated Health Care Coordination",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.19",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "integrated health care coordination",
+      "health care coordination"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover integrated health care coordination?",
+     "expect": [
+      "Yes",
+      "Integrated Health Care Coordination"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_nutritional_supplements",
+   "engine": "coverage",
+   "topic": "P3-18",
+   "title": "Nutritional Supplements",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.20",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "nutritional supplements",
+      "nutritional supplement"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover nutritional supplements?",
+     "expect": [
+      "Yes",
+      "Nutritional Supplements"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_participant_directed",
+   "engine": "coverage",
+   "topic": "P3-19",
+   "title": "Participant-Directed Home Care",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness (H&W) Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.21",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "participant-directed home care",
+      "participant directed home care"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover participant-directed home care?",
+     "expect": [
+      "Yes",
+      "Health & Wellness (H&W) Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_pers",
+   "engine": "coverage",
+   "topic": "P3-20",
+   "title": "Personal Emergency Response System",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.22",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "personal emergency response system",
+      "personal emergency response",
+      "emergency response system",
+      "life alert",
+      "medical alert system"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover a personal emergency response system?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_residential_hab",
+   "engine": "coverage",
+   "topic": "P3-22",
+   "title": "Residential-Based Habilitation",
+   "values": {
+    "covered": true,
+    "program": "TBI Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.24",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "residential-based habilitation",
+      "residential based habilitation"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the TBI Waiver cover residential-based habilitation?",
+     "expect": [
+      "Yes",
+      "TBI Waiver"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_respite",
+   "engine": "coverage",
+   "topic": "P3-23",
+   "title": "Respite Care Services",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.25",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "respite",
+      "respite care",
+      "respite services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover respite care?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI"
+     ]
+    }
+   ],
+   "exclude": [
+    "structured family caregiving",
+    "structured family",
+    "sfc"
+   ]
+  },
+  {
+   "id": "cov_hw_smes",
+   "engine": "coverage",
+   "topic": "P3-24",
+   "title": "Specialized Medical Equipment and Supplies",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.26",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "specialized medical equipment and supplies",
+      "specialized medical equipment",
+      "medical equipment",
+      "medical supplies"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover specialized medical equipment and supplies?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_structured_day",
+   "engine": "coverage",
+   "topic": "P3-25",
+   "title": "Structured Day Program",
+   "values": {
+    "covered": true,
+    "program": "TBI Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.27",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "structured day program",
+      "structured day"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the TBI Waiver cover a structured day program?",
+     "expect": [
+      "Yes",
+      "Structured Day Program"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_supported_employment",
+   "engine": "coverage",
+   "topic": "P3-27",
+   "title": "Supported Employment",
+   "values": {
+    "covered": true,
+    "program": "TBI Waiver"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.29",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "supported employment"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the TBI Waiver cover supported employment?",
+     "expect": [
+      "Yes",
+      "Supported Employment"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_transportation",
+   "engine": "coverage",
+   "topic": "P3-28",
+   "title": "Transportation",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers"
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.30",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "transportation",
+      "transportation services"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover transportation?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cov_hw_vehicle_mods",
+   "engine": "coverage",
+   "topic": "P3-29",
+   "title": "Vehicle Modifications",
+   "values": {
+    "covered": true,
+    "program": "Health & Wellness and TBI waivers",
+    "conditions": "Coverage only: the manual's H&W/TBI section states no dollar cap for vehicle modifications. The $15,000-per-10-years cap is verified for the FS and CIH waivers only."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.31",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "vehicle modifications",
+      "vehicle modification",
+      "van modification",
+      "van modifications",
+      "modify my vehicle",
+      "modify a vehicle",
+      "modify my van",
+      "vehicle mods",
+      "van mods"
+     ],
+     [
+      "waiver",
+      "medicaid",
+      "cover",
+      "covered",
+      "coverage",
+      "pay",
+      "pays",
+      "pay for",
+      "will pay",
+      "help pay",
+      "help with",
+      "program",
+      "service",
+      "does medicaid",
+      "through medicaid",
+      "through the waiver",
+      "on the waiver",
+      "under the waiver",
+      "health and wellness",
+      "health & wellness",
+      "h&w",
+      "tbi"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Health and Wellness Waiver cover vehicle modifications?",
+     "expect": [
+      "Yes",
+      "Health & Wellness and TBI",
+      "no dollar cap"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "home_exclusion_spouse",
+   "engine": "lookup",
+   "topic": "P1-11",
+   "title": "Home excluded while a spouse or family member lives in it",
+   "values": {
+    "facts": [
+     {
+      "label": "Home excluded while",
+      "value": "a spouse, a minor or disabled child, or a sibling with an equity interest lawfully lives in the home"
+     },
+     {
+      "label": "Effect",
+      "value": "the home does not count as a resource for long-term care Medicaid"
+     }
+    ]
+   },
+   "source": "IHCPPM 3005 (exceptions named in the server registry entry home_equity_limit)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "spouse lives in",
+      "wife lives in",
+      "husband lives in",
+      "still lives in my home",
+      "still lives in the home",
+      "lives in the home",
+      "living in my home",
+      "living in our home",
+      "count my home",
+      "count our home",
+      "count the home",
+      "take my home",
+      "take our home",
+      "sell my home",
+      "sell our home",
+      "sell the home",
+      "have to sell",
+      "home count against",
+      "house count against",
+      "count my house",
+      "home excluded",
+      "home is excluded",
+      "exempt home",
+      "home exemption"
+     ]
+    ]
+   },
+   "exclude": [
+    "equity"
+   ],
+   "golden": [
+    {
+     "q": "Will Medicaid count my home if my wife still lives in it?",
+     "expect": [
+      "does not count"
+     ]
+    },
+    {
+     "q": "Do I have to sell my home to get long-term care Medicaid if my spouse stays in it?",
+     "expect": [
+      "excluded"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "parental_income_disregard",
+   "engine": "lookup",
+   "topic": "P1-21",
+   "title": "Parental income disregarded for a child on an HCBS waiver",
+   "values": {
+    "facts": [
+     {
+      "label": "Parent's income",
+      "value": "disregarded (not counted) for a child receiving HCBS waiver services"
+     },
+     {
+      "label": "Child's budget",
+      "value": "the child is budgeted on the child's own income against 300% of the SSI federal benefit rate"
+     }
+    ]
+   },
+   "source": "Server registry mechanism parental_income_disregard_waiver",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "parental income",
+      "parents' income",
+      "parent's income",
+      "parents' earnings",
+      "parent's earnings",
+      "earnings count",
+      "my income count",
+      "my income counted",
+      "income counted for",
+      "counted for a child",
+      "income count against my",
+      "does my income count",
+      "will my income count",
+      "my earnings count",
+      "income disregarded"
+     ],
+     [
+      "child",
+      "son",
+      "daughter",
+      "kid",
+      "minor",
+      "waiver",
+      "family supports",
+      "cih",
+      "hcbs"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does my income count against my child on the Family Supports Waiver?",
+     "expect": [
+      "disregarded",
+      "not counted"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fs_serves_ages",
+   "engine": "lookup",
+   "topic": "P2-2",
+   "title": "Family Supports Waiver serves children and adults",
+   "values": {
+    "facts": [
+     {
+      "label": "Who FS serves",
+      "value": "children and adults with intellectual/developmental disabilities or autism"
+     },
+     {
+      "label": "Turning 18",
+      "value": "the Family Supports Waiver does not end at 18"
+     }
+    ]
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2 (BDS serves individuals of all ages with I/DD; Section 3.6); battery key B10",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "family supports",
+      "family supports waiver",
+      "fs waiver"
+     ],
+     [
+      "18",
+      "turn 18",
+      "turns 18",
+      "age out",
+      "ages out",
+      "too old",
+      "adults",
+      "children and adults",
+      "only for children",
+      "just for kids",
+      "end at",
+      "adult son",
+      "adult daughter",
+      "grow up"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does the Family Supports Waiver end when my son turns 18?",
+     "expect": [
+      "does not end at 18"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hw_eligibility",
+   "engine": "lookup",
+   "topic": "P3-1",
+   "title": "Health & Wellness Waiver eligibility",
+   "values": {
+    "facts": [
+     {
+      "label": "Age",
+      "value": "59 and younger"
+     },
+     {
+      "label": "Level of care",
+      "value": "nursing facility level of care (NF LOC)"
+     },
+     {
+      "label": "Medicaid",
+      "value": "must be eligible for an IHCP Medicaid program with an active HCBS waiver benefit plan"
+     }
+    ]
+   },
+   "source": "DDARS HCBS Waivers Provider Manual v12.2, Section 11.1 (NF LOC) and the manual introduction (age 59 and under)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "health and wellness waiver",
+      "health and wellness",
+      "h&w waiver",
+      "h and w waiver"
+     ],
+     [
+      "eligible",
+      "eligibility",
+      "qualify",
+      "who can get",
+      "requirements",
+      "level of care",
+      "age limit",
+      "get on",
+      "sign up",
+      "who is it for"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Who is eligible for the Health and Wellness Waiver?",
+     "expect": [
+      "59 and younger",
+      "nursing facility level of care"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "snap_allotments",
+   "engine": "lookup",
+   "topic": "P8-1",
+   "title": "SNAP maximum monthly allotments (FY2027)",
+   "values": {
+    "facts": [
+     {
+      "label": "Maximum allotment, household of 1",
+      "value": "$306"
+     },
+     {
+      "label": "Maximum allotment, household of 2",
+      "value": "$562"
+     },
+     {
+      "label": "Maximum allotment, household of 3",
+      "value": "$808"
+     },
+     {
+      "label": "Maximum allotment, household of 4",
+      "value": "$1,023"
+     },
+     {
+      "label": "Maximum allotment, household of 5",
+      "value": "$1,217"
+     },
+     {
+      "label": "Maximum allotment, household of 6",
+      "value": "$1,463"
+     },
+     {
+      "label": "Maximum allotment, household of 7",
+      "value": "$1,616"
+     },
+     {
+      "label": "Maximum allotment, household of 8",
+      "value": "$1,841"
+     },
+     {
+      "label": "Each additional member",
+      "value": "+$225"
+     }
+    ]
+   },
+   "source": "Indiana DFR SNAP income page, FY2027 table (verified file snap-income-table-fy2027.md)",
+   "effective": {
+    "from": "2026-10-01",
+    "to": "2027-09-30"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "snap",
+      "food stamps",
+      "food assistance",
+      "ebt"
+     ],
+     [
+      "allotment",
+      "maximum benefit",
+      "max benefit",
+      "most",
+      "benefit amount",
+      "get per month",
+      "monthly benefit"
+     ]
+    ]
+   },
+   "exclude": [
+    "income limit",
+    "income limits",
+    "resource",
+    "lump",
+    "savings",
+    "saved",
+    "bank",
+    "asset",
+    "assets",
+    "calculated",
+    "calculation",
+    "formula"
+   ],
+   "golden": [
+    {
+     "q": "What is the maximum SNAP allotment for a household of 4?",
+     "expect": [
+      "$1,023"
+     ]
+    },
+    {
+     "q": "How much in food stamps can a family of 3 get each month at most?",
+     "expect": [
+      "$808"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "snap_income_limits",
+   "engine": "lookup",
+   "topic": "P8-2",
+   "title": "SNAP income limits (FY2027, monthly)",
+   "values": {
+    "facts": [
+     {
+      "label": "Gross limit, household of 1",
+      "value": "$1,729"
+     },
+     {
+      "label": "Gross limit, household of 2",
+      "value": "$2,345"
+     },
+     {
+      "label": "Gross limit, household of 3",
+      "value": "$2,960"
+     },
+     {
+      "label": "Gross limit, household of 4",
+      "value": "$3,575"
+     },
+     {
+      "label": "Gross limit, household of 5",
+      "value": "$4,191"
+     },
+     {
+      "label": "Gross limit, household of 6",
+      "value": "$4,806"
+     },
+     {
+      "label": "Gross limit, household of 7",
+      "value": "$5,421"
+     },
+     {
+      "label": "Gross limit, household of 8",
+      "value": "$6,037"
+     },
+     {
+      "label": "Gross, each additional member",
+      "value": "+$616"
+     },
+     {
+      "label": "Net limit, household of 1",
+      "value": "$1,330"
+     },
+     {
+      "label": "Net limit, household of 2",
+      "value": "$1,804"
+     },
+     {
+      "label": "Net limit, household of 3",
+      "value": "$2,277"
+     },
+     {
+      "label": "Net limit, household of 4",
+      "value": "$2,750"
+     },
+     {
+      "label": "Net limit, household of 5",
+      "value": "$3,224"
+     },
+     {
+      "label": "Net limit, household of 6",
+      "value": "$3,697"
+     },
+     {
+      "label": "Net limit, household of 7",
+      "value": "$4,170"
+     },
+     {
+      "label": "Net limit, household of 8",
+      "value": "$4,644"
+     },
+     {
+      "label": "Net, each additional member",
+      "value": "+$474"
+     }
+    ]
+   },
+   "source": "Indiana DFR SNAP income page, FY2027 table (verified file snap-income-table-fy2027.md)",
+   "effective": {
+    "from": "2026-10-01",
+    "to": "2027-09-30"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "snap",
+      "food stamps",
+      "food assistance",
+      "ebt"
+     ],
+     [
+      "income limit",
+      "income limits",
+      "gross income",
+      "gross",
+      "net income",
+      "make too much",
+      "income cutoff",
+      "earn too much",
+      "how much can i make",
+      "how much income",
+      "income can"
+     ]
+    ]
+   },
+   "exclude": [
+    "allotment",
+    "maximum benefit",
+    "max benefit",
+    "resource",
+    "lump",
+    "will we get",
+    "will i get",
+    "how much snap will",
+    "how much will we get",
+    "how much will i get"
+   ],
+   "golden": [
+    {
+     "q": "What is the SNAP gross income limit for a household of 4?",
+     "expect": [
+      "$3,575"
+     ]
+    },
+    {
+     "q": "How much income can a household of 2 have and still get food stamps?",
+     "expect": [
+      "$2,345",
+      "$1,804"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "snap_lump_sum",
+   "engine": "lookup",
+   "topic": "P8-5",
+   "title": "SNAP treatment of a lump sum payment",
+   "values": {
+    "facts": [
+     {
+      "label": "As income",
+      "value": "a nonrecurring lump sum is NOT counted as SNAP income"
+     },
+     {
+      "label": "As a resource",
+      "value": "it counts as a resource only in the month it is received (Indiana SNAP resource limit $5,000)"
+     }
+    ]
+   },
+   "source": "7 CFR 273.9(c)(8); server registry mechanism snap_lump_sum",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "snap",
+      "snap benefits",
+      "snap program",
+      "my snap",
+      "indiana snap",
+      "food stamps",
+      "food stamp",
+      "food assistance",
+      "ebt"
+     ],
+     [
+      "lump sum",
+      "lump-sum",
+      "one-time payment",
+      "one time payment",
+      "single payment",
+      "back payment",
+      "big check",
+      "settlement payment",
+      "money all at once"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "I received a one-time lump sum. Does SNAP count it as income?",
+     "expect": [
+      "NOT counted as SNAP income",
+      "month it is received"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "part_b_premium",
+   "engine": "lookup",
+   "topic": "P12-2",
+   "title": "Medicare Part B standard premium (2026)",
+   "values": {
+    "facts": [
+     {
+      "label": "Standard Part B premium, 2026",
+      "value": "$202.90 a month"
+     },
+     {
+      "label": "Higher incomes",
+      "value": "pay more (income-related monthly adjustment)"
+     }
+    ]
+   },
+   "source": "Medicare.gov, 'What does Medicare cost?' (page in the corpus; battery key B24)",
+   "effective": {
+    "from": "2026-01-01",
+    "to": "2026-12-31"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "part b premium",
+      "part b cost",
+      "medicare part b premium",
+      "part b monthly premium",
+      "premium for part b",
+      "cost of part b",
+      "part b price",
+      "how much is part b",
+      "part b go up"
+     ]
+    ]
+   },
+   "exclude": [
+    "who pays",
+    "pays my",
+    "pay my",
+    "medicare savings",
+    "qmb",
+    "slmb",
+    "medicaid pay",
+    "state pays",
+    "2023",
+    "2024",
+    "2025",
+    "2027",
+    "2028",
+    "2029",
+    "2030",
+    "next year",
+    "last year",
+    "coming year"
+   ],
+   "golden": [
+    {
+     "q": "What is the standard Medicare Part B premium for 2026?",
+     "expect": [
+      "$202.90"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "backpay_exclusion",
+   "engine": "lookup",
+   "topic": "P14-3",
+   "title": "SSI/SSDI backpay resource exclusion (nine months)",
+   "values": {
+    "facts": [
+     {
+      "label": "Resource exclusion",
+      "value": "retroactive SSI or Social Security benefits are excluded from countable resources for nine months after the month received"
+     },
+     {
+      "label": "After nine months",
+      "value": "money still held then counts as a resource"
+     }
+    ]
+   },
+   "source": "SSA SSI resources page and POMS (server registry entry backpay_exclusion)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "backpay",
+      "back pay",
+      "retroactive",
+      "past-due benefits",
+      "past due benefits",
+      "lump sum from social security",
+      "ssi back",
+      "ssdi back",
+      "back payment from social security"
+     ],
+     [
+      "count",
+      "resource",
+      "resources",
+      "excluded",
+      "exclusion",
+      "how long",
+      "asset",
+      "assets",
+      "spend"
+     ]
+    ]
+   },
+   "exclude": [
+    "snap",
+    "food stamps",
+    "food assistance"
+   ],
+   "golden": [
+    {
+     "q": "How long is SSDI backpay excluded from my resources?",
+     "expect": [
+      "nine months"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "able_in_medicaid_disregard",
+   "engine": "lookup",
+   "topic": "P16-4",
+   "title": "ABLE account balance and Indiana Medicaid",
+   "values": {
+    "facts": [
+     {
+      "label": "Indiana Medicaid",
+      "value": "the INvestABLE ABLE balance is exempt (does not count) for Indiana Medicaid"
+     },
+     {
+      "label": "Rule",
+      "value": "DFR Policy Manual 2615.10.35"
+     }
+    ]
+   },
+   "source": "DFR Policy Manual 2615.10.35 (stated in the server registry entry able_onset_age)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "exclude": [
+    "inherit",
+    "how much can i save",
+    "can i save",
+    "save in 2026"
+   ],
+   "triggers": {
+    "all": [
+     [
+      "able account",
+      "able accounts",
+      "my able",
+      "an able",
+      "the able",
+      "able balance",
+      "able plan",
+      "investable",
+      "529a"
+     ],
+     [
+      "medicaid",
+      "indiana medicaid",
+      "count against",
+      "count as",
+      "balance",
+      "exempt",
+      "disregard",
+      "asset",
+      "resource",
+      "waiver"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does my INvestABLE account count against Indiana Medicaid?",
+     "expect": [
+      "exempt",
+      "does not count"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "able_tax_credit",
+   "engine": "lookup",
+   "topic": "P16-6",
+   "title": "Indiana ABLE contribution tax credit",
+   "values": {
+    "facts": [
+     {
+      "label": "Credit",
+      "value": "20% of contributions to an Indiana ABLE (INvestABLE) account"
+     },
+     {
+      "label": "Cap",
+      "value": "$1,000 per return"
+     },
+     {
+      "label": "Married filing separately",
+      "value": "$500 cap"
+     },
+     {
+      "label": "Type",
+      "value": "nonrefundable, no carryover or carryback; claimed on Schedule IN-ABLE"
+     }
+    ]
+   },
+   "source": "Indiana HB 1303 and LSA fiscal note LS 6935 (server registry entry indiana_able_tax_credit; v28 sources/05)",
+   "effective": {
+    "from": "2023-01-01",
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "able account",
+      "able accounts",
+      "my able",
+      "an able",
+      "the able",
+      "investable",
+      "529a",
+      "able plan"
+     ],
+     [
+      "tax",
+      "credit",
+      "tax credit",
+      "state tax",
+      "indiana tax",
+      "indiana tax credit",
+      "state tax credit",
+      "able tax credit",
+      "credit for contributing",
+      "tax break",
+      "taxes",
+      "tax deduction",
+      "save on taxes"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "How much is the Indiana tax credit for putting money in an ABLE account?",
+     "expect": [
+      "20%",
+      "$1,000",
+      "$500"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "difficulty_of_care",
+   "engine": "lookup",
+   "topic": "P17-2",
+   "title": "Difficulty-of-care exclusion for waiver caregiver pay",
+   "values": {
+    "facts": [
+     {
+      "label": "Income treatment",
+      "value": "Medicaid waiver payments to a caregiver who lives with the person they care for are difficulty-of-care payments, excluded from income (IRS Notice 2014-7)"
+     },
+     {
+      "label": "For HIP and other MAGI coverage",
+      "value": "the pay does not count as household income"
+     }
+    ]
+   },
+   "source": "IRS Notice 2014-7 and IRS Q&A (server registry entry difficulty_of_care)",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "difficulty of care",
+      "caregiver pay",
+      "sfc pay",
+      "paid caregiver",
+      "waiver payments",
+      "structured family caregiving pay",
+      "pay for caring",
+      "caregiver income",
+      "pay my wife gets",
+      "pay my husband gets",
+      "wife is paid",
+      "husband is paid",
+      "spouse is paid",
+      "my wife is paid",
+      "my husband is paid",
+      "paid through the waiver",
+      "paid to care for",
+      "gets paid to care",
+      "paid for my care"
+     ],
+     [
+      "tax",
+      "taxable",
+      "income",
+      "count as income",
+      "counts as income",
+      "hip",
+      "magi",
+      "household income",
+      "irs"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Is the pay my wife gets for my care through the waiver counted as income for taxes?",
+     "expect": [
+      "excluded from income"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "aba_coverage",
+   "engine": "lookup",
+   "topic": "Absent-3",
+   "title": "ABA therapy coverage (Indiana Medicaid)",
+   "values": {
+    "facts": [
+     {
+      "label": "Covered",
+      "value": "yes: ABA is an Indiana Medicaid (IHCP) EPSDT / state-plan service, not a waiver service"
+     },
+     {
+      "label": "Ages",
+      "value": "under 21 only"
+     },
+     {
+      "label": "Prior authorization",
+      "value": "required"
+     },
+     {
+      "label": "Comprehensive ABA",
+      "value": "up to 4,000 hours over the member's lifetime"
+     },
+     {
+      "label": "After the allocation",
+      "value": "targeted ABA up to 15 hours per week"
+     }
+    ]
+   },
+   "source": "IHCP BT201606 and BT202627 (v27 sources 03a, 03b)",
+   "effective": {
+    "from": "2026-04-01",
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "exclude": [
+    " trabajo",
+    " trabajar",
+    "trabaja "
+   ],
+   "triggers": {
+    "all": [
+     [
+      "aba",
+      "applied behavior analysis",
+      "aba therapy",
+      "autism therapy",
+      "behavior analysis"
+     ],
+     [
+      "cover",
+      "covered",
+      "coverage",
+      "medicaid",
+      "pay",
+      "waiver",
+      "ihcp",
+      "epsdt",
+      "child",
+      "son",
+      "daughter",
+      "kids"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Does Indiana Medicaid cover ABA therapy for my child?",
+     "expect": [
+      "under 21",
+      "4,000 hours",
+      "Prior authorization"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "parent_guardian_minor_bar",
+   "engine": "coverage",
+   "topic": "P2-11a",
+   "title": "Paying a parent, stepparent, or legal guardian to care for their own minor child",
+   "values": {
+    "covered": false,
+    "program": "DD waivers (FS / CIH)",
+    "conditions": "Section 6.9 bars this because a parent, stepparent, or legal guardian is legally responsible for the minor's care: they may not receive payment for any waiver-funded service delivered to a waiver participant under 18, on either waiver. The bar is about minors only \u2014 a parent of an ADULT child may be paid as another relative, through a DDARS-approved provider agency."
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Section 6.9",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "exclude": [
+    "grandparent",
+    "grandmother",
+    "grandfather",
+    "grandma",
+    "grandpa",
+    "18-year-old",
+    "19-year-old",
+    "20-year-old",
+    "21-year-old",
+    "18 years old",
+    "19 years old",
+    "20 years old",
+    "21 years old",
+    "adult child",
+    "adult son",
+    "adult daughter"
+   ],
+   "triggers": {
+    "all": [
+     [
+      "parent",
+      "parents",
+      "mother",
+      "father",
+      "mom",
+      "dad",
+      "mama",
+      "stepparent",
+      "step-parent",
+      "stepmother",
+      "stepfather",
+      "stepmom",
+      "stepdad",
+      "guardian",
+      "legal guardian",
+      "birth mother",
+      "birth father",
+      "adoptive parent",
+      "foster parent"
+     ],
+     [
+      "minor",
+      "under 18",
+      "under the age of 18",
+      "minor child",
+      "minor son",
+      "minor daughter",
+      "year-old son",
+      "year-old daughter",
+      "year-old child",
+      "year old son",
+      "year old daughter",
+      "year old child",
+      "years old",
+      "teen",
+      "teenage",
+      "teenager",
+      "toddler",
+      "infant",
+      "preschool",
+      "school-age",
+      "school age",
+      "young child",
+      "little boy",
+      "little girl",
+      "child under 18",
+      "son under 18",
+      "daughter under 18"
+     ],
+     [
+      "paid",
+      "pay",
+      "get paid",
+      "be paid",
+      "caregiver",
+      "care for",
+      "take care",
+      "provide care",
+      "providing care",
+      "hired",
+      "hire",
+      "work as",
+      "working as",
+      "provider"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Can a mother be paid to care for her 10-year-old son on the Family Supports waiver?",
+     "expect": [
+      "No",
+      "under 18",
+      "Section 6.9"
+     ]
+    },
+    {
+     "q": "Can a dad be paid to care for his 8-year-old daughter on the waiver?",
+     "expect": [
+      "No",
+      "under 18"
+     ]
+    },
+    {
+     "q": "Can a legal guardian be paid to care for a minor on the CIH waiver?",
+     "expect": [
+      "No",
+      "any waiver-funded service"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "parent_paid_own_child",
+   "engine": "lookup",
+   "topic": "P2-11b",
+   "title": "Can a parent be paid to care for their own child on a waiver? It depends on the child's age",
+   "values": {
+    "facts": [
+     {
+      "label": "Child under 18",
+      "value": "No \u2014 a parent, stepparent, or legal guardian may not be paid for any waiver-funded service to their own minor child (Family Supports or CIH)"
+     },
+     {
+      "label": "Adult child (18 or older)",
+      "value": "Yes \u2014 the parent is treated as another relative: paid only through a DDARS-approved provider agency, with the choice justified in the person's plan (PCISP); residential habilitation (PAC on Family Supports, RHS on CIH) is capped at 40 hours per week per caregiver"
+     },
+     {
+      "label": "A spouse is different",
+      "value": "a spouse may be paid only under Structured Family Caregiving"
+     }
+    ]
+   },
+   "source": "DDARS HCBS Waivers Provider Manual, Section 6.9",
+   "effective": {
+    "from": null,
+    "to": null
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "exclude": [
+    "minor",
+    "under 18",
+    "under the age of 18",
+    "minor child",
+    "minor son",
+    "minor daughter",
+    "year-old son",
+    "year-old daughter",
+    "year-old child",
+    "teenage",
+    "teenager",
+    "toddler",
+    "infant",
+    "preschool",
+    "school-age",
+    "school age",
+    "young child",
+    "pays for",
+    "more services than",
+    "spending limit",
+    "spending cap",
+    "annual cap",
+    "yearly cap",
+    "medicare"
+   ],
+   "triggers": {
+    "all": [
+     [
+      "parent",
+      "parents",
+      "mother",
+      "father",
+      "mom",
+      "dad",
+      "stepparent",
+      "step-parent",
+      "stepmother",
+      "stepfather",
+      "guardian",
+      "son",
+      "daughter",
+      "child",
+      "children"
+     ],
+     [
+      "paid",
+      "pay",
+      "get paid",
+      "be paid",
+      "caregiver",
+      "care for",
+      "take care",
+      "provide care",
+      "providing care",
+      "hire",
+      "hired",
+      "work as",
+      "working as"
+     ],
+     [
+      "own child",
+      "their child",
+      "her child",
+      "his child",
+      "my child",
+      "own children",
+      "their children",
+      "her children",
+      "his children",
+      "my children",
+      "their son",
+      "their daughter",
+      "her son",
+      "her daughter",
+      "his son",
+      "his daughter",
+      "their adult child",
+      "her adult child",
+      "his adult child",
+      "their adult son",
+      "their adult daughter",
+      "her adult son",
+      "her adult daughter",
+      "his adult son",
+      "his adult daughter"
+     ]
+    ]
+   },
+   "golden": [
+    {
+     "q": "Can a parent be paid to care for their own child on a waiver?",
+     "expect": [
+      "Child under 18",
+      "No",
+      "Adult child",
+      "40 hours per week"
+     ]
+    },
+    {
+     "q": "Can a father be paid to care for his adult daughter on the Family Supports waiver?",
+     "expect": [
+      "Adult child",
+      "40 hours per week"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "eap_window",
+   "engine": "lookup",
+   "topic": "N15/N32-EAP",
+   "title": "Energy Assistance Program (EAP / LIHEAP) application window",
+   "values": {
+    "facts": [
+     {
+      "label": "Application window (program year 2027)",
+      "value": "October 1, 2026 to April 30, 2027"
+     },
+     {
+      "label": "How the benefit is paid",
+      "value": "paid directly to the utility vendor; the money does not come to the household"
+     },
+     {
+      "label": "How to apply",
+      "value": "through a local Community Action Agency / Local Service Provider"
+     }
+    ]
+   },
+   "source": "IHCDA Energy Assistance Program (LIHEAP), program year 2027 window (Battery 2 key U33; the window the v29 live EAP answer shipped)",
+   "effective": {
+    "from": "2026-10-01",
+    "to": "2027-04-30"
+   },
+   "verified_on": "2026-10-16",
+   "review_by": "2027-01-15",
+   "triggers": {
+    "all": [
+     [
+      "energy assistance",
+      "energy assistance program",
+      "heating assistance",
+      "home energy assistance",
+      "low-income home energy",
+      "liheap",
+      "the eap",
+      "eap program",
+      "heating bills",
+      "winter heating",
+      "help with my heating",
+      "utility assistance"
+     ],
+     [
+      "apply",
+      "when",
+      "application",
+      "sign up",
+      "enroll",
+      "window",
+      "how does the program pay",
+      "how does it pay",
+      "who pays",
+      "pay"
+     ]
+    ]
+   },
+   "exclude": [
+    "snap",
+    "food stamps"
+   ],
+   "golden": [
+    {
+     "q": "When can I apply for help with my winter heating bills in Indiana, and how does the program pay?",
+     "expect": [
+      "October 1, 2026",
+      "April 30, 2027",
+      "utility vendor"
+     ]
+    },
+    {
+     "q": "wen can i apply for help with my heating bills in indiana and how doese the program pay",
+     "expect": [
+      "October 1, 2026",
+      "April 30, 2027"
+     ]
+    }
+   ]
+  }
+ ]
+}
