@@ -1,5 +1,5 @@
 {
- "_note": "v21 seed registrations (WS3c), hand-written from the two 2026-10-14 production failures and the v14 QIT bridge vocabulary. Format: concept (matched as a substring of the lowercased question/query) -> corpus terms or section numbers the concept lives under. The server reads this file once at boot (FSSA_GROWTH_TERMS overrides the path); the growth-loop runner's staged additions merge here only by a human act.",
+ "_note": "v21 seed registrations (WS3c), hand-written from the two 2026-10-14 production failures and the v14 QIT bridge vocabulary. Format: concept (matched as a substring of the lowercased question/query) -> corpus terms or section numbers the concept lives under. The server reads this file once at boot (FSSA_GROWTH_TERMS overrides the path); the growth-loop runner's staged additions merge here only by a human act. Phase 1 (combined build, 2026-10-19): month-received bridges added from the v35 Stage 4 diagnosis (fix 3): lump-sum, gift, inheritance, settlement and month-received phrasings map to the exact carrier phrases in ILTCP Assets (doc 1230) and DFR Ch 2600 / Ch 2800 (docs 1257, 1258), each phrase verified in those sections of the offline corpus copy.",
  "divisor": [
   "3006.00.00"
  ],
@@ -62,5 +62,58 @@
  "breathing machine": [
   "continuous positive airway pressure",
   "cpap"
+ ],
+ "lump sum": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "lump-sum": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "one-time payment": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "settlement": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "gift": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "gave me": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "inheritance": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "inherited": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received",
+  "month received"
+ ],
+ "month received": [
+  "non-recurring lump sum payments",
+  "counted as resources starting in the month received",
+  "income in the month received"
  ]
 }

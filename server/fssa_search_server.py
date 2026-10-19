@@ -2412,11 +2412,144 @@ def _v2_exact_sections(question):
     return out
 
 
-def _v2_section_hit(sid, match, anchors=None):
+# --- Phase 1 (combined, Stage 4 fix 2): sentence-selected slice --
+# The v35 Stage 4 pool autopsy (v35/STAGE4_DIAGNOSIS.md) found 16
+# of 21 buried pilot items were figure-level slice misses: the
+# carrier section reached the packet, but the slice served from
+# it covered a different region than the needed figure or phrase.
+# The served excerpt below is built from a 3-chunk anchor window
+# capped at _SERVED_EXCERPT_CAP chars; when the full section text
+# is longer than that window and a sentence elsewhere in the
+# section matches the question's figure/concept terms strictly
+# better than any sentence the anchor window already carries,
+# the served slice is the window around those matching sentences
+# instead. Strict fallback: no better sentence match, no change
+# (the anchor window is served byte-for-byte as before).
+_SERVED_EXCERPT_CAP = 2000
+_SLICE_FIGURE_RX = re.compile(
+    r"\$\s?\d[\d,]*(?:\.\d+)?"
+    r"|\b\d[\d,]*(?:\.\d+)?\s?(?:%|percent|months?|years?"
+    r"|weeks?|days?)\b", re.IGNORECASE)
+
+
+def _slice_spans(text):
+    """(start, end) sentence-ish spans of `text`: splits on
+    sentence-final punctuation and on line breaks (manual tables
+    carry one fact per line). Spans index into the original text,
+    so a selected window is an exact slice of it."""
+    spans = []
+    for m in re.finditer(r"[^\n.!?]+(?:[.!?]+|$)", text or ""):
+        s, e = m.start(), m.end()
+        while s < e and text[s] in " \t":
+            s += 1
+        while e > s and text[e - 1] in " \t":
+            e -= 1
+        if e > s:
+            spans.append((s, e))
+    return spans
+
+
+def _slice_terms(query):
+    """The question's figure/concept terms for slice selection:
+    its keywords, any growth-term phrases registered for it, and
+    the dollar amounts it names. Returns (words, phrases, amounts,
+    figure_seeking)."""
+    q = (query or "").lower()
+    words = set(keywords(query or ""))
+    phrases = []
+    for ph in _growth_expansions(q):
+        if " " in ph:
+            phrases.append(ph)
+        else:
+            words.add(ph)
+    for t in list(words):
+        for w in SYNONYMS.get(t, ()):
+            if " " not in w:
+                words.add(w)
+    amounts = [a.replace(" ", "").replace(",", "")
+               for a in re.findall(r"\$\s?\d[\d,]*(?:\.\d+)?", q)]
+    figure_seeking = bool(amounts) or any(
+        w in q for w in _FIGURE_Q_WORDS) or bool(
+        re.search(r"\b\d", q))
+    return words, phrases, amounts, figure_seeking
+
+
+def _slice_span_score(span_text, words, phrases, amounts,
+                      figure_seeking):
+    low = (span_text or "").lower()
+    score = 0
+    for ph in phrases:
+        if ph in low:
+            score += 2
+    hit_words = 0
+    for w in words:
+        if len(w) >= 3 and re.search(r"\b" + re.escape(w) + r"\b",
+                                     low):
+            hit_words += 1
+    score += hit_words
+    compact = low.replace(",", "")
+    for a in amounts:
+        if a and a in compact:
+            score += 3
+    if figure_seeking and _SLICE_FIGURE_RX.search(span_text or ""):
+        score += 2
+    return score
+
+
+def _sentence_selected_slice(full_text, query, cap):
+    """A cap-sized window of `full_text` around its best matching
+    sentences, or None when nothing in the full text matches the
+    question better than `current_best` (the caller compares).
+    Returns (window_text, best_score)."""
+    words, phrases, amounts, figure_seeking = _slice_terms(query)
+    if not words and not phrases and not amounts:
+        return None, 0
+    spans = _slice_spans(full_text)
+    if not spans:
+        return None, 0
+    scores = [_slice_span_score(full_text[s:e], words, phrases,
+                                 amounts, figure_seeking)
+              for s, e in spans]
+    best = max(scores) if scores else 0
+    # A lone generic word is not a figure/concept match: require
+    # a phrase, an exact amount, a figure in a figure-seeking
+    # question alongside a term, or two distinct terms.
+    if best < 2:
+        return None, best
+    bi = scores.index(best)
+    lo = hi = bi
+
+    def _fits(a, b):
+        return spans[b][1] - spans[a][0] <= cap
+
+    # Grow to neighbouring matching sentences first, then to
+    # adjacent context, one side at a time, while the window
+    # fits the cap.
+    for want_match in (True, False):
+        while True:
+            if lo > 0 and _fits(lo - 1, hi) and (
+                    not want_match or scores[lo - 1] > 0):
+                lo -= 1
+                continue
+            if hi + 1 < len(spans) and _fits(lo, hi + 1) and (
+                    not want_match or scores[hi + 1] > 0):
+                hi += 1
+                continue
+            break
+    window = full_text[spans[lo][0]:spans[hi][1]]
+    return window[:cap], best
+
+
+def _v2_section_hit(sid, match, anchors=None, query=None):
     """Build a served hit for a section: the anchor chunk (the
     vector hit chunk when known, else the section's best FTS
     chunk, else its first chunk) plus its same-section neighbours,
-    as one evidence window. Returns None for an unknown section."""
+    as one evidence window. Returns None for an unknown section.
+    Phase 1 (fix 2): when a query is supplied and the section's
+    full text holds a sentence matching the question's terms
+    strictly better than the anchor window does, the served
+    excerpt is the sentence-selected window around that sentence
+    (same cap); otherwise the anchor window is served unchanged."""
     meta = _V2["sections"].get(sid)
     if not meta:
         return None
@@ -2447,7 +2580,36 @@ def _v2_section_hit(sid, match, anchors=None):
                 break
     lo = max(0, idx - 1)
     hi = min(len(chunks), idx + 2)
-    excerpt = "\n".join(t for _r, _o, t in chunks[lo:hi])[:2000]
+    excerpt = "\n".join(
+        t for _r, _o, t in chunks[lo:hi])[:_SERVED_EXCERPT_CAP]
+    # Phase 1 (fix 2): sentence-selected slice. Only when the
+    # section's full text is longer than the excerpt served and
+    # its best matching sentence beats every sentence the anchor
+    # window already carries. Any failure keeps the anchor
+    # window byte-for-byte.
+    if query:
+        try:
+            with _V2_QLOCK:
+                _srow = conn.execute(
+                    "SELECT text FROM sections WHERE section_id=?",
+                    (sid,)).fetchone()
+            _full = _srow[0] if _srow else ""
+            if _full and len(_full) > len(excerpt):
+                _words, _phrases, _amounts, _fseek = \
+                    _slice_terms(query)
+                _cur_best = 0
+                for _s, _e in _slice_spans(excerpt):
+                    _cur_best = max(
+                        _cur_best,
+                        _slice_span_score(
+                            excerpt[_s:_e], _words, _phrases,
+                            _amounts, _fseek))
+                _sel, _sel_best = _sentence_selected_slice(
+                    _full, query, _SERVED_EXCERPT_CAP)
+                if _sel and _sel_best > _cur_best:
+                    excerpt = _sel
+        except Exception:
+            pass
     doc = _V2["docs"][meta["doc_id"]]
     hit = {"title": doc["title"], "url": doc["url"],
            "source": "v2", "verified": True, "excerpt": excerpt,
@@ -2494,6 +2656,16 @@ def _is_ddars_manual_doc(doc):
     sf = ((doc or {}).get("source_file") or "").lower()
     return ("hcbs waivers" in title or "ddars" in title
             or "hcbs waivers" in sf or "ddars" in sf)
+
+
+# The fusion priors' question-intent word lists, named once
+# (v35, Stage 2): the rerank seat's routed prompt reads the
+# same lists, so the two consumers cannot drift apart.
+_FREQ_Q_WORDS = ("how often", "how frequently", "how long",
+                 "every ", "expire", "lookback", "look-back")
+_FIGURE_Q_WORDS = ("limit", "cost", "amount", "much", "income",
+                   "pay", "rate", "dollar", "price", "fee",
+                   "premium", "allowance", "keep")
 
 
 def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
@@ -2634,13 +2806,8 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
     # Priors (small, multiplicative, from the profile).
     pr = profile.get("priors", {})
     indiana_scoped = "indiana" in q_low or "hoosier" in q_low
-    freq_q = any(w in q_low for w in
-                 ("how often", "how frequently", "how long",
-                  "every ", "expire", "lookback", "look-back"))
-    figure_q = any(w in q_low for w in
-                   ("limit", "cost", "amount", "much", "income",
-                    "pay", "rate", "dollar", "price", "fee",
-                    "premium", "allowance", "keep"))
+    freq_q = any(w in q_low for w in _FREQ_Q_WORDS)
+    figure_q = any(w in q_low for w in _FIGURE_Q_WORDS)
     # v27 (Change 3a): the DDARS-manual rule prior, computed
     # once per search (question signal + the profile value).
     dd_rule_q = _dd_rule_question(q_low)
@@ -2676,7 +2843,7 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
         url = _V2["docs"][meta["doc_id"]]["url"]
         if url_counts.get(url, 0) >= 2:
             continue
-        h = _v2_section_hit(sid, match, anchors)
+        h = _v2_section_hit(sid, match, anchors, query=query)
         if h is None:
             continue
         url_counts[url] = url_counts.get(url, 0) + 1
@@ -2715,7 +2882,14 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
         if _POOL_EXPORT_PATH:
             _export_rerank_pool(
                 query, _pool, _winning, _backend, n,
-                _pool_export_extras(_pool, scores))
+                _pool_export_extras(
+                    _pool, scores,
+                    _fusion_export_inputs(
+                        channels,
+                        {"indiana_scoped": bool(indiana_scoped),
+                         "freq_q": bool(freq_q),
+                         "figure_q": bool(figure_q),
+                         "dd_rule_q": bool(dd_rule_q)})))
     if len(result) > n:
         result = result[:n]
 
@@ -2748,7 +2922,7 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
                 _v2_match([spec["phrase"]]), scope, 6)
             cand_hits = []
             for sid in cand_secs:
-                h = _v2_section_hit(sid, match, anchors)
+                h = _v2_section_hit(sid, match, anchors, query=query)
                 if h:
                     cand_hits.append(h)
             if not cand_hits:
@@ -2776,7 +2950,7 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
         result = _front(pin_hits)
     reg_hits = []
     for sid in channels.get("R", [])[:2]:
-        h = _v2_section_hit(sid, match, anchors)
+        h = _v2_section_hit(sid, match, anchors, query=query)
         if h and all((x["url"], x["excerpt"][:60])
                      != (h["url"], h["excerpt"][:60])
                      for x in reg_hits + pin_hits):
@@ -2848,13 +3022,68 @@ def hybrid_search(query, corpus=None, n=6, use_rewrite=True,
 
 
 
-def _pool_export_extras(pool, scores):
+def _fusion_export_inputs(channels, intent):
+    """v35 (Stage 2, C2 #3): the fusion inputs the offline
+    weight fitter (tools/fit_fusion_weights.py) needs to
+    recompute fused scores for candidate parameters exactly:
+    the final channel rank lists (post round-2, as fused),
+    the question's intent flags (which priors fired), and
+    per-section prior inputs (the doc's authority tier and
+    jurisdiction, the section's figure kinds, the DDARS
+    flag). Returns None on any failure — an export must
+    never disturb the search it rides on."""
+    try:
+        meta = {}
+        for name, lst in (channels or {}).items():
+            for sid in lst:
+                if sid in meta:
+                    continue
+                smeta = _V2["sections"].get(sid)
+                if not smeta:
+                    continue
+                doc = _V2["docs"][smeta["doc_id"]]
+                meta[sid] = {
+                    "tier": doc.get("authority_tier"),
+                    "jurisdiction": doc.get("jurisdiction"),
+                    "figure_kinds": [
+                        f.get("kind")
+                        for f in (_V2["enrich"].get(sid) or [])],
+                    "ddars": bool(_is_ddars_manual_doc(doc)),
+                }
+        return {"channels": channels, "intent": intent,
+                "meta": meta}
+    except Exception:
+        return None
+
+
+def _pool_export_extras(pool, scores, fusion=None):
     """v33.2: extra pool-export fields for the blend A/B —
     per-candidate fused scores and the arm config.
-    Log-only, like the export itself."""
-    return {"fused_scores": [scores.get(h.get("_section"))
-                             for h in pool],
-            "arm": {"blend_alpha": RERANK_BLEND_ALPHA}}
+    Log-only, like the export itself.
+    v35 (Stage 2, C2 #3): when the caller supplies the fusion
+    inputs (see _fusion_export_inputs), each candidate's
+    per-channel ranks and prior inputs ride along under
+    "fusion", aligned with the candidates list."""
+    out = {"fused_scores": [scores.get(h.get("_section"))
+                            for h in pool],
+           "arm": {"blend_alpha": RERANK_BLEND_ALPHA}}
+    if fusion:
+        try:
+            chans = fusion.get("channels") or {}
+            meta = fusion.get("meta") or {}
+            out["fusion"] = {
+                "intent": fusion.get("intent") or {},
+                "channel_ranks": [
+                    {name: (lst.index(sid) if sid in lst
+                            else None)
+                     for name, lst in chans.items()}
+                    for sid in (h.get("_section") for h in pool)],
+                "prior_meta": [meta.get(h.get("_section"))
+                               for h in pool],
+            }
+        except Exception:
+            pass
+    return out
 
 
 def _export_rerank_pool(query, pool, ranked, backend, n,
@@ -3038,6 +3267,54 @@ def rerank_with_qwen(query, hits):
 RERANK_UTILITY_MAX_TOKENS = 1024
 
 
+def _rerank_scope_line(query):
+    """v35 (Stage 2, C2 #7): the routed ordering instruction
+    for the LLM rerank seat, selected by the question's own
+    classifiers — _question_scope (v33.1) for the governing
+    jurisdiction, and the fusion priors' intent word lists
+    for figure/frequency intent. Through v33.2 the seat got
+    one prompt for every question; it handled only the
+    unscoped case, so v33.1's seat guarantee put the Indiana
+    document IN the window but nothing told the seat to rank
+    it FIRST (the original SNAP failure was a federal
+    document outranking the Indiana one). The routed lines
+    say the positive preference for the question's actual
+    class. Prompt text only: the call, the parser, the
+    fail-open, and the v33.2 blend are untouched."""
+    scope = _question_scope(query)
+    q_low = (query or "").lower()
+    if scope in ("state", "joint_in"):
+        lines = ["This question is about Indiana: prefer the "
+                 "Indiana document that states the rule over "
+                 "other states' documents and over general "
+                 "explainers; a federal document governs only "
+                 "where it states the rule Indiana applies."]
+    elif scope == "other":
+        lines = ["This question names a US state other than "
+                 "Indiana: prefer that state's documents over "
+                 "Indiana documents and over general documents."]
+    elif scope == "federal":
+        lines = ["This question is about a federal program or "
+                 "federal rules: prefer federal documents "
+                 "(from SSA, CMS, USDA, FEMA, or the Code of "
+                 "Federal Regulations) over state documents."]
+    else:
+        lines = ["When the question names no US state, prefer "
+                 "general/national documents over "
+                 "state-specific ones."]
+    if any(w in q_low for w in _FIGURE_Q_WORDS):
+        lines.append(
+            "The question asks for a figure or limit: prefer "
+            "the section that states the number asked for over "
+            "a section that only describes the program.")
+    if any(w in q_low for w in _FREQ_Q_WORDS):
+        lines.append(
+            "The question asks how often or how long: prefer "
+            "the section that states the frequency or time "
+            "period over one that only describes the program.")
+    return " ".join(lines)
+
+
 def rerank_with_llm(query, hits):
     """Rerank search hits by relevance to the query (v15.1: NIM
     fast tier; see _utility_text)."""
@@ -3050,9 +3327,8 @@ def rerank_with_llm(query, hits):
         prompt = (f"Question: {query}\n\n"
                   f"Rank these {len(items)} document excerpts by relevance to the question. "
                   f"Prefer documents whose title directly matches the question's topic, "
-                  f"official policy manuals and program documents over announcements, "
-                  f"and when the question names no US state, general/national documents "
-                  f"over state-specific ones. "
+                  f"official policy manuals and program documents over announcements. "
+                  + _rerank_scope_line(query) + " "
                   f"Output ONLY the numbers in order from most to least relevant, comma-separated.\n\n"
                   + "\n".join(items) + "\n\nRanking:")
         text = _clean_llm_list_output(
@@ -3278,6 +3554,18 @@ SYSTEM_PROMPT = (
     "For questions asking about dollar amounts, income limits, costs, or fees: if any "
     "excerpt contains specific dollar figures ($), quote them directly. Do not say "
     "the numbers are not listed when dollar amounts appear in the excerpts. "
+    # v35 (Stage 1, C3): the pilot's largest drafter failure
+    # class was omission — a figure for the asked parameter sat
+    # in the packet and the draft never quoted it (16 of 20
+    # drafter-caused fails). One rule, both lanes (this prompt
+    # is shared through _system_prompt_for).
+    "FIGURES: Quote every figure the excerpts give for the thing being "
+    "asked about: not only dollar amounts, but income and resource "
+    "limits, percentages, counts, ages, deadlines, and time periods "
+    "(days, months, years), including small figures. If an excerpt "
+    "states a figure for the asked parameter, state that figure in "
+    "your answer, exactly as given; describing a limit, period, or "
+    "amount without stating its figure is an incomplete answer. "
     "CALCULATIONS: When you add, subtract, multiply, or divide dollar "
     "amounts, work one step at a time and write each calculation as an "
     "explicit equation in the form ($2,705 - $900 = $1,805). Never state "
@@ -3952,32 +4240,17 @@ def _doc_chunks(d):
 
 
 # ---------------------------------------------------------------------------
-# v20.2: boot-time consistency check. The loaded embeddings
-# must correspond to the corpora. NOTE the two chunkers:
-# the retrieval-side chunker above (_chunks) is NOT what
-# built the embeddings — the generation pipeline
-# (gen_embeddings_stream.py) windows text at 600 chars
-# with 100 overlap, section-aware over the SAME
-# _split_sections, skipping docs under 200 chars and URLs
-# already embedded. The manifest therefore replicates the
-# GENERATION chunker exactly; measured against the v19
-# corpora it yields 73,454 chunks vs the live file's
-# 73,014 rows (the ~0.6% delta is generation-vintage
-# noise: per-chunk embed failures are skipped at build
-# time, and the append-only build file carries chunks
-# from earlier corpus vintages of the same URLs). The
-# incident this check exists to catch is thousand-scale:
-# the v19 finalize resurrecting the dedupe-skipped chunks
-# (+2,244 rows), caught by hand hours later in v19.
-# dedupe_skip.json, when present in the server dir, is
-# reported in the detail block (its raw/adjusted counts),
-# but the verdict compares against the raw manifest: on
-# the live build the skip list's indices address an older
-# build file, so adjusting by it would double-count the
-# removal. A mismatch prints loudly and lands in /health
-# as "consistency" — WARN ONLY: the server always boots
-# (a stale-but-serving index beats a dark one).
-# ---------------------------------------------------------------------------
+# v20.2: boot-time consistency check (WARN only, never a
+# boot refusal). g0012 fix: the verdict now measures the
+# ACTIVE GENERATION STORE (see _run_consistency_check and
+# v36/MISMATCH_DIAGNOSIS.md). The original v20.2 comparison,
+# the legacy embeddings file against a manifest recomputed
+# from corpus.json + corpus_federal.json, is retained inside
+# the check as an informational block only: those are static
+# pre-generation files that the v2 retrieval engine never
+# reads, and their mismatch (73,014 vs 73,454, identical on
+# g0010 and g0011) was a stale diagnostic, not missing
+# content.
 CONSISTENCY = {"ok": None, "detail": "check not run"}
 
 
@@ -4008,8 +4281,152 @@ def _emb_chunk_count(text):
     return n if n else len(_emb_window(text))
 
 
+def _gen_store_counts(gen_dir, gen):
+    """Counts for one generation store, read read-only
+    straight from the generation dir (the g0012 consistency
+    check's universe). Returns a dict; raises on any missing
+    piece so the caller can name the failure."""
+    import sqlite3 as _sq
+    import numpy as _npy
+    db = os.path.join(gen_dir, f"corpus_{gen}.db")
+    conn = _sq.connect(f"file:{db}?mode=ro", uri=True)
+    try:
+        counts = {t: conn.execute(
+            f"SELECT COUNT(*) FROM {t}").fetchone()[0]
+            for t in ("docs", "sections", "chunks")}
+        # Synthetic questions: the builder's own walk
+        # (sections LEFT JOIN enrich, questions per section).
+        counts["questions"] = sum(
+            len(json.loads(r[0] or "[]"))
+            for r in conn.execute(
+                "SELECT e.questions FROM sections s "
+                "LEFT JOIN enrich e "
+                "ON e.section_id = s.section_id ORDER BY s.row"))
+        meta = {}
+        for k, v in conn.execute("SELECT key, value FROM meta"):
+            try:
+                meta[k] = json.loads(v)
+            except Exception:
+                meta[k] = v
+    finally:
+        conn.close()
+    vec = _npy.load(os.path.join(gen_dir, f"vectors_{gen}.npy"),
+                    mmap_mode="r")
+    counts["chunk_vector_rows"] = int(vec.shape[0])
+    counts["embed_dim_actual"] = int(vec.shape[1])
+    with open(os.path.join(gen_dir, "vectors_index.json"),
+              encoding="utf-8") as f:
+        counts["chunk_vector_index_rows"] = len(
+            json.load(f)["rows"])
+    sq_path = os.path.join(gen_dir, f"synthq_vectors_{gen}.npy")
+    if os.path.exists(sq_path):
+        smat = _npy.load(sq_path, mmap_mode="r")
+        counts["question_vector_rows"] = int(smat.shape[0])
+        with open(os.path.join(gen_dir, "synthq_index.json"),
+                  encoding="utf-8") as f:
+            counts["question_vector_index_rows"] = len(json.load(f))
+    else:
+        counts["question_vector_rows"] = 0
+        counts["question_vector_index_rows"] = 0
+    man_path = os.path.join(gen_dir, f"manifest_{gen}.json")
+    counts["manifest"] = None
+    if os.path.exists(man_path):
+        with open(man_path, encoding="utf-8") as f:
+            counts["manifest"] = json.load(f)
+    counts["meta"] = meta
+    return counts
+
+
 def _run_consistency_check():
+    """g0012 fix (see v36/MISMATCH_DIAGNOSIS.md): the verdict
+    now measures the ACTIVE GENERATION STORE, the universe
+    live retrieval actually serves (v2 engine: corpus_<gen>.db
+    + vectors_<gen>.npy + synthq_vectors_<gen>.npy, opened by
+    _v2_open from generations/CURRENT).
+
+    The pre-g0012 check compared the LEGACY pre-generation
+    index files in the server dir (embeddings.npz /
+    embeddings.json, built 2026-10-14 by the v19-era pipeline
+    from corpus.json + corpus_federal.json) against a chunk
+    manifest recomputed from those same legacy corpus files.
+    Neither side is read by the v2 retrieval engine, and
+    neither side changes when CURRENT flips, so the verdict
+    was identical on every generation (73,014 vs 73,454 on
+    both g0010 and g0011) and could never go green. That
+    legacy comparison is still computed below, but ONLY as an
+    informational block ("legacy_pre_generation_index",
+    verdict_excluded: true); it no longer decides ok.
+
+    Verdict rule: ok is true only when every count the builder
+    asserts also agrees here: docs / sections / chunks table
+    counts vs the generation manifest and the meta table;
+    chunks vs chunk vector rows vs chunk vector index rows;
+    synthetic questions (the builder's enrich walk) vs
+    question vector rows vs question index rows; the meta
+    embed_dims vs the chunk vector matrix width. Every
+    disagreement is named in detail["differences"] as
+    {field, expected, actual}. WARN only, as before: the
+    server always boots."""
     global CONSISTENCY
+    detail = {"scope": "active_generation"}
+    differences = []
+    try:
+        base = os.environ.get("FSSA_GENERATIONS_DIR") or os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "generations")
+        with open(os.path.join(base, "CURRENT"),
+                  encoding="utf-8") as f:
+            gen = f.read().strip()
+        detail["generation"] = gen
+        c = _gen_store_counts(os.path.join(base, gen), gen)
+        meta = c["meta"]
+        man = c["manifest"] or {}
+
+        def _num(v):
+            try:
+                return int(v)
+            except Exception:
+                return None
+
+        def expect(field, expected, actual):
+            detail[field] = {"expected": expected, "actual": actual}
+            if expected is not None and actual != expected:
+                differences.append({"field": field,
+                                    "expected": expected,
+                                    "actual": actual})
+
+        expect("docs_vs_manifest", _num(man.get("docs")), c["docs"])
+        expect("sections_vs_manifest", _num(man.get("sections")),
+               c["sections"])
+        expect("chunks_vs_manifest", _num(man.get("chunks")),
+               c["chunks"])
+        expect("docs_vs_meta", _num(meta.get("docs")), c["docs"])
+        expect("chunks_vs_meta", _num(meta.get("chunks")), c["chunks"])
+        expect("chunk_vectors_vs_chunks", c["chunks"],
+               c["chunk_vector_rows"])
+        expect("chunk_vector_index_vs_chunks", c["chunks"],
+               c["chunk_vector_index_rows"])
+        expect("question_vectors_vs_questions", c["questions"],
+               c["question_vector_rows"])
+        expect("question_vector_index_vs_questions", c["questions"],
+               c["question_vector_index_rows"])
+        expect("questions_vs_manifest_synthq_rows",
+               _num(man.get("synthq_rows")), c["questions"])
+        expect("embed_dim_vs_meta", _num(meta.get("embed_dims")),
+               c["embed_dim_actual"])
+        if str(meta.get("vectors_state")) != "ready":
+            differences.append({
+                "field": "vectors_state",
+                "expected": "ready",
+                "actual": meta.get("vectors_state")})
+        detail["vectors_state"] = meta.get("vectors_state")
+    except Exception as e:
+        differences.append({"field": "generation_store_read",
+                            "expected": "readable generation store",
+                            "actual": f"{type(e).__name__}: {e}"})
+    detail["differences"] = differences
+    # Informational only: the legacy pre-generation comparison,
+    # unchanged from the pre-g0012 check. It measures static
+    # server-dir files that live retrieval never reads.
     try:
         manifest = {}
         for d in CORPUS_IN + CORPUS_FED:
@@ -4017,68 +4434,32 @@ def _run_consistency_check():
             text = d.get("text") or ""
             if u and u not in manifest and len(text) >= 200:
                 manifest[u] = _emb_chunk_count(text)
-        skips = {}
-        n_skips = 0
-        try:
-            with open("dedupe_skip.json", encoding="utf-8") as f:
-                for e in json.load(f):
-                    if int(e.get("index", -1)) \
-                            < manifest.get(e.get("url"), 0):
-                        skips[e["url"]] = skips.get(e["url"], 0) + 1
-                        n_skips += 1
-        except FileNotFoundError:
-            pass
         actual = {}
-        for c in EMBEDDINGS:
-            actual[c["url"]] = actual.get(c["url"], 0) + 1
-        orphans = sorted(u for u in actual if u not in manifest)
-        missing = sorted(u for u, c in manifest.items()
-                         if c > 0 and actual.get(u, 0) == 0)
-        mismatched = sorted(
-            u for u in manifest
-            if u in actual and actual[u] != manifest[u])
-        man_total = sum(manifest.values())
-        detail = {
+        for ch in EMBEDDINGS:
+            actual[ch["url"]] = actual.get(ch["url"], 0) + 1
+        detail["legacy_pre_generation_index"] = {
+            "verdict_excluded": True,
+            "note": "embeddings.npz / embeddings.json vs a chunk "
+                    "manifest recomputed from corpus.json + "
+                    "corpus_federal.json; static v19-era files, "
+                    "not read by the v2 retrieval engine",
             "embeddings_rows": len(EMBEDDINGS),
-            "manifest_rows": man_total,
-            "delta_rows": len(EMBEDDINGS) - man_total,
-            "dedupe_skip_entries_applicable": n_skips,
-            "manifest_rows_after_dedupe_skips":
-                man_total - n_skips,
-            "docs_in": len(CORPUS_IN),
-            "docs_federal": len(CORPUS_FED),
-            "matrix_rows": (None if EMB_MAT is None
-                            else int(EMB_MAT.shape[0])),
-            "orphan_urls": len(orphans),
-            "missing_urls": len(missing),
-            "mismatched_urls": len(mismatched),
-            "examples": {
-                "orphan": orphans[:3], "missing": missing[:3],
-                "mismatched": [
-                    {"url": u, "expected": manifest[u],
-                     "actual": actual[u]}
-                    for u in mismatched[:3]]}}
-        ok = (len(EMBEDDINGS) == man_total and not orphans
-              and not missing and not mismatched
-              and (EMB_MAT is None
-                   or int(EMB_MAT.shape[0]) == len(EMBEDDINGS)))
-        CONSISTENCY = {"ok": bool(ok), "detail": detail}
-        if ok:
-            print(f"[consistency] ok: {len(EMBEDDINGS)} embedding "
-                  f"rows match the corpora chunk manifest "
-                  f"({man_total} expected)", flush=True)
-        else:
-            print(f"[consistency] WARNING: embeddings do NOT "
-                  f"match the corpora chunk manifest: "
-                  f"{json.dumps(detail)}", flush=True)
+            "manifest_rows": sum(manifest.values()),
+            "delta_rows": len(EMBEDDINGS) - sum(manifest.values())}
     except Exception as e:
-        CONSISTENCY = {"ok": False,
-                       "detail": f"check failed: "
-                                 f"{type(e).__name__}: {e}"}
-        print(f"[consistency] WARNING: consistency check "
-              f"failed to run: {type(e).__name__}: {e}",
+        detail["legacy_pre_generation_index"] = {
+            "verdict_excluded": True,
+            "error": f"{type(e).__name__}: {e}"}
+    ok = not differences
+    CONSISTENCY = {"ok": bool(ok), "detail": detail}
+    if ok:
+        print(f"[consistency] ok: generation "
+              f"{detail.get('generation')} store, vectors and "
+              f"manifest all reconcile", flush=True)
+    else:
+        print(f"[consistency] WARNING: generation store does "
+              f"NOT reconcile: {json.dumps(differences)}",
               flush=True)
-
 
 def search(query, corpus=None, n=6, extra_terms=None):
     corpus = corpus if corpus is not None else CORPUS_IN
@@ -6233,6 +6614,52 @@ _ASSETS_RX = re.compile(
     r"|(?:savings|assets|resources)\s+(?:of|total(?:ing)?|are)\s+"
     r"\$\s?(\d[\d,]*(?:\.\d{1,2})?)",
     re.IGNORECASE)
+
+
+def _group_hit(group, q_low, q_tokens):
+    """One trigger group hits: any of its word tokens is
+    present in the question, or any of its phrases is a
+    substring of it. (The single-group half of _groups_hit,
+    which requires EVERY group to hit.)"""
+    if q_tokens & group.get("tokens", set()):
+        return True
+    return any(p in q_low for p in group.get("phrases", ()))
+
+
+def _computed_engaged(kind, question, strict_hit):
+    """v35 (Stage 1, C4): engagement for the two
+    computed-figures families ("csra", "spousal_split").
+
+    The strict path is unchanged: the family's full trigger
+    match (every group hits) engages, exactly as v13/v32.
+    The generalization is for the phrasings the strict match
+    misses (typo'd or indirect, the MF3 family): the family
+    ALSO engages when any ONE of its own trigger groups hits
+    AND the question involves a spouse AND — the caller's
+    half of the bargain — the deterministic computation
+    itself succeeds on the question. The computations keep
+    their conservative anchors (an assets phrase for the
+    CSRA; the door engine's role assignment for the split),
+    so a loose engagement whose computation cannot anchor
+    still produces no block. The front door's matching is
+    NOT touched: this widens only which lane questions
+    receive the computed VERIFIED FIGURES block."""
+    if strict_hit:
+        return True
+    if not _question_involves_spouse(question):
+        return False
+    if kind == "csra":
+        fam = next((e for e in VERIFIED_FIGURES
+                    if e.get("id") == "csra"), None)
+    else:
+        fam = next((m for m in MECHANISMS
+                    if m.get("id") == "spousal_split"), None)
+    if fam is None:
+        return False
+    q_low = (question or "").lower()
+    q_tokens = set(re.findall(r"[a-z]+", q_low))
+    return any(_group_hit(g, q_low, q_tokens)
+               for g in fam.get("groups", ()))
 
 
 def compute_spousal_split(question):
@@ -9127,6 +9554,16 @@ def _events_reset():
     # its gap-log rows all carry it (growth-loop join key).
     ctx.ask_id = uuid.uuid4().hex[:12]
     _ASK_CTX_VAR.set(ctx)
+    # v35 (Stage 1, C8): mirror the id onto the async job
+    # record at birth, so a job abandoned at the time cap can
+    # write its timeout record WITH the ask id (the no-trace
+    # fix) instead of only after the child unwinds.
+    try:
+        _job = getattr(_STAGE_TLS, "job", None)
+        if isinstance(_job, dict):
+            _job["ask_id"] = ctx.ask_id
+    except Exception:
+        pass
 
 
 def _note_seat(job, model, failover):
@@ -15766,6 +16203,10 @@ footer{margin-top:24px; font-size:12px; color:var(--ink-tertiary); max-width:65c
       <p>Search And Retrieval Assistant</p>
     </div>
   </header>
+  <div class="card" style="margin-bottom:16px">
+    <a href="/screen"><strong>Will I qualify?</strong></a>
+    <span> Run the Indiana waiver and long-term care determinations screen.</span>
+  </div>
   <div class="card">
     <div class="askrow">
       <textarea id="q" aria-label="Your question" placeholder="Ask about Medicaid, waivers, SNAP…"></textarea>
@@ -16346,6 +16787,1684 @@ def _record_ask(record):
                 f.write(line + "\n")
     except Exception:
         pass
+
+
+def _judge_stage_outcomes(events):
+    """v35 (Stage 1, C8): the judge chain's stage outcomes
+    for one ask, folded from the ask's seat events: per judge
+    seat, whether it served (and on which model) or failed /
+    went down (and why). Compact on purpose — the completed
+    record already carries the full event stream; this is
+    the at-a-glance summary a grader reads first."""
+    stages = {}
+    for ev in events or ():
+        if not isinstance(ev, dict):
+            continue
+        job = ev.get("job") or ""
+        if "judge" not in job:
+            continue
+        kind = ev.get("kind")
+        row = stages.setdefault(
+            job, {"job": job, "served": False, "model": None,
+                  "attempts": 0, "last_error": None})
+        if kind == "seat":
+            row["served"] = True
+            row["model"] = ev.get("model") or row["model"]
+            row["attempts"] += 1
+        elif kind in ("seat_fail", "seat_down"):
+            row["attempts"] += 1
+            if ev.get("error"):
+                row["last_error"] = ev.get("error")
+    return list(stages.values())
+
+
+def _record_ask_failure(status, error, question=None, mode=None,
+                        corpus=None, t0=None, wall_s=None,
+                        job_id=None, ask_id=None, stage=None,
+                        from_ctx=True):
+    """v35 (Stage 1, C8): the no-trace fix. A Deep run on
+    2026-10-18 vanished completely — no result, no error
+    record, nothing in ask_records.jsonl to grade or debug
+    from (test-suite/DEEP-NO-TRACE-SPEC.md). Every error and
+    timeout exit of the ask path now writes ONE failure
+    record (kind "ask", status "error" / "timeout") carrying
+    the ask id, the lane, the question, the error, the
+    elapsed time, and the judge chain's stage outcomes so
+    far. Never raises: _record_ask never raises, and every
+    context read here is guarded. from_ctx=False is for the
+    job layer's timeout path, where the calling thread's ask
+    context belongs to a different ask."""
+    try:
+        rec = {"kind": "ask", "status": status,
+               "ts": time.time(),
+               "wall_s": (wall_s if wall_s is not None
+                          else (round(time.monotonic() - t0, 3)
+                                if t0 else None)),
+               "question": question, "mode": mode,
+               "corpus": corpus,
+               "error": (str(error)[:300] if error else None),
+               "job_id": job_id, "ask_id": ask_id,
+               "stage": stage}
+        if from_ctx:
+            try:
+                ctx = _ask_ctx()
+                if rec["ask_id"] is None:
+                    rec["ask_id"] = ctx.ask_id
+                rec["phase_ms"] = _phase_ms_snapshot()
+                rec["events"] = list(ctx.events)[-40:]
+                rec["judge_stages"] = _judge_stage_outcomes(
+                    ctx.events)
+            except Exception:
+                pass
+        _record_ask(rec)
+    except Exception:
+        pass
+
+
+# ==================================================================
+# v37: the determinations screen (one-screen intake, shared fact
+# model, per-program engines, results sheet, refusal machinery).
+# The fact schema and the Indiana waiver/LTC engine below are the
+# v37 build skeleton (facts.py, engine_in_waiver_ltc.py) spliced
+# verbatim; the shell after them is new. The verdict path is
+# deterministic code only.
+# ==================================================================
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
+"""Shared fact schema for the v36 one-screen shell.
+
+One intake fills one FactSet. Every program engine reads the same
+FactSet. Each field carries provenance: stated, derived, or unknown.
+A decisive field with provenance unknown must produce a question back
+from an engine, never an assumed value.
+
+Pure data and validation only. No I/O, no server imports.
+"""
+
+
+
+
+class Provenance(str, Enum):
+    STATED = "stated"
+    DERIVED = "derived"
+    UNKNOWN = "unknown"
+
+
+@dataclass(frozen=True)
+class FactValue:
+    """A single fact plus where it came from."""
+
+    value: Any = None
+    provenance: Provenance = Provenance.UNKNOWN
+
+    @property
+    def is_known(self) -> bool:
+        return self.value is not None and self.provenance is not Provenance.UNKNOWN
+
+
+def stated(value: Any) -> FactValue:
+    return FactValue(value=value, provenance=Provenance.STATED)
+
+
+def derived(value: Any) -> FactValue:
+    return FactValue(value=value, provenance=Provenance.DERIVED)
+
+
+def unknown() -> FactValue:
+    return FactValue(value=None, provenance=Provenance.UNKNOWN)
+
+
+@dataclass(frozen=True)
+class Transfer:
+    """One transfer or gift. Dates are kept as months before intake."""
+
+    amount: float
+    months_ago: int
+    recipient: str = ""
+
+
+# Core fields are always asked at intake. Branch fields are asked only
+# when a registered engine names them as a decider for this fact set.
+CORE_FIELDS = (
+    "state_of_residence",
+    "household_size",
+    "marital_status",
+    "spouse_applies",
+    "applicant_income_monthly",
+    "spouse_income_monthly",
+    "home_owns",
+    "home_equity",
+    "home_residents",
+    "transfers",
+    "disability_or_waiver_need",
+    "current_coverage",
+)
+
+ASSET_TYPES = ("bank", "retirement", "property_non_home", "vehicles", "other")
+
+BRANCH_FIELDS = (
+    "shelter_costs_monthly",
+    "has_court_order",
+    "court_order_spousal_amount",
+    "has_miller_trust",
+    "burial_funds",
+    "has_irrevocable_burial_trust",
+)
+
+
+@dataclass
+class FactSet:
+    """The single shared fact record for one household."""
+
+    # Core intake.
+    state_of_residence: FactValue = field(default_factory=unknown)
+    household_size: FactValue = field(default_factory=unknown)
+    marital_status: FactValue = field(default_factory=unknown)  # single | married
+    spouse_applies: FactValue = field(default_factory=unknown)  # bool
+    applicant_income_monthly: FactValue = field(default_factory=unknown)
+    applicant_income_by_source: dict[str, FactValue] = field(default_factory=dict)
+    spouse_income_monthly: FactValue = field(default_factory=unknown)
+    assets_by_type: dict[str, FactValue] = field(default_factory=dict)
+    home_owns: FactValue = field(default_factory=unknown)
+    home_equity: FactValue = field(default_factory=unknown)
+    # Tuple of resident tags, for example: applicant, spouse,
+    # minor_child, disabled_child, sibling_with_equity.
+    home_residents: FactValue = field(default_factory=unknown)
+    transfers: FactValue = field(default_factory=unknown)  # tuple[Transfer, ...]
+    disability_or_waiver_need: FactValue = field(default_factory=unknown)
+    current_coverage: FactValue = field(default_factory=unknown)
+
+    # Branch facts, asked only when an engine needs the decider.
+    shelter_costs_monthly: FactValue = field(default_factory=unknown)
+    has_court_order: FactValue = field(default_factory=unknown)
+    court_order_spousal_amount: FactValue = field(default_factory=unknown)
+    has_miller_trust: FactValue = field(default_factory=unknown)
+    burial_funds: FactValue = field(default_factory=unknown)
+    has_irrevocable_burial_trust: FactValue = field(default_factory=unknown)
+
+    # Figures a user or a draft answer asserted. Engines compare these
+    # against the governing registry values. A contradiction is a
+    # binding conflict and routes to refusal, see the kill rule.
+    asserted_figures: dict[str, FactValue] = field(default_factory=dict)
+
+    def provenance_map(self) -> dict[str, str]:
+        out: dict[str, str] = {}
+        for name in CORE_FIELDS + BRANCH_FIELDS:
+            fv = getattr(self, name)
+            out[name] = fv.provenance.value if isinstance(fv, FactValue) else "unknown"
+        for kind in ASSET_TYPES:
+            fv = self.assets_by_type.get(kind)
+            out[f"assets.{kind}"] = fv.provenance.value if fv else "unknown"
+        return out
+
+
+def applicant_income_total(facts: FactSet) -> FactValue:
+    """Applicant monthly income. By-source rows win when present."""
+    if facts.applicant_income_by_source:
+        parts = list(facts.applicant_income_by_source.values())
+        if any(not p.is_known for p in parts):
+            return unknown()
+        return derived(sum(float(p.value) for p in parts))
+    return facts.applicant_income_monthly
+
+
+def countable_assets_total(facts: FactSet) -> FactValue:
+    """Total countable assets from the by-type rows.
+
+    The by-type rows are defined as countable amounts. Exempt amounts
+    are not entered here, they are branch facts. If no rows exist, the
+    total is unknown. If any entered row is unknown, the total is
+    unknown, because a partial sum would be an assumption.
+    """
+    if not facts.assets_by_type:
+        return unknown()
+    parts = list(facts.assets_by_type.values())
+    if any(not p.is_known for p in parts):
+        return unknown()
+    return derived(sum(float(p.value) for p in parts))
+
+
+def validate_factset(facts: FactSet) -> list[str]:
+    """Boundary validation. Returns a list of problems, empty if clean."""
+    problems: list[str] = []
+
+    def check_money(name: str, fv: FactValue) -> None:
+        if fv.is_known and float(fv.value) < 0:
+            problems.append(f"{name} is negative")
+
+    check_money("applicant_income_monthly", facts.applicant_income_monthly)
+    check_money("spouse_income_monthly", facts.spouse_income_monthly)
+    check_money("home_equity", facts.home_equity)
+    check_money("shelter_costs_monthly", facts.shelter_costs_monthly)
+    for kind, fv in facts.assets_by_type.items():
+        if kind not in ASSET_TYPES:
+            problems.append(f"unknown asset type: {kind}")
+        check_money(f"assets.{kind}", fv)
+    if facts.household_size.is_known and int(facts.household_size.value) < 1:
+        problems.append("household_size is below 1")
+    if facts.marital_status.is_known and facts.marital_status.value not in (
+        "single",
+        "married",
+    ):
+        problems.append("marital_status must be single or married")
+    if facts.transfers.is_known:
+        for t in facts.transfers.value:
+            if t.amount < 0:
+                problems.append("transfer amount is negative")
+            if t.months_ago < 0:
+                problems.append("transfer months_ago is negative")
+    return problems
+"""Indiana waiver and long-term care engine for the v36 shell.
+
+Pure functions only: a FactSet goes in, per-screen verdict objects
+come out. No server imports, no I/O, no network.
+
+Every governing figure below is traced in DESIGN.md to its row in
+v35/build/front_door_data.json. Display rounding: the registry stores
+the MMMNA maximum as 4066.5 and the shelter standard as 811.5. The
+results sheet shows them as $4,067 and $812.
+"""
+
+
+
+
+# Governing figures, 2026, from front_door_data.json rows.
+INCOME_CAP = 2982.0  # row waiver_income_cap
+ASSET_LIMIT_SINGLE = 2000.0  # row asset_limit
+ASSET_LIMIT_COUPLE_BOTH_APPLY = 3000.0  # row asset_limit
+CSRA_FRACTION = 0.5  # row csra
+CSRA_MIN = 32532.0  # row csra
+CSRA_MAX = 162660.0  # row csra
+MMMNA_MIN = 2705.0  # row spousal_liability
+MMMNA_MAX = 4066.5  # row spousal_liability, shown as $4,067
+SHELTER_STANDARD = 811.5  # row spousal_liability, shown as $812
+TRANSFER_LOOKBACK_MONTHS = 60  # row transfer_penalty
+TRANSFER_DIVISOR = 8027.0  # row transfer_penalty, from 2026-07-01
+HOME_EQUITY_LIMIT = 752000.0  # row home_equity_limit
+
+# Margin rule, see DESIGN.md. A result inside the margin of its line
+# is too close to call, never a guessed yes or no.
+MARGIN_FLAT = 100.0
+MARGIN_PCT = 0.05
+MARGIN_ASSETS_FLAT = 250.0
+TRANSFER_TIMING_MARGIN_MONTHS = 2
+MARGIN_OVERRIDES = {
+    "home_equity": 0.05,  # percent of the limit
+}
+
+
+def margin_for(threshold: float, screen: str) -> float:
+    if screen == "assets":
+        return MARGIN_ASSETS_FLAT
+    if screen in MARGIN_OVERRIDES:
+        return max(MARGIN_FLAT, MARGIN_OVERRIDES[screen] * threshold)
+    return max(MARGIN_FLAT, MARGIN_PCT * threshold)
+
+
+class Verdict:
+    LIKELY_YES = "likely_yes"
+    LIKELY_NO = "likely_no"
+    TOO_CLOSE = "too_close_to_call"
+    REFUSAL = "refusal"
+    NOT_APPLICABLE = "not_applicable"
+    NOT_SCREENED = "not_screened"
+
+
+@dataclass
+class ScreenResult:
+    screen: str
+    verdict: str
+    deciding_fact: str = ""
+    distance: float | None = None
+    citations: list[str] = field(default_factory=list)
+    trace: list[str] = field(default_factory=list)
+    question_back: str = ""
+    refusal_reason: str = ""
+
+
+@dataclass
+class EngineResult:
+    program: str
+    overall: str
+    screens: list[ScreenResult] = field(default_factory=list)
+    questions_back: list[str] = field(default_factory=list)
+    refusal_reasons: list[str] = field(default_factory=list)
+    closing_line: str = (
+        "This is a screening estimate only. The state makes the final decision."
+    )
+
+
+CIT = {
+    "income": ["front_door_data row waiver_income_cap", "300% of SSI federal benefit rate, 2026"],
+    "assets": ["front_door_data row asset_limit"],
+    "csra": ["front_door_data row csra", "CMS 2026 spousal impoverishment standards"],
+    "mmmna": [
+        "front_door_data row spousal_liability",
+        "CMS 2026 spousal impoverishment standards",
+        "IHCPPM 3010.20.10",
+    ],
+    "transfer": ["front_door_data row transfer_penalty", "IHCPPM 3006.00.00"],
+    "home_equity": ["front_door_data row home_equity_limit", "IHCPPM 3005.10.05"],
+}
+
+# Binding shape mirrors v35/build/jurisdiction_bindings.json: an id, a
+# governing label, governing values, and values that must never be
+# presented as governing. An asserted figure that lands on a
+# non-governing value, or that differs from the governing value, is a
+# binding contradiction.
+BINDINGS = {
+    "waiver_income_cap": {"governing": [INCOME_CAP], "nongoverning": []},
+    "asset_limit_single": {"governing": [ASSET_LIMIT_SINGLE], "nongoverning": []},
+    "transfer_divisor": {"governing": [TRANSFER_DIVISOR], "nongoverning": [7651.0]},
+    "home_equity_limit": {"governing": [HOME_EQUITY_LIMIT], "nongoverning": []},
+    "mmmna_max": {"governing": [MMMNA_MAX], "nongoverning": []},
+    "csra_min": {"governing": [CSRA_MIN], "nongoverning": []},
+    "csra_max": {"governing": [CSRA_MAX], "nongoverning": []},
+}
+
+
+def csra_amount(total_countable_assets: float) -> float:
+    """Community spouse resource allowance: half, clamped."""
+    half = CSRA_FRACTION * total_countable_assets
+    return min(max(half, CSRA_MIN), CSRA_MAX)
+
+
+def _binding_conflict(facts: FactSet) -> str:
+    for key, fv in facts.asserted_figures.items():
+        binding = BINDINGS.get(key)
+        if binding is None or not fv.is_known:
+            continue
+        value = float(fv.value)
+        if value in binding["nongoverning"]:
+            return f"asserted {key}={value} is a non-governing value"
+        if value not in binding["governing"]:
+            return f"asserted {key}={value} contradicts governing {binding['governing']}"
+    return ""
+
+
+def _refusal(screen: str, reason: str, question: str = "") -> ScreenResult:
+    return ScreenResult(
+        screen=screen,
+        verdict=Verdict.REFUSAL,
+        deciding_fact=reason,
+        refusal_reason=reason,
+        question_back=question,
+    )
+
+
+def _screen_income(facts: FactSet) -> ScreenResult:
+    income = applicant_income_total(facts)
+    if not income.is_known:
+        return _refusal(
+            "income", "applicant income is unknown", "What is the applicant monthly income, by source?"
+        )
+    value = float(income.value)
+    distance = INCOME_CAP - value
+    trace = [f"income {value:.2f} vs cap {INCOME_CAP:.2f}, distance {distance:.2f}"]
+    if abs(distance) <= margin_for(INCOME_CAP, "income"):
+        return ScreenResult(
+            "income", Verdict.TOO_CLOSE, "applicant_income_monthly", distance, CIT["income"], trace
+        )
+    if value <= INCOME_CAP:
+        return ScreenResult(
+            "income", Verdict.LIKELY_YES, "applicant_income_monthly", distance, CIT["income"], trace
+        )
+    # Over the cap. The Miller trust fact is now the decider, so it is
+    # a branch question when it has not been asked yet.
+    miller = facts.has_miller_trust
+    if not miller.is_known:
+        return _refusal(
+            "income",
+            "income is over the cap and Miller trust status is unknown",
+            "Is the income over the cap routed through a Qualified Income Trust (Miller trust)?",
+        )
+    if miller.value is True:
+        trace.append("Miller trust stated, over-cap income can be routed")
+        return ScreenResult(
+            "income", Verdict.LIKELY_YES, "has_miller_trust", distance, CIT["income"], trace
+        )
+    return ScreenResult(
+        "income", Verdict.LIKELY_NO, "applicant_income_monthly", distance, CIT["income"], trace
+    )
+
+
+def _asset_allowable(facts: FactSet, total: float) -> tuple[float, list[str], list[str]]:
+    """Returns allowable total, citations, trace lines."""
+    married = facts.marital_status.value == "married"
+    if married and facts.spouse_applies.is_known and facts.spouse_applies.value is False:
+        csra = csra_amount(total)
+        allowable = ASSET_LIMIT_SINGLE + csra
+        trace = [
+            f"couple, one applies: CSRA clamp(half of {total:.2f}) = {csra:.2f}",
+            f"allowable total = {ASSET_LIMIT_SINGLE:.2f} + {csra:.2f} = {allowable:.2f}",
+        ]
+        return allowable, CIT["assets"] + CIT["csra"], trace
+    if married:
+        return ASSET_LIMIT_COUPLE_BOTH_APPLY, CIT["assets"], ["couple, both apply"]
+    return ASSET_LIMIT_SINGLE, CIT["assets"], ["single applicant"]
+
+
+def _screen_assets(facts: FactSet) -> ScreenResult:
+    if not facts.marital_status.is_known:
+        return _refusal("assets", "marital status is unknown", "Is the applicant single or married?")
+    if facts.marital_status.value == "married" and not facts.spouse_applies.is_known:
+        return _refusal(
+            "assets", "spouse-applies flag is unknown", "Is the spouse also applying?"
+        )
+    total_fv = countable_assets_total(facts)
+    if not total_fv.is_known:
+        return _refusal(
+            "assets",
+            "countable assets are incomplete",
+            "What are the countable assets by type: bank, retirement, other property, vehicles, other?",
+        )
+    total = float(total_fv.value)
+    allowable, citations, trace = _asset_allowable(facts, total)
+    distance = allowable - total
+    trace.append(f"assets {total:.2f} vs allowable {allowable:.2f}, distance {distance:.2f}")
+    if abs(distance) <= margin_for(allowable, "assets"):
+        return ScreenResult("assets", Verdict.TOO_CLOSE, "countable_assets_total", distance, citations, trace)
+    verdict = Verdict.LIKELY_YES if total <= allowable else Verdict.LIKELY_NO
+    return ScreenResult("assets", verdict, "countable_assets_total", distance, citations, trace)
+
+
+def _is_couple_one_applies(facts: FactSet) -> bool:
+    return (
+        facts.marital_status.is_known
+        and facts.marital_status.value == "married"
+        and facts.spouse_applies.is_known
+        and facts.spouse_applies.value is False
+    )
+
+
+def _screen_mmmna(facts: FactSet) -> ScreenResult:
+    if not _is_couple_one_applies(facts):
+        return ScreenResult("mmmna", Verdict.NOT_APPLICABLE, "marital_status", None, CIT["mmmna"], ["no community spouse"])
+    if not facts.spouse_income_monthly.is_known:
+        return _refusal("mmmna", "spouse income is unknown", "What is the community spouse monthly income?")
+    spouse_income = float(facts.spouse_income_monthly.value)
+    trace: list[str] = []
+    if facts.has_court_order.is_known and facts.has_court_order.value is True:
+        if not facts.court_order_spousal_amount.is_known:
+            return _refusal(
+                "mmmna",
+                "court order flag is set but the ordered amount is unknown",
+                "What monthly amount does the court or administrative order set for the spouse?",
+            )
+        target = float(facts.court_order_spousal_amount.value)
+        trace.append(f"court or administrative order sets target {target:.2f}")
+    elif facts.shelter_costs_monthly.is_known:
+        shelter = float(facts.shelter_costs_monthly.value)
+        excess = max(0.0, shelter - SHELTER_STANDARD)
+        raw = MMMNA_MIN + excess
+        trace.append(f"shelter {shelter:.2f}, excess over standard {excess:.2f}, raw target {raw:.2f}")
+        if raw > MMMNA_MAX and abs(raw - MMMNA_MAX) <= margin_for(MMMNA_MAX, "mmmna"):
+            return ScreenResult("mmmna", Verdict.TOO_CLOSE, "shelter_costs_monthly", MMMNA_MAX - raw, CIT["mmmna"], trace)
+        target = min(raw, MMMNA_MAX)
+    else:
+        # Shelter is the branch decider only when it could lift the
+        # spouse above the minimum. If spouse income is already at or
+        # above the maximum, shelter cannot change the outcome.
+        if spouse_income < MMMNA_MAX:
+            return _refusal(
+                "mmmna",
+                "shelter costs are unknown and could change the MMMNA",
+                "What are the community spouse monthly shelter costs?",
+            )
+        target = MMMNA_MIN
+        trace.append("spouse income at or above MMMNA maximum, shelter not decisive")
+    allocation = max(0.0, target - spouse_income)
+    trace.append(f"MMMNA target {target:.2f}, spouse income {spouse_income:.2f}, allocation {allocation:.2f}")
+    return ScreenResult("mmmna", Verdict.LIKELY_YES, "mmmna_target", allocation, CIT["mmmna"], trace)
+
+
+def _screen_transfer(facts: FactSet) -> ScreenResult:
+    if not facts.transfers.is_known:
+        return _refusal(
+            "transfer",
+            "transfer history is unknown",
+            "Were any assets given away, sold below value, or put in another name in the last 60 months?",
+        )
+    transfers = list(facts.transfers.value)
+    for t in transfers:
+        if abs(t.months_ago - TRANSFER_LOOKBACK_MONTHS) <= TRANSFER_TIMING_MARGIN_MONTHS:
+            return ScreenResult(
+                "transfer",
+                Verdict.TOO_CLOSE,
+                "transfers",
+                float(TRANSFER_LOOKBACK_MONTHS - t.months_ago),
+                CIT["transfer"],
+                [f"transfer {t.amount:.2f} at {t.months_ago} months sits on the 60 month line"],
+            )
+    in_window = [t for t in transfers if t.months_ago < TRANSFER_LOOKBACK_MONTHS]
+    if not in_window:
+        return ScreenResult("transfer", Verdict.LIKELY_YES, "transfers", None, CIT["transfer"], ["no transfer inside 60 months"])
+    total = sum(t.amount for t in in_window)
+    penalty = total / TRANSFER_DIVISOR
+    trace = [
+        f"transferred {total:.2f} inside 60 months",
+        f"penalty frame: {total:.2f} / {TRANSFER_DIVISOR:.2f} per month = {penalty:.2f} months",
+    ]
+    return ScreenResult("transfer", Verdict.LIKELY_NO, "transfers", -total, CIT["transfer"], trace)
+
+
+_HOME_EXEMPT_RESIDENTS = {"spouse", "minor_child", "disabled_child", "sibling_with_equity"}
+
+
+def _screen_home_equity(facts: FactSet) -> ScreenResult:
+    if not facts.home_owns.is_known:
+        return _refusal("home_equity", "home ownership is unknown", "Does the applicant own a home?")
+    if facts.home_owns.value is False:
+        return ScreenResult("home_equity", Verdict.NOT_APPLICABLE, "home_owns", None, CIT["home_equity"], ["no home owned"])
+    if not facts.home_residents.is_known:
+        return _refusal(
+            "home_equity",
+            "who lives in the home is unknown and decides whether the home counts",
+            "Who lives in the home?",
+        )
+    residents = set(facts.home_residents.value)
+    if residents & _HOME_EXEMPT_RESIDENTS:
+        return ScreenResult(
+            "home_equity", Verdict.LIKELY_YES, "home_residents", None, CIT["home_equity"],
+            ["an exempt resident lives in the home, the home equity screen does not count it"],
+        )
+    if not facts.home_equity.is_known:
+        return _refusal("home_equity", "home equity is unknown", "What is the equity in the home?")
+    equity = float(facts.home_equity.value)
+    distance = HOME_EQUITY_LIMIT - equity
+    trace = [f"home equity {equity:.2f} vs limit {HOME_EQUITY_LIMIT:.2f}, distance {distance:.2f}"]
+    if abs(distance) <= margin_for(HOME_EQUITY_LIMIT, "home_equity"):
+        return ScreenResult("home_equity", Verdict.TOO_CLOSE, "home_equity", distance, CIT["home_equity"], trace)
+    verdict = Verdict.LIKELY_YES if equity <= HOME_EQUITY_LIMIT else Verdict.LIKELY_NO
+    return ScreenResult("home_equity", verdict, "home_equity", distance, CIT["home_equity"], trace)
+
+
+def evaluate(facts: FactSet) -> EngineResult:
+    """Run every screen for the Indiana waiver and LTC program row."""
+    problems = validate_factset(facts)
+    if problems:
+        return EngineResult(
+            program="indiana_waiver_ltc",
+            overall=Verdict.REFUSAL,
+            screens=[_refusal("validation", "; ".join(problems))],
+            refusal_reasons=problems,
+        )
+    conflict = _binding_conflict(facts)
+    if conflict:
+        result = _refusal("binding", conflict)
+        return EngineResult(
+            program="indiana_waiver_ltc",
+            overall=Verdict.REFUSAL,
+            screens=[result],
+            refusal_reasons=[conflict],
+        )
+    if not facts.state_of_residence.is_known:
+        result = _refusal("jurisdiction", "state of residence is unknown", "What state does the applicant live in?")
+        return EngineResult(
+            program="indiana_waiver_ltc",
+            overall=Verdict.REFUSAL,
+            screens=[result],
+            questions_back=[result.question_back],
+            refusal_reasons=[result.refusal_reason],
+        )
+    if str(facts.state_of_residence.value).upper() != "IN":
+        result = ScreenResult(
+            screen="jurisdiction",
+            verdict=Verdict.NOT_SCREENED,
+            deciding_fact="state_of_residence",
+            refusal_reason="this engine screens Indiana only",
+            trace=[f"state is {facts.state_of_residence.value}, not IN"],
+        )
+        return EngineResult(
+            program="indiana_waiver_ltc",
+            overall=Verdict.REFUSAL,
+            screens=[result],
+            refusal_reasons=["out of scope jurisdiction: not Indiana"],
+        )
+    screens = [
+        _screen_income(facts),
+        _screen_assets(facts),
+        _screen_mmmna(facts),
+        _screen_transfer(facts),
+        _screen_home_equity(facts),
+    ]
+    questions = [s.question_back for s in screens if s.question_back]
+    reasons = [s.refusal_reason for s in screens if s.refusal_reason]
+    if any(s.verdict == Verdict.REFUSAL for s in screens):
+        overall = Verdict.REFUSAL
+    elif any(s.verdict == Verdict.TOO_CLOSE for s in screens):
+        overall = Verdict.TOO_CLOSE
+    elif any(s.verdict == Verdict.LIKELY_NO for s in screens):
+        overall = Verdict.LIKELY_NO
+    else:
+        overall = Verdict.LIKELY_YES
+    return EngineResult(
+        program="indiana_waiver_ltc",
+        overall=overall,
+        screens=screens,
+        questions_back=questions,
+        refusal_reasons=reasons,
+    )
+
+
+# ------------------------------------------------------------------
+# v37 shell: one-screen intake, results sheet, kill-rule output
+# check, no-trace records, and free-text fact extraction for the
+# determinations screen. The verdict path is deterministic code
+# only (the engine above). Models may fill facts from free text at
+# the edges in a later version; nothing here calls a model, and no
+# model output can change a verdict.
+#
+# determine(payload) is the pure entry point:
+#   payload = {"facts": {...}, "asserted_figures": {...},
+#              "free_text": "..."}        (all keys optional)
+# It returns {"det_id", "status", "pending", "sheet",
+# "questions_back", "refusal_reasons", "provenance"}.
+# status is "sheet" (a determination), "refusal" (the machinery
+# declined, with the question or route named), or "needs_facts"
+# (branch questions still open on a non-refusal sheet).
+# _det_handle(payload) is the route wrapper: it records every
+# outcome and turns any exception into a failure record plus an
+# error reply, the v35 Stage 1 no-trace pattern. Never raises.
+# ------------------------------------------------------------------
+
+DET_PROGRAM_ID = "indiana_waiver_ltc"
+DET_CLOSING_LINE = ("This is a screening estimate only. "
+                    "The state makes the final decision.")
+
+_DET_QUESTIONS = {
+    "state_of_residence": "What state does the applicant live in?",
+    "household_size": "How many people are in the household?",
+    "marital_status": "Is the applicant single or married?",
+    "spouse_applies": "Is the spouse also applying?",
+    "applicant_income_monthly":
+        "What is the applicant monthly income, by source?",
+    "spouse_income_monthly":
+        "What is the community spouse monthly income?",
+    "assets_by_type":
+        "What are the countable assets by type: bank, retirement, "
+        "other property, vehicles, other?",
+    "home_owns": "Does the applicant own a home?",
+    "home_residents": "Who lives in the home?",
+    "home_equity": "What is the equity in the home?",
+    "transfers":
+        "Were any assets given away, sold below value, or put in "
+        "another name in the last 60 months?",
+    "shelter_costs_monthly":
+        "What are the community spouse monthly shelter costs?",
+    "has_court_order":
+        "Is there a court or administrative order setting support "
+        "for the spouse?",
+    "court_order_spousal_amount":
+        "What monthly amount does the court or administrative "
+        "order set for the spouse?",
+    "has_miller_trust":
+        "Is the income over the cap routed through a Qualified "
+        "Income Trust (Miller trust)?",
+    "burial_funds":
+        "How much money is set aside for burial, inside the "
+        "amounts already entered?",
+    "has_irrevocable_burial_trust":
+        "Is any of that burial money in an irrevocable burial "
+        "trust?",
+}
+
+_DET_SCREEN_TITLES = {
+    "income": "Income vs the waiver income cap",
+    "assets": "Countable assets vs the limit",
+    "mmmna": "Spouse income allowance (MMMNA)",
+    "transfer": "Transfers in the last 60 months",
+    "home_equity": "Home equity",
+    "jurisdiction": "State screened",
+    "binding": "Figure check",
+    "validation": "Answers check",
+}
+
+_DET_VERDICT_LABELS = {
+    "likely_yes": "Likely yes",
+    "likely_no": "Likely no",
+    "too_close_to_call": "Too close to call",
+    "refusal": "Cannot determine yet",
+    "not_applicable": "Does not apply",
+    "not_screened": "Not screened",
+}
+
+
+def _det_enabled():
+    return os.environ.get("FSSA_DETERMINATIONS") != "0"
+
+
+def _det_new_id():
+    return "det-" + uuid.uuid4().hex[:12]
+
+
+def _det_money(value):
+    # Display rounding is half up, per DESIGN.md: the registry
+    # stores the MMMNA maximum as 4066.5 and the sheet shows
+    # $4,067 (banker's rounding would print $4,066).
+    return "$" + format(int(float(value) + 0.5), ",d")
+
+
+def _det_num(raw):
+    """Coerce a payload value to float, or None if not numeric."""
+    if isinstance(raw, bool):
+        return None
+    if isinstance(raw, (int, float)):
+        return float(raw)
+    if isinstance(raw, str):
+        try:
+            return float(raw.replace(",", "").replace("$", "").strip())
+        except ValueError:
+            return None
+    return None
+
+
+def _det_bool(raw):
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, str):
+        low = raw.strip().lower()
+        if low in ("true", "yes", "y", "1"):
+            return True
+        if low in ("false", "no", "n", "0"):
+            return False
+    return None
+
+
+def _det_facts_from_payload(payload):
+    """Build a FactSet from a JSON payload. Every value the caller
+    supplied is provenance stated. A value that cannot be coerced
+    is left unknown, so the intake asks for it instead of guessing.
+    Free text, when present, only fills fields still unknown."""
+    facts = FactSet()
+    if not isinstance(payload, dict):
+        return facts
+    raw = payload.get("facts")
+    if not isinstance(raw, dict):
+        raw = {}
+
+    def put_money(name):
+        if name in raw:
+            v = _det_num(raw[name])
+            if v is not None:
+                setattr(facts, name, stated(v))
+
+    def put_bool(name):
+        if name in raw:
+            v = _det_bool(raw[name])
+            if v is not None:
+                setattr(facts, name, stated(v))
+
+    if isinstance(raw.get("state_of_residence"), str) \
+            and raw["state_of_residence"].strip():
+        _sv = raw["state_of_residence"].strip()
+        if len(_sv) == 2:
+            facts.state_of_residence = stated(_sv.upper())
+        elif _sv.lower() in _DET_STATE_NAMES:
+            facts.state_of_residence = stated(
+                _DET_STATE_NAMES[_sv.lower()])
+        else:
+            facts.state_of_residence = stated(_sv.upper())
+    if isinstance(raw.get("household_size"), (int, float)) \
+            and not isinstance(raw.get("household_size"), bool):
+        facts.household_size = stated(int(raw["household_size"]))
+    if isinstance(raw.get("marital_status"), str) \
+            and raw["marital_status"].strip().lower() in (
+                "single", "married"):
+        facts.marital_status = stated(raw["marital_status"].strip().lower())
+    put_bool("spouse_applies")
+    put_money("applicant_income_monthly")
+    put_money("spouse_income_monthly")
+    put_money("home_equity")
+    put_money("shelter_costs_monthly")
+    put_money("court_order_spousal_amount")
+    put_money("burial_funds")
+    put_bool("home_owns")
+    put_bool("has_court_order")
+    put_bool("has_miller_trust")
+    put_bool("has_irrevocable_burial_trust")
+    put_bool("disability_or_waiver_need")
+    if isinstance(raw.get("current_coverage"), str):
+        facts.current_coverage = stated(raw["current_coverage"])
+    by_source = raw.get("applicant_income_by_source")
+    if isinstance(by_source, dict):
+        parts = {}
+        for src, val in by_source.items():
+            v = _det_num(val)
+            if v is not None:
+                parts[str(src)] = stated(v)
+        if parts:
+            facts.applicant_income_by_source = parts
+    by_type = raw.get("assets_by_type")
+    if isinstance(by_type, dict):
+        rows = {}
+        for kind, val in by_type.items():
+            if str(kind) in ASSET_TYPES:
+                v = _det_num(val)
+                rows[str(kind)] = stated(v) if v is not None else unknown()
+        if rows:
+            facts.assets_by_type = rows
+    residents = raw.get("home_residents")
+    if isinstance(residents, (list, tuple)):
+        facts.home_residents = stated(
+            tuple(str(r) for r in residents))
+    transfers = raw.get("transfers")
+    if isinstance(transfers, (list, tuple)):
+        items = []
+        ok = True
+        for t in transfers:
+            if not isinstance(t, dict):
+                ok = False
+                break
+            amount = _det_num(t.get("amount"))
+            months = _det_num(t.get("months_ago"))
+            if amount is None or months is None:
+                ok = False
+                break
+            items.append(Transfer(amount, int(months),
+                                  str(t.get("recipient") or "")))
+        if ok:
+            facts.transfers = stated(tuple(items))
+    asserted = payload.get("asserted_figures")
+    if isinstance(asserted, dict):
+        figs = {}
+        for key, val in asserted.items():
+            v = _det_num(val)
+            if v is not None:
+                figs[str(key)] = stated(v)
+        if figs:
+            facts.asserted_figures = figs
+    free_text = payload.get("free_text")
+    if isinstance(free_text, str) and free_text.strip():
+        _det_extract_into(facts, free_text)
+    return facts
+
+
+_DET_STATE_NAMES = {
+    "indiana": "IN", "ohio": "OH", "kentucky": "KY",
+    "illinois": "IL", "michigan": "MI", "pennsylvania": "PA",
+    "tennessee": "TN", "missouri": "MO", "iowa": "IA",
+    "wisconsin": "WI", "minnesota": "MN", "kansas": "KS",
+    "nebraska": "NE", "arkansas": "AR", "west virginia": "WV",
+    "virginia": "VA", "north carolina": "NC", "georgia": "GA",
+    "florida": "FL", "texas": "TX", "california": "CA",
+    "new york": "NY",
+}
+
+_DET_MONEY_RX = r"\$\s?([\d,]+(?:\.\d{1,2})?)"
+_DET_MONTH_WORDS = {"one": 12, "two": 24, "three": 36, "four": 48,
+                   "five": 60, "six": 72}
+
+
+def _det_extract_into(facts, text):
+    """Fill still-unknown facts from free text, conservatively.
+
+    A field is filled only when the text names an explicit dollar
+    figure next to a context word for that field, or uses one of
+    the plain household phrases below. Anything less clear stays
+    unknown, and unknown produces a question back, never a guess.
+    This is a reading aid at the edge of the screen; it never feeds
+    a figure into the engine that the text did not state."""
+    low = " " + text.lower() + " "
+
+    def money(pattern):
+        m = re.search(pattern, low)
+        if not m:
+            return None
+        try:
+            return float(m.group(1).replace(",", ""))
+        except (TypeError, ValueError):
+            return None
+
+    if not facts.state_of_residence.is_known:
+        for name, code in _DET_STATE_NAMES.items():
+            if (" live in " + name in low or " lives in " + name in low
+                    or " living in " + name in low
+                    or " resident of " + name in low
+                    or " in " + name + " " in low):
+                facts.state_of_residence = stated(code)
+                break
+    if not facts.marital_status.is_known:
+        if re.search(r"\b(my wife|my husband|my spouse|we are married"
+                     r"|i am married|i'm married)\b", low):
+            facts.marital_status = stated("married")
+        elif re.search(r"\b(i am single|i'm single)\b", low):
+            facts.marital_status = stated("single")
+    if facts.marital_status.is_known \
+            and facts.marital_status.value == "married" \
+            and not facts.spouse_income_monthly.is_known:
+        # Spouse income first, and only on an income word next to
+        # the spouse mention, so "my wife lives there. I gave
+        # $40,135..." never reads as spouse income.
+        v = money(r"(?:wife|husband|spouse)(?:'s)? (?:income|ssdi"
+                  r"|check|pension|benefit)[^$]{0,20}" + _DET_MONEY_RX)
+        if v is None:
+            v = money(r"(?:wife|husband|spouse) (?:gets?|makes?"
+                      r"|earns?|receives?|brings? home)[^$]{0,20}"
+                      + _DET_MONEY_RX)
+        if v is not None:
+            facts.spouse_income_monthly = stated(v)
+    if not applicant_income_total(facts).is_known:
+        v = None
+        for m in re.finditer(r"(?:income|ssdi|social security"
+                             r"|pension|salary|wages?|gets?|receive"
+                             r"|brings? home|make|makes)[^$]{0,30}"
+                             + _DET_MONEY_RX, low):
+            before = low[max(0, m.start() - 16):m.start()]
+            if "wife" in before or "husband" in before \
+                    or "spouse" in before:
+                continue
+            try:
+                v = float(m.group(1).replace(",", ""))
+            except ValueError:
+                v = None
+            break
+        if v is None:
+            v = money(_DET_MONEY_RX +
+                      r"\s*(?:a month|per month|/month|monthly)")
+        if v is not None:
+            facts.applicant_income_monthly = stated(v)
+    if not facts.assets_by_type:
+        rows = {}
+        v = money(r"(?:in the bank|in savings|in checking|bank "
+                  r"account|savings account)[^$]{0,20}" + _DET_MONEY_RX)
+        if v is None:
+            v = money(_DET_MONEY_RX + r"[^.,]{0,25}(?:in the bank"
+                      r"|in savings|in checking|in a bank account)")
+        if v is not None:
+            rows["bank"] = stated(v)
+        v = money(r"(?:ira|401\(?k\)?|retirement)[^$]{0,20}"
+                  + _DET_MONEY_RX)
+        if v is None:
+            v = money(_DET_MONEY_RX + r"[^.,]{0,25}(?:in an ira"
+                      r"|in a 401|in retirement)")
+        if v is not None:
+            rows["retirement"] = stated(v)
+        if rows:
+            facts.assets_by_type = rows
+    if not facts.home_owns.is_known:
+        if re.search(r"\b(own my home|own our home|own a home"
+                     r"|own the home|i own my house)\b", low):
+            facts.home_owns = stated(True)
+        elif re.search(r"\b(i rent|we rent| renting)\b", low):
+            facts.home_owns = stated(False)
+    if facts.home_owns.is_known and facts.home_owns.value is True \
+            and facts.marital_status.is_known \
+            and facts.marital_status.value == "married" \
+            and not facts.home_residents.is_known:
+        if re.search(r"\b(wife|husband|spouse) lives (there"
+                     r"|in the home|with me)\b", low) \
+                or re.search(r"\blive (there|in the home) with my "
+                             r"(wife|husband|spouse)\b", low):
+            facts.home_residents = stated(("applicant", "spouse"))
+    if not facts.home_equity.is_known:
+        v = money(r"(?:equity|home is worth|house is worth"
+                  r"|home worth)[^$]{0,20}" + _DET_MONEY_RX)
+        if v is not None:
+            facts.home_equity = stated(v)
+    if not facts.transfers.is_known:
+        items = []
+        for m in re.finditer(
+                r"(?:gave|gifted|transferred|signed over)"
+                r"[^$]{0,30}" + _DET_MONEY_RX, low):
+            amount = float(m.group(1).replace(",", ""))
+            tail = low[m.end():m.end() + 60]
+            months = None
+            mm = re.search(r"(\d+)\s*(?:months?|mos)\s*ago", tail)
+            if mm:
+                months = int(mm.group(1))
+            elif "last year" in tail or "a year ago" in tail:
+                months = 12
+            else:
+                for word, n in _DET_MONTH_WORDS.items():
+                    if word + " years ago" in tail:
+                        months = n
+                        break
+            if months is not None:
+                items.append(Transfer(amount, months, ""))
+        if items:
+            facts.transfers = stated(tuple(items))
+    return facts
+
+
+def _det_pending(facts, result):
+    """Fields the intake still needs, in asking order: core gaps
+    first, then the branch deciders the design names. A field is
+    listed only when it can change the sheet."""
+    pending = []
+
+    def add(name):
+        if name not in pending:
+            pending.append(name)
+
+    if not facts.state_of_residence.is_known:
+        add("state_of_residence")
+    if not facts.household_size.is_known:
+        add("household_size")
+    if not facts.marital_status.is_known:
+        add("marital_status")
+    married = facts.marital_status.is_known \
+        and facts.marital_status.value == "married"
+    if married and not facts.spouse_applies.is_known:
+        add("spouse_applies")
+    if not applicant_income_total(facts).is_known:
+        add("applicant_income_monthly")
+    couple_one = married and facts.spouse_applies.is_known \
+        and facts.spouse_applies.value is False
+    if couple_one and not facts.spouse_income_monthly.is_known:
+        add("spouse_income_monthly")
+    if not countable_assets_total(facts).is_known:
+        add("assets_by_type")
+    if not facts.home_owns.is_known:
+        add("home_owns")
+    elif facts.home_owns.value is True:
+        if not facts.home_residents.is_known:
+            add("home_residents")
+        else:
+            residents = set(facts.home_residents.value)
+            if not (residents & _HOME_EXEMPT_RESIDENTS) \
+                    and not facts.home_equity.is_known:
+                add("home_equity")
+    if not facts.transfers.is_known:
+        add("transfers")
+    # Branch deciders, fired only on their named triggers.
+    income = applicant_income_total(facts)
+    if income.is_known and float(income.value) - INCOME_CAP \
+            > margin_for(INCOME_CAP, "income") \
+            and not facts.has_miller_trust.is_known:
+        add("has_miller_trust")
+    if couple_one and facts.spouse_income_monthly.is_known:
+        if facts.has_court_order.is_known \
+                and facts.has_court_order.value is True:
+            if not facts.court_order_spousal_amount.is_known:
+                add("court_order_spousal_amount")
+        elif float(facts.spouse_income_monthly.value) < MMMNA_MAX:
+            if not facts.has_court_order.is_known:
+                add("has_court_order")
+            if not facts.shelter_costs_monthly.is_known:
+                add("shelter_costs_monthly")
+    total = countable_assets_total(facts)
+    if total.is_known and facts.marital_status.is_known:
+        allowable, _, _ = _asset_allowable(facts, float(total.value))
+        if abs(allowable - float(total.value)) \
+                <= margin_for(allowable, "assets"):
+            if not facts.burial_funds.is_known:
+                add("burial_funds")
+            if not facts.has_irrevocable_burial_trust.is_known:
+                add("has_irrevocable_burial_trust")
+    return pending
+
+
+def _det_screen_line(facts, s):
+    """One plain-language line per screen: the verdict, the
+    deciding fact in words, and the figures behind it. Every
+    figure printed here comes from the fact record or from the
+    engine's own governing constants."""
+    v = s.verdict
+    if s.screen == "income":
+        income = applicant_income_total(facts)
+        iv = float(income.value) if income.is_known else None
+        if v == "likely_yes" and s.deciding_fact == "has_miller_trust":
+            return ("Income is " + _det_money(iv) + " a month, over "
+                    "the " + _det_money(INCOME_CAP) + " waiver income "
+                    "cap, and a Miller trust is in place to route the "
+                    "income over the cap.")
+        if v in ("likely_yes", "likely_no", "too_close_to_call") \
+                and iv is not None:
+            if v == "too_close_to_call":
+                return ("Income is " + _det_money(iv) + " a month, "
+                        "within the margin of the "
+                        + _det_money(INCOME_CAP) + " waiver income "
+                        "cap, too close to the line to call.")
+            if iv <= INCOME_CAP:
+                return ("Income is " + _det_money(iv) + " a month, "
+                        "at or under the " + _det_money(INCOME_CAP)
+                        + " waiver income cap.")
+            return ("Income is " + _det_money(iv) + " a month, over "
+                    "the " + _det_money(INCOME_CAP) + " waiver "
+                    "income cap, with no Miller trust in place.")
+        return "Income could not be screened: " + (
+            s.refusal_reason or s.deciding_fact)
+    if s.screen == "assets":
+        total = countable_assets_total(facts)
+        if v in ("likely_yes", "likely_no", "too_close_to_call") \
+                and total.is_known:
+            tv = float(total.value)
+            allowable, _, _ = _asset_allowable(facts, tv)
+            if facts.marital_status.value == "married" \
+                    and facts.spouse_applies.is_known \
+                    and facts.spouse_applies.value is False:
+                return ("Countable assets are " + _det_money(tv)
+                        + ". The community spouse keeps a CSRA of "
+                        + _det_money(csra_amount(tv)) + " and the "
+                        "applicant keeps " + _det_money(
+                            ASSET_LIMIT_SINGLE) + ", so the couple "
+                        "allowance is " + _det_money(allowable) + ".")
+            return ("Countable assets are " + _det_money(tv)
+                    + " against an allowance of "
+                    + _det_money(allowable) + ".")
+        return "Assets could not be screened: " + (
+            s.refusal_reason or s.deciding_fact)
+    if s.screen == "mmmna":
+        if v == "not_applicable":
+            return ("No community spouse, so the spouse income "
+                    "allowance does not apply.")
+        target = None
+        for line in s.trace:
+            if line.startswith("MMMNA target "):
+                try:
+                    target = float(line.split()[2].rstrip(","))
+                except (IndexError, ValueError):
+                    target = None
+        if target is not None:
+            return ("The spouse income allowance (MMMNA) target is "
+                    + _det_money(target) + " a month, between the "
+                    + _det_money(MMMNA_MIN) + " minimum and the "
+                    + _det_money(MMMNA_MAX) + " maximum.")
+        return "The spouse allowance could not be computed: " + (
+            s.refusal_reason or s.deciding_fact)
+    if s.screen == "transfer":
+        if v == "likely_no":
+            in_window = [t for t in facts.transfers.value
+                         if t.months_ago < TRANSFER_LOOKBACK_MONTHS]
+            total = sum(t.amount for t in in_window)
+            penalty = total / TRANSFER_DIVISOR
+            return ("Transfers of " + _det_money(total) + " inside "
+                    "the 60 month lookback carry a penalty risk: "
+                    + _det_money(total) + " divided by the "
+                    + _det_money(TRANSFER_DIVISOR) + " monthly "
+                    "divisor is about " + format(penalty, ".1f")
+                    + " months.")
+        if v == "likely_yes":
+            return ("No uncompensated transfer inside the 60 month "
+                    "lookback.")
+        if v == "too_close_to_call":
+            return ("A transfer sits within 2 months of the 60 "
+                    "month line, so the timing cannot be called "
+                    "from month counts alone.")
+        return "Transfers could not be screened: " + (
+            s.refusal_reason or s.deciding_fact)
+    if s.screen == "home_equity":
+        if v == "not_applicable":
+            return "No home owned, so the home equity rule does not apply."
+        if v in ("likely_yes", "likely_no", "too_close_to_call"):
+            if s.deciding_fact == "home_residents":
+                return ("Someone the rule exempts lives in the "
+                        "home, so the home equity does not count "
+                        "against the applicant.")
+            if facts.home_equity.is_known:
+                return ("Home equity is " + _det_money(
+                    float(facts.home_equity.value)) + " against "
+                    "the Indiana limit of "
+                    + _det_money(HOME_EQUITY_LIMIT) + ".")
+        return "Home equity could not be screened: " + (
+            s.refusal_reason or s.deciding_fact)
+    if s.screen == "jurisdiction":
+        if v == "not_screened":
+            return ("This screen covers Indiana Medicaid waiver "
+                    "and long-term care only.")
+        return "State could not be screened: " + (
+            s.refusal_reason or s.deciding_fact)
+    return s.deciding_fact or s.refusal_reason
+
+
+def _det_money_values_in(text):
+    out = []
+    for m in re.finditer(r"\$\s?([\d,]+(?:\.\d{1,2})?)", text or ""):
+        try:
+            out.append(float(m.group(1).replace(",", "")))
+        except ValueError:
+            pass
+    return out
+
+
+# Kill-rule output checkpoint (DESIGN section 7, checkpoint 2).
+# Terms that tie a line to a binding's fact. A line is killed only
+# when it both names the fact and carries a non-governing figure
+# for it, so a legitimate figure from another screen (the $3,000
+# couple asset allowance, for example) is never killed by the
+# transfer divisor or SNAP bindings.
+_DET_BINDING_TERMS = {
+    "transfer_divisor": ("divisor", "penalty"),
+    "waiver_income_cap": ("income cap",),
+    "asset_limit_single": ("asset limit", "resource limit"),
+    "home_equity_limit": ("home equity limit", "equity limit"),
+    "mmmna_max": ("mmmna maximum", "allowance maximum"),
+    "csra_min": ("csra",),
+    "csra_max": ("csra",),
+}
+
+
+def _det_line_killed(line):
+    """True when a sheet line states a figure that contradicts a
+    binding for the fact the line names."""
+    low = (line or "").lower()
+    values = _det_money_values_in(line)
+    if not values:
+        return False
+    for key, binding in BINDINGS.items():
+        terms = _DET_BINDING_TERMS.get(key, ())
+        if not any(t in low for t in terms):
+            continue
+        for v in values:
+            if v in binding["nongoverning"]:
+                return True
+        # For the three bindings whose figure belongs to that fact
+        # alone, a line that names the fact and prints figures but
+        # never the governing figure is stating some other number
+        # as the rule. Computed lines are safe: the transfer line
+        # prints the $8,027 divisor itself, the income lines print
+        # the $2,982 cap itself, so the governing value is present.
+        if key in ("transfer_divisor", "waiver_income_cap",
+                   "home_equity_limit") and binding["governing"] \
+                and not any(v in binding["governing"]
+                            for v in values):
+            return True
+    for b in _JURISDICTION_BINDINGS:
+        terms = [t.lower() for t in
+                 (b.get("attribution_terms") or [])
+                 + (b.get("context_terms") or [])]
+        label = (b.get("fact_label") or "").lower()
+        if label and label.split()[0] in low and \
+                any(t in low for t in terms):
+            for v in values:
+                if v in (b.get("nongoverning_values") or []):
+                    return True
+    return False
+
+
+def _det_render_sheet(facts, result):
+    rows = []
+    for s in result.screens:
+        line = _det_screen_line(facts, s)
+        verdict = s.verdict
+        if verdict not in (Verdict.REFUSAL, Verdict.NOT_SCREENED) \
+                and _det_line_killed(line):
+            verdict = Verdict.REFUSAL
+            line = ("This line was removed by the figure check "
+                    "because it stated a figure that contradicts "
+                    "the governing value. The screen declines "
+                    "rather than printing it.")
+            result.refusal_reasons.append(
+                "kill rule: a " + s.screen + " line contradicted "
+                "a governing figure")
+        row = {
+            "screen": s.screen,
+            "title": _DET_SCREEN_TITLES.get(s.screen, s.screen),
+            "verdict": verdict,
+            "verdict_label": _DET_VERDICT_LABELS.get(verdict, verdict),
+            "line": line,
+            "deciding_fact": s.deciding_fact,
+            "citations": list(s.citations),
+        }
+        if s.question_back:
+            row["question_back"] = s.question_back
+        if s.refusal_reason:
+            row["refusal_reason"] = s.refusal_reason
+        rows.append(row)
+    overall = result.overall
+    if any(r["verdict"] == Verdict.REFUSAL for r in rows) \
+            and overall != Verdict.REFUSAL:
+        overall = Verdict.REFUSAL
+    return {
+        "program": result.program,
+        "program_label": "Indiana Medicaid waiver and long-term care",
+        "overall": overall,
+        "overall_label": _DET_VERDICT_LABELS.get(overall, overall),
+        "rows": rows,
+        "closing_line": DET_CLOSING_LINE,
+    }
+
+
+def determine(payload, det_id=None):
+    """Run the determinations screen on one payload. Pure and
+    deterministic: same payload, same sheet. Raises on malformed
+    internals; the route wrapper (_det_handle) is the guarded
+    path that records failures."""
+    det_id = det_id or _det_new_id()
+    facts = _det_facts_from_payload(payload)
+    result = evaluate(facts)
+    pending = _det_pending(facts, result)
+    sheet = _det_render_sheet(facts, result)
+    if sheet["overall"] == Verdict.REFUSAL:
+        status = "refusal"
+    elif pending:
+        status = "needs_facts"
+    else:
+        status = "sheet"
+    questions = [{"field": name,
+                  "question": _DET_QUESTIONS.get(name, name)}
+                 for name in pending]
+    return {
+        "det_id": det_id,
+        "status": status,
+        "pending": questions,
+        "sheet": sheet,
+        "questions_back": list(result.questions_back),
+        "refusal_reasons": list(result.refusal_reasons),
+        "provenance": facts.provenance_map(),
+        "closing_line": DET_CLOSING_LINE,
+    }
+
+
+def _record_determine(rec):
+    """One trace record per determination, success or refusal,
+    through the ask-record writer. Never raises."""
+    try:
+        rec.setdefault("kind", "determine")
+        rec.setdefault("ts", time.time())
+        _record_ask(rec)
+    except Exception:
+        pass
+
+
+def _record_determine_failure(error, payload=None, det_id=None,
+                              t0=None):
+    """The v35 Stage 1 no-trace pattern, applied to the screen: a
+    determination that dies anywhere still leaves one complete
+    failure record (id, error, elapsed, and the facts' provenance
+    so the hole can be graded later). Never raises."""
+    try:
+        prov = None
+        try:
+            prov = _det_facts_from_payload(
+                payload or {}).provenance_map()
+        except Exception:
+            prov = None
+        _record_ask({
+            "kind": "determine", "status": "error",
+            "ts": time.time(),
+            "wall_s": (round(time.monotonic() - t0, 3)
+                       if t0 else None),
+            "det_id": det_id,
+            "error": (str(error)[:300] if error else None),
+            "provenance": prov,
+            "stage": "evaluate",
+        })
+    except Exception:
+        pass
+
+
+def _det_handle(payload):
+    """Route wrapper for POST /screen/evaluate. Records the
+    outcome either way; an internal failure returns an error body
+    with the det id and leaves its failure record."""
+    det_id = _det_new_id()
+    t0 = time.monotonic()
+    try:
+        out = determine(payload, det_id=det_id)
+    except Exception as e:
+        _record_determine_failure(e, payload=payload,
+                                  det_id=det_id, t0=t0)
+        return {"error": "the screen could not finish", 
+                "det_id": det_id}, 500
+    _record_determine({
+        "det_id": det_id, "status": out["status"],
+        "wall_s": round(time.monotonic() - t0, 3),
+        "overall": out["sheet"]["overall"],
+        "pending": [q["field"] for q in out["pending"]],
+        "refusal_reasons": out["refusal_reasons"],
+        "provenance": out["provenance"],
+    })
+    return out, 200
+
+
+
+SCREEN_PAGE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Will I qualify? - FSSA SARA determinations screen</title>
+<style>
+:root{
+  --bg:#020617; --surface-1:#0F172A; --surface-2:#1A1E2F; --surface-3:#1E293B;
+  --hairline:#1E293B; --hairline-strong:#334155;
+  --ink:#F8FAFC; --ink-secondary:#CBD5E1; --ink-tertiary:#94A3B8; --ink-disabled:#64748B;
+  --accent:#2563EB; --accent-hover:#3B82F6; --success:#22C55E; --error:#EF4444; --warning:#F59E0B;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#F8FAFC; --surface-1:#FFFFFF; --surface-2:#F1F5F9; --surface-3:#E2E8F0;
+    --hairline:#E2E8F0; --hairline-strong:#CBD5E1;
+    --ink:#0F172A; --ink-secondary:#334155; --ink-tertiary:#64748B; --ink-disabled:#94A3B8;
+    --accent:#2563EB; --accent-hover:#1D4ED8; --success:#16A34A; --error:#DC2626; --warning:#D97706;
+  }
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:Inter,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink-secondary); line-height:1.6; min-height:100dvh; display:flex; flex-direction:column; align-items:center; padding:24px 16px;}
+.wrap{width:100%; max-width:720px;}
+header{margin-bottom:8px;}
+header h1{font-size:24px; font-weight:600; letter-spacing:-0.02em; color:var(--ink); line-height:1.2;}
+header p{font-size:14px; color:var(--ink-tertiary); line-height:1.4;}
+.card{background:var(--surface-1); border:1px solid var(--hairline); border-radius:12px; padding:16px; margin-top:16px;}
+.card h2{font-size:16px; color:var(--ink); margin-bottom:10px;}
+label{display:block; font-size:13px; color:var(--ink-tertiary); margin:10px 0 4px;}
+input, select, textarea{width:100%; background:var(--surface-2); color:var(--ink); border:1px solid var(--hairline-strong); border-radius:8px; padding:8px 10px; font-size:15px;}
+textarea{min-height:64px;}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:0 12px;}
+.checks label{display:inline-block; margin:4px 12px 4px 0; color:var(--ink-secondary); font-size:14px;}
+.checks input{width:auto; margin-right:6px;}
+button{background:var(--accent); color:#fff; border:0; border-radius:8px; padding:10px 18px; font-size:15px; cursor:pointer; margin-top:16px;}
+button:hover{background:var(--accent-hover);}
+.chip{display:inline-block; font-size:12px; font-weight:600; border-radius:999px; padding:2px 10px; margin-left:8px; vertical-align:middle;}
+.yes{background:var(--success); color:#04150a;} .no{background:var(--error); color:#fff;}
+.close{background:var(--warning); color:#1a1000;} .muted{background:var(--surface-3); color:var(--ink-secondary);}
+.row{border-top:1px solid var(--hairline); padding:10px 0;}
+.row:first-of-type{border-top:0;}
+.row .t{color:var(--ink); font-weight:600; font-size:15px;}
+.row .cite{font-size:12px; color:var(--ink-tertiary);}
+.row .q{font-size:14px; color:var(--warning);}
+.overall{font-size:18px; color:var(--ink); font-weight:600;}
+.closing{margin-top:14px; font-size:14px; color:var(--ink-tertiary); font-style:italic;}
+.err{color:var(--error);}
+a{color:var(--accent-hover);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Will I qualify?</h1>
+    <p>Indiana Medicaid waiver and long-term care screening. Answer once; the screen checks each rule with the same figures SARA uses. This is a screening estimate only. The state makes the final decision.</p>
+    <p><a href="/">Back to SARA search and ask</a></p>
+  </header>
+
+  <div class="card" id="intakeCard">
+    <h2>Your facts</h2>
+    <div class="grid">
+      <div><label for="f_state">State you live in</label><input id="f_state" placeholder="Indiana or IN"></div>
+      <div><label for="f_household">Household size</label><input id="f_household" type="number" min="1" step="1"></div>
+      <div><label for="f_marital">Marital status</label><select id="f_marital"><option value="">Choose</option><option value="single">Single</option><option value="married">Married</option></select></div>
+      <div><label for="f_spouse_applies">If married: is your spouse also applying?</label><select id="f_spouse_applies"><option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option></select></div>
+      <div><label for="f_income">Applicant income per month ($)</label><input id="f_income" type="number" min="0" step="any"></div>
+      <div><label for="f_spouse_income">Spouse income per month ($)</label><input id="f_spouse_income" type="number" min="0" step="any"></div>
+    </div>
+    <label>Countable assets ($, by type)</label>
+    <div class="grid">
+      <div><label for="a_bank">Bank accounts</label><input id="a_bank" type="number" min="0" step="any"></div>
+      <div><label for="a_retirement">Retirement (IRA, 401k)</label><input id="a_retirement" type="number" min="0" step="any"></div>
+      <div><label for="a_property_non_home">Property other than the home</label><input id="a_property_non_home" type="number" min="0" step="any"></div>
+      <div><label for="a_vehicles">Vehicles</label><input id="a_vehicles" type="number" min="0" step="any"></div>
+      <div><label for="a_other">Other assets</label><input id="a_other" type="number" min="0" step="any"></div>
+    </div>
+    <div class="grid">
+      <div><label for="f_home_owns">Do you own a home?</label><select id="f_home_owns"><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+      <div><label for="f_home_equity">Home equity ($)</label><input id="f_home_equity" type="number" min="0" step="any"></div>
+    </div>
+    <label>Who lives in the home?</label>
+    <div class="checks">
+      <label><input type="checkbox" class="rescb" value="applicant">Applicant</label>
+      <label><input type="checkbox" class="rescb" value="spouse">Spouse</label>
+      <label><input type="checkbox" class="rescb" value="minor_child">Minor child</label>
+      <label><input type="checkbox" class="rescb" value="disabled_child">Disabled child</label>
+      <label><input type="checkbox" class="rescb" value="sibling_with_equity">Sibling with an equity interest</label>
+      <label><input type="checkbox" class="rescb" value="other">Other</label>
+    </div>
+    <label for="f_transfers_any">Any gifts, or assets given away or sold below value, in the last 5 years?</label>
+    <select id="f_transfers_any"><option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option></select>
+    <div id="transferRows">
+      <div class="grid">
+        <div><label>Transfer 1 amount ($)</label><input id="t_amt0" type="number" min="0" step="any"></div>
+        <div><label>Months ago</label><input id="t_mo0" type="number" min="0" step="1"></div>
+      </div>
+      <div class="grid">
+        <div><label>Transfer 2 amount ($)</label><input id="t_amt1" type="number" min="0" step="any"></div>
+        <div><label>Months ago</label><input id="t_mo1" type="number" min="0" step="1"></div>
+      </div>
+      <div class="grid">
+        <div><label>Transfer 3 amount ($)</label><input id="t_amt2" type="number" min="0" step="any"></div>
+        <div><label>Months ago</label><input id="t_mo2" type="number" min="0" step="1"></div>
+      </div>
+    </div>
+    <div class="grid">
+      <div><label for="f_need">Do you need waiver or nursing-home level care?</label><select id="f_need"><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+      <div><label for="f_coverage">Current coverage (if any)</label><input id="f_coverage" placeholder="none, Medicare, ..."></div>
+    </div>
+    <label for="f_freetext">Or describe the situation in your own words (optional; fills in blanks above only)</label>
+    <textarea id="f_freetext" placeholder="Example: I live in Indiana, I am married, my SSDI is $1,900 a month..."></textarea>
+    <button onclick="submitFacts()">Screen me</button>
+    <p id="intakeErr" class="err"></p>
+  </div>
+
+  <div class="card" id="branchCard" style="display:none">
+    <h2>A few more questions decide this</h2>
+    <div id="branchFields"></div>
+    <button onclick="submitFacts()">Continue</button>
+  </div>
+
+  <div class="card" id="sheetCard" style="display:none">
+    <h2>Your screening</h2>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+<script>
+var branchState = {};
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function val(id){ var e=document.getElementById(id); return e? e.value.trim() : ""; }
+function num(id){ var v=val(id); if(v==="") return null; var n=parseFloat(v); return isNaN(n)? null : n; }
+function collectFacts(){
+  var f = {};
+  var st = val("f_state"); if(st) f.state_of_residence = st;
+  var hh = num("f_household"); if(hh!==null) f.household_size = hh;
+  var ms = val("f_marital"); if(ms) f.marital_status = ms;
+  if(ms==="married"){
+    var sa = val("f_spouse_applies"); if(sa) f.spouse_applies = (sa==="yes");
+    var si = num("f_spouse_income"); if(si!==null) f.spouse_income_monthly = si;
+  }
+  var inc = num("f_income"); if(inc!==null) f.applicant_income_monthly = inc;
+  var assets = {}, anyA = false;
+  ["bank","retirement","property_non_home","vehicles","other"].forEach(function(k){
+    var v = num("a_"+k); if(v!==null){ assets[k]=v; anyA=true; }
+  });
+  if(anyA) f.assets_by_type = assets;
+  var ho = val("f_home_owns"); if(ho) f.home_owns = (ho==="yes");
+  if(ho==="yes"){
+    var he = num("f_home_equity"); if(he!==null) f.home_equity = he;
+    var res = [];
+    document.querySelectorAll(".rescb:checked").forEach(function(c){ res.push(c.value); });
+    if(res.length) f.home_residents = res;
+  }
+  var ta = val("f_transfers_any");
+  if(ta==="no"){ f.transfers = []; }
+  else if(ta==="yes"){
+    var trs = [];
+    for(var i=0;i<3;i++){
+      var a = num("t_amt"+i), m = num("t_mo"+i);
+      if(a!==null && m!==null) trs.push({amount:a, months_ago:m, recipient:""});
+    }
+    if(trs.length) f.transfers = trs;
+  }
+  var dn = val("f_need"); if(dn) f.disability_or_waiver_need = (dn==="yes");
+  var cov = val("f_coverage"); if(cov) f.current_coverage = cov;
+  Object.keys(branchState).forEach(function(k){ f[k] = branchState[k]; });
+  return f;
+}
+var BRANCH_INPUTS = {
+  has_miller_trust: ["select", "Is the income over the cap routed through a Qualified Income Trust (Miller trust)?"],
+  has_court_order: ["select", "Is there a court or administrative order setting support for the spouse?"],
+  shelter_costs_monthly: ["number", "Community spouse monthly shelter costs ($)"],
+  court_order_spousal_amount: ["number", "Monthly amount the order sets for the spouse ($)"],
+  burial_funds: ["number", "Money set aside for burial, inside the amounts already entered ($)"],
+  has_irrevocable_burial_trust: ["select", "Is any burial money in an irrevocable burial trust?"],
+  spouse_income_monthly: ["number", "Community spouse monthly income ($)"],
+  home_equity: ["number", "Home equity ($)"]
+};
+function readBranch(){
+  document.querySelectorAll("[data-branch]").forEach(function(e){
+    var name = e.getAttribute("data-branch");
+    var kind = BRANCH_INPUTS[name][0];
+    if(kind==="select"){ if(e.value) branchState[name] = (e.value==="yes"); }
+    else { var n = parseFloat(e.value); if(!isNaN(n)) branchState[name] = n; }
+  });
+}
+function submitFacts(){
+  readBranch();
+  var payload = {facts: collectFacts()};
+  var ft = val("f_freetext"); if(ft) payload.free_text = ft;
+  document.getElementById("intakeErr").textContent = "";
+  fetch("/screen/evaluate", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)})
+    .then(function(r){ return r.json(); })
+    .then(function(out){
+      if(out.error){ document.getElementById("intakeErr").textContent = out.error; return; }
+      handleResult(out);
+    })
+    .catch(function(e){ document.getElementById("intakeErr").textContent = "The screen did not answer. Try again."; });
+}
+function handleResult(out){
+  var branch = document.getElementById("branchCard");
+  var fields = document.getElementById("branchFields");
+  var todo = (out.pending || []).filter(function(q){ return BRANCH_INPUTS[q.field] && !(q.field in branchState); });
+  if(out.status === "needs_facts" || (out.status === "refusal" && todo.length)){
+    fields.innerHTML = "";
+    todo.forEach(function(q){
+      var kind = BRANCH_INPUTS[q.field][0];
+      var html = "<label>" + esc(q.question) + "</label>";
+      if(kind === "select"){
+        html += "<select data-branch=\"" + esc(q.field) + "\"><option value=\"\">Choose</option><option value=\"yes\">Yes</option><option value=\"no\">No</option></select>";
+      } else {
+        html += "<input type=\"number\" min=\"0\" step=\"any\" data-branch=\"" + esc(q.field) + "\">";
+      }
+      fields.innerHTML += html;
+    });
+    branch.style.display = "block";
+    if(out.status === "sheet" || out.sheet) renderSheet(out);
+    return;
+  }
+  branch.style.display = "none";
+  renderSheet(out);
+}
+function chipClass(v){
+  if(v === "likely_yes") return "yes";
+  if(v === "likely_no") return "no";
+  if(v === "too_close_to_call" || v === "refusal") return "close";
+  return "muted";
+}
+function renderSheet(out){
+  var card = document.getElementById("sheetCard");
+  var body = document.getElementById("sheetBody");
+  var s = out.sheet;
+  var html = "<p class=\"overall\">" + esc(s.program_label) + ": " + esc(s.overall_label) +
+    "<span class=\"chip " + chipClass(s.overall) + "\">" + esc(s.overall_label) + "</span></p>";
+  (out.pending || []).forEach(function(q){
+    html += "<p class=\"q\">Still needed: " + esc(q.question) + "</p>";
+  });
+  s.rows.forEach(function(r){
+    html += "<div class=\"row\"><span class=\"t\">" + esc(r.title) + "</span>" +
+      "<span class=\"chip " + chipClass(r.verdict) + "\">" + esc(r.verdict_label) + "</span>" +
+      "<div>" + esc(r.line) + "</div>";
+    if(r.question_back) html += "<div class=\"q\">" + esc(r.question_back) + "</div>";
+    if(r.citations && r.citations.length) html += "<div class=\"cite\">Sources: " + esc(r.citations.join("; ")) + "</div>";
+    html += "</div>";
+  });
+  html += "<p class=\"closing\">" + esc(s.closing_line) + "</p>";
+  body.innerHTML = html;
+  card.style.display = "block";
+}
+</script>
+</body>
+</html>
+"""
 
 
 # --- v27.1: the front door ----------------------------------------
@@ -17548,13 +19667,21 @@ def _run_job(rec, raw_body, headers):
     outlives the join is abandoned: the record finalizes as an
     error naming the budget backstop, and the child (a daemon)
     is fenced off from overwriting the record afterwards."""
+    _job_payload = None
     try:
-        payload = json.loads(raw_body)
-        if isinstance(payload, dict):
-            payload.pop("async", None)
-            raw_body = json.dumps(payload).encode()
+        _job_payload = json.loads(raw_body)
+        if isinstance(_job_payload, dict):
+            _job_payload.pop("async", None)
+            raw_body = json.dumps(_job_payload).encode()
     except Exception:
         pass
+    # v35 (Stage 1, C8): the job record carries the question
+    # and lane from the start, so a job that never reaches a
+    # terminal ask record is still identifiable (the no-trace
+    # fix; see _record_ask_failure).
+    if isinstance(_job_payload, dict):
+        rec["question"] = _job_payload.get("question")
+        rec["mode"] = _job_payload.get("mode")
     shim = type("_JobShim", (), {})()
     # v18 fix (2026-10-14, live-found): the re-serialized body
     # above can be LONGER than the original request body (the
@@ -17603,6 +19730,13 @@ def _run_job(rec, raw_body, headers):
             if not rec.get("_abandoned"):
                 rec["status"] = "error"
                 rec["error"] = str(e)[:300]
+        # v35 (Stage 1, C8): stash the ask id on the job
+        # record (this thread owns the ask context) so the
+        # job layer's records can join to the ask record.
+        try:
+            rec["ask_id"] = _ask_ctx().ask_id
+        except Exception:
+            pass
         rec["stage"] = "done"
         try:
             _set_phase("done")
@@ -17618,13 +19752,33 @@ def _run_job(rec, raw_body, headers):
         rec["error"] = ("the ask exceeded the "
                         f"{ASK_TIME_CAP_S}s cap and was stopped "
                         "by the job-thread budget backstop")
+        # v35 (Stage 1, C8): the timeout writes its ask
+        # failure record NOW, at the moment of abandonment —
+        # the orphaned child is fenced off from the normal
+        # record (above), so without this the run leaves only
+        # the thin job line below. from_ctx=False: this
+        # thread's ask context is not the abandoned ask's.
+        _record_ask_failure(
+            "timeout", rec["error"],
+            question=rec.get("question"),
+            mode=rec.get("mode"), job_id=rec.get("id"),
+            ask_id=rec.get("ask_id"),
+            wall_s=round(time.time() - rec["ts"], 3),
+            stage=(str(rec.get("stage")) + "/"
+                   + str((rec.get("phase") or {}).get("name"))),
+            from_ctx=False)
         rec["stage"] = "done"
     # v18 (§E): the job layer's own timestamps persist too (pass
     # 1 item P1's correction: total_ms is honest; what was
     # missing is exactly this job record).
     _record_ask({"kind": "job", "job_id": rec.get("id"),
                  "created": rec.get("ts"),
-                 "finished": time.time(), "status": rec["status"]})
+                 "finished": time.time(), "status": rec["status"],
+                 # v35 (Stage 1, C8): join keys for the
+                 # no-trace records.
+                 "question": rec.get("question"),
+                 "mode": rec.get("mode"),
+                 "ask_id": rec.get("ask_id")})
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -17686,7 +19840,25 @@ class Handler(BaseHTTPRequestHandler):
                         # v27.1: front-door state (rows loaded;
                         # a missing data file reads loaded=false
                         # and the lanes are untouched).
+                        "determinations": {"enabled": _det_enabled(),
+                        "program": DET_PROGRAM_ID},
                         "front_door": _front_door_health()})
+        elif u.path == "/screen":
+            # v37: the determinations screen page (one
+            # intake; verdicts come from POST
+            # /screen/evaluate, deterministic code only).
+            if not _det_enabled():
+                self.send_response(404)
+                self.end_headers()
+            else:
+                body = SCREEN_PAGE.encode()
+                self.send_response(200)
+                self.send_header("Content-Type",
+                                 "text/html; charset=utf-8")
+                self.send_header("Content-Length",
+                                 str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
         elif u.path == "/gaps":
             # v14: the gap log (IDKs, abstained parts, failed gates)
             # for the monthly rescrape watchlist and registry growth.
@@ -17827,6 +19999,30 @@ class Handler(BaseHTTPRequestHandler):
             except Exception:
                 _wok = False
             self._json({"ok": _wok, "model": _wm})
+            return
+        if u.path == "/screen/evaluate":
+            # v37: run the determinations screen. The
+            # wrapper records every outcome; a failure
+            # leaves a no-trace record and returns its
+            # det id with the error.
+            if not _det_enabled():
+                self._json({"error": "determinations screen is off"}, 404)
+                return
+            try:
+                _dl = int(self.headers.get("Content-Length", 0))
+                if _dl > 100 * 1024:
+                    self._json({"error": "request too large"}, 413)
+                    return
+                _dpayload = json.loads(
+                    self.rfile.read(_dl) or b"{}")
+                if not isinstance(_dpayload, dict):
+                    self._json({"error": "request body must be a JSON object"}, 400)
+                    return
+            except Exception:
+                self._json({"error": "request body must be valid JSON"}, 400)
+                return
+            _dout, _dcode = _det_handle(_dpayload)
+            self._json(_dout, _dcode)
             return
         if u.path != "/ask":
             self.send_response(404)
@@ -18327,6 +20523,14 @@ class Handler(BaseHTTPRequestHandler):
                 if _inf_entry is not None:
                     _inflight_release(_inf_key)
                     _inf_entry = None
+                # v35 (Stage 1, C8): an error exit writes its
+                # failure record before responding (see
+                # _record_ask_failure).
+                _record_ask_failure(
+                    "error",
+                    "retrieval engine unavailable: " + str(e),
+                    question=question, mode=ask_mode,
+                    corpus=corpus_name, t0=t_start)
                 self._json({"error": "retrieval engine "
                                     "unavailable: "
                                     + str(e)[:200]}, 503)
@@ -18338,7 +20542,10 @@ class Handler(BaseHTTPRequestHandler):
             # assignment cannot overwrite the block.)
             registry_entries = _registry_matches(question)
             csra_comp = None
-            if any(e["id"] == "csra" for e in registry_entries):
+            if _computed_engaged(
+                    "csra", question,
+                    any(e["id"] == "csra"
+                        for e in registry_entries)):
                 csra_comp = compute_csra(question)
             # v32 (Fix 3): the spousal split, computed like
             # the CSRA — gated on its family's match (here the
@@ -18346,9 +20553,15 @@ class Handler(BaseHTTPRequestHandler):
             # so the door assignment only ever runs on its own
             # family. Its figures join the same verified-
             # figures surface ([registry]-citable, allowed).
+            # v35 (Stage 1, C4): _computed_engaged adds the
+            # loose path (one trigger group + spouse + the
+            # computation's own anchor) for the phrasings the
+            # full match misses.
             spousal_comp = None
-            if any(m["id"] == "spousal_split"
-                   for m in _mechanism_matches(question)):
+            if _computed_engaged(
+                    "spousal_split", question,
+                    any(m["id"] == "spousal_split"
+                        for m in _mechanism_matches(question))):
                 spousal_comp = compute_spousal_split(question)
             reg_block = _registry_block(registry_entries)
             if csra_comp:
@@ -18534,6 +20747,14 @@ class Handler(BaseHTTPRequestHandler):
                     "draft_capped": _ask_ctx().draft_capped,
                     "checks": (judging or {}).get("checks"),
                     "annotation": (judging or {}).get("annotation"),
+                    # v35 (Stage 1, C8): for Deep asks, the
+                    # judge chain's stage outcomes at record
+                    # level (which judge seats served, on
+                    # which models, which failed and why) —
+                    # the per-claim verdicts ride in units.
+                    "judge_stages": (
+                        _judge_stage_outcomes(_ask_ctx().events)
+                        if ask_mode == "deep" else None),
                     # v20.2 (observability): the ask's full
                     # event stream (seat successes AND the new
                     # seat_fail/seat_down failure reasons,
@@ -18742,14 +20963,18 @@ class Handler(BaseHTTPRequestHandler):
                                    if (h["url"], h["excerpt"][:60])
                                    not in seen_k]
                     p_csra = None
-                    if any(e["id"] == "csra" for e in p_reg):
+                    if _computed_engaged(
+                            "csra", part,
+                            any(e["id"] == "csra" for e in p_reg)):
                         p_csra = compute_csra(part)
                     # v32 (Fix 3): the part's spousal split,
                     # gated and computed like the whole
-                    # question's.
+                    # question's (v35: same loose path).
                     p_spousal = None
-                    if any(m["id"] == "spousal_split"
-                           for m in p_mechs):
+                    if _computed_engaged(
+                            "spousal_split", part,
+                            any(m["id"] == "spousal_split"
+                                for m in p_mechs)):
                         p_spousal = compute_spousal_split(part)
                     p_allowed = _registry_values(
                         p_reg, on_date=_question_date(part)) + [
@@ -19432,6 +21657,22 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:
             if _inf_entry is not None:
                 _inflight_release(_inf_key)
+            # v35 (Stage 1, C8): the no-trace fix — an ask
+            # that dies here used to leave NO record at all.
+            # Write the failure record (guarded to the ask
+            # branch: ask_mode exists only there) before the
+            # 500 goes out. Locals are read defensively: an
+            # early failure may precede their assignment.
+            try:
+                if locals().get("ask_mode"):
+                    _record_ask_failure(
+                        "error", e,
+                        question=locals().get("question"),
+                        mode=locals().get("ask_mode"),
+                        corpus=locals().get("corpus_name"),
+                        t0=locals().get("t_start"))
+            except Exception:
+                pass
             self._json({"error": str(e)[:300]}, 500)
 
     def log_message(self, *a):
