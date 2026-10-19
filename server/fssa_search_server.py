@@ -1025,6 +1025,30 @@ def _set_stage(text):
         rec["stage"] = text
 
 
+def _note_found_pages(hits, limit=12):
+    """v37.2: publish the pages a search just found onto
+    the ask's job record, so the page's poller can show
+    them while rerank and drafting finish. Through v37.1
+    the run card showed only phase names during retrieval,
+    so a slow rerank looked like nothing had been found
+    (ask f0de81c7f39f: 109.7s of "retrieving" on an empty
+    card). Titles and urls only; the latest search wins,
+    and the search's own final publish replaces the raw
+    pool with the served order. No-op off the job path
+    (plain /search, replica grading), exactly like
+    _set_stage. Never raises: a display note must never
+    fail an ask."""
+    rec = getattr(_STAGE_TLS, "job", None)
+    if rec is None:
+        return
+    try:
+        rec["found"] = [{"t": (h.get("title") or "")[:120],
+                         "u": h.get("url") or ""}
+                        for h in list(hits)[:limit]]
+    except Exception:
+        pass
+
+
 # --- v23 (WS1): structured phase progress ----------------------------
 # The job record carries a PHASE alongside the free-text stage:
 # one of retrieving / drafting / extracting / checking /
@@ -1195,7 +1219,8 @@ def _clean_llm_list_output(text):
             return line
     return lines[0] if lines else ""
 
-def _utility_text(prompt, max_tokens=256, timeout=30):
+def _utility_text(prompt, max_tokens=256, timeout=30,
+                  deadline=None):
     """One bare chat call for the retrieval utilities (query
     rewrite, policy-phrase rewrite, rerank). Raises on any
     failure: the utilities degrade to their empty result,
@@ -1205,7 +1230,16 @@ def _utility_text(prompt, max_tokens=256, timeout=30):
     the paid OpenRouter utility model. Groq is OUT entirely
     (v30: its utility/rerank legs failed silently). Every
     leg's failure is logged with provider + status and
-    lands on the seats panel — no silent seats."""
+    lands on the seats panel — no silent seats.
+    v37.2: `deadline` (a time.monotonic() instant) bounds
+    the WHOLE chain attempt when a caller passes one: both
+    legs clamp their socket timeouts to the time left and
+    no leg or retry starts once it is spent (the transports
+    already enforce this; through v37.1 the chain was never
+    handed a deadline, so a glitching chain could ride the
+    Cerebras leg's full timeout plus both OpenRouter
+    attempts at full timeout). Callers that pass no
+    deadline see the pre-v37.2 behavior, unchanged."""
     _sys = ("You are a precise retrieval utility. Reply with "
             "only the requested output, no explanations.")
     if _cerebras_key():
@@ -1213,7 +1247,7 @@ def _utility_text(prompt, max_tokens=256, timeout=30):
             _out = _cerebras_text(
                 CEREBRAS_DEFAULT_MODEL, _sys, prompt,
                 temperature=0, max_tokens=max_tokens,
-                timeout=timeout)
+                timeout=timeout, deadline=deadline)
             _seat_note("utility",
                        "cerebras " + CEREBRAS_DEFAULT_MODEL,
                        True)
@@ -1231,7 +1265,7 @@ def _utility_text(prompt, max_tokens=256, timeout=30):
             _out = _or_text(
                 OPENROUTER_UTILITY_MODEL, _sys,
                 prompt, temperature=0, max_tokens=max_tokens,
-                timeout=timeout)
+                timeout=timeout, deadline=deadline)
             _seat_note("utility",
                        "openrouter " + OPENROUTER_UTILITY_MODEL,
                        True)
@@ -2690,7 +2724,13 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
                          "pin_fired": None,
                          "pool": [{"t": (h.get("title") or "")[:70],
                                    "u": h.get("url"), "sel": i}
-                                  for i, h in enumerate(cached[:28])]})
+                                  for i, h in enumerate(cached[:28])],
+                         # v37.2: no rerank ran for a cached
+                         # pool; the fields ride as None like
+                         # the other unknown signals above.
+                         "rerank_backend": None,
+                         "rerank_capped": None})
+        _note_found_pages(cached)
         return [dict(h) for h in cached]
     profile = _V2["profile"] or {}
     weights = profile.get("channel_weights",
@@ -2853,6 +2893,13 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
     # _jurisdiction_seats) before the rerank slot, so the
     # reranker sees the guaranteed documents too.
     result = _jurisdiction_seats(result, hits, query)
+    # v37.2: the raw pool exists at this point; show it on
+    # the ask's run card while the rerank slot runs (the
+    # final publish below replaces it with the served
+    # order).
+    _note_found_pages(result)
+    _backend = None
+    _rerank_capped = False
     if use_rerank and RERANK_ENABLED and len(result) > n:
         _pool = list(result)
         ranked_hits = []
@@ -2869,6 +2916,12 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
                 _backend = "ce"
         if not ranked_hits:
             ranked_hits = rerank_with_llm(query, result)
+            # v37.2: did the rerank deadline end the
+            # attempt? (rerank_with_llm flags it on the
+            # thread-local; read before any other search
+            # on this thread can overwrite it.)
+            _rerank_capped = bool(
+                getattr(_RERANK_TLS, "capped", False))
             if ranked_hits:
                 _backend = "llm"
         if ranked_hits:
@@ -2991,11 +3044,22 @@ def _hybrid_search_v2(query, corpus, n, use_rewrite, use_rerank):
                      "flat": bool(flat),
                      "registry_hit": bool(channels.get("R")),
                      "pin_fired": bool(pin_hits),
-                     "typo_expansions": typo_alts, "pool": pool})
+                     "typo_expansions": typo_alts, "pool": pool,
+                     # v37.2: the rerank slot's outcome for
+                     # this search — which backend won, and
+                     # whether the rerank deadline is what
+                     # ended the LLM attempt (the ask then
+                     # ran on the fused order: a recorded
+                     # degradation, not a silent one).
+                     "rerank_backend": _backend,
+                     "rerank_capped": bool(_rerank_capped)})
     for h in result:
         h.pop("_section", None)
     _retr_note("v2", time.monotonic() - _t0)
     _cache_put(_V2_CACHE, cache_key, result)
+    # v37.2: the served order replaces the raw pool on the
+    # run card for the drafting phase.
+    _note_found_pages(result)
     return [dict(h) for h in result]
 
 
@@ -3266,6 +3330,32 @@ def rerank_with_qwen(query, hits):
 # the CEREBRAS_MAX_TOKENS reasoning floor (>= 512).
 RERANK_UTILITY_MAX_TOKENS = 1024
 
+# v37.2: the rerank chain's TOTAL time budget (a deadline
+# handed to _utility_text, not a per-leg timeout). Through
+# v37.1 rerank_with_llm passed only a per-leg socket
+# timeout (45s) and the chain plumbed no deadline, so a
+# glitching chain could ride the Cerebras leg's full
+# timeout plus BOTH OpenRouter attempts at full timeout
+# (up to ~135s) inside one retrieval. Ask f0de81c7f39f
+# (2026-10-19) spent 109.7s of its 111.4s in the
+# retrieving phase while drafting took 0.7s. Healthy
+# rerank legs answer in a few seconds: the healthy
+# retrieving-phase median over the 60 asks before the
+# incident was 12.4s for the WHOLE phase (expansion,
+# rewrite, fusion, and up to five searches included), so
+# a healthy single rerank leg is well under that. 12s
+# leaves healthy behavior untouched and cuts the
+# pathological case about 9x. On expiry the seat fails
+# open to the fused order exactly as on any other chain
+# failure, and the search's pool note records
+# rerank_capped so the ask record shows the degradation.
+RERANK_UTILITY_DEADLINE_S = 12.0
+
+# The rerank slot's per-call outcome for the pool note
+# (same thread-local discipline as _STAGE_TLS: a search
+# runs start-to-finish on one thread).
+_RERANK_TLS = threading.local()
+
 
 def _rerank_scope_line(query):
     """v35 (Stage 2, C2 #7): the routed ordering instruction
@@ -3318,6 +3408,12 @@ def _rerank_scope_line(query):
 def rerank_with_llm(query, hits):
     """Rerank search hits by relevance to the query (v15.1: NIM
     fast tier; see _utility_text)."""
+    # v37.2: the whole chain attempt is deadline-bound (see
+    # RERANK_UTILITY_DEADLINE_S); the outcome rides the
+    # thread-local so the caller's pool note can record
+    # whether the cap is what ended the attempt.
+    _RERANK_TLS.capped = False
+    _deadline = time.monotonic() + RERANK_UTILITY_DEADLINE_S
     try:
         # Build a compact list for the LLM to rank
         items = []
@@ -3334,7 +3430,7 @@ def rerank_with_llm(query, hits):
         text = _clean_llm_list_output(
             _utility_text(prompt,
                           max_tokens=RERANK_UTILITY_MAX_TOKENS,
-                          timeout=45))
+                          timeout=45, deadline=_deadline))
         # Parse numbers
         order = []
         for part in text.replace(",", " ").split():
@@ -3357,6 +3453,11 @@ def rerank_with_llm(query, hits):
         _seat_note("rerank", "llm utility chain", False,
                    "unparseable ranking output")
     except Exception as e:
+        # v37.2: a failure that arrives with the deadline
+        # spent is the cap doing its job; flag it so the
+        # pool note can mark the ask degraded-by-cap.
+        if time.monotonic() >= _deadline:
+            _RERANK_TLS.capped = True
         _seat_note("rerank", "llm utility chain", False,
                    f"{type(e).__name__}: {e}")
     return []
@@ -16154,6 +16255,10 @@ button.secondary:hover{background:var(--surface-3);}
 @media (prefers-reduced-motion: reduce){ .st-active .glyph{animation:none;} }
 .ifneeded{margin-top:8px; border-top:1px dashed var(--hairline); padding-top:8px;}
 .ifneeded .glabel{font-size:12px; color:var(--ink-tertiary); margin-bottom:4px;}
+#foundBox{margin-top:8px; border-top:1px dashed var(--hairline); padding-top:8px;}
+#foundBox .glabel{font-size:12px; color:var(--ink-tertiary); margin-bottom:4px;}
+.foundline{font-size:13px; color:var(--ink-secondary); padding:1px 0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 #draftCalls{margin-top:8px; font-size:12px; color:var(--ink-tertiary);}
 #answer{margin-top:16px; display:none;}
 #answer .card h2{font-size:16px; font-weight:600; color:var(--ink); margin-bottom:12px;}
@@ -16240,6 +16345,10 @@ footer{margin-top:24px; font-size:12px; color:var(--ink-tertiary); max-width:65c
       <div id="passCaption"></div>
       <div id="partLines"></div>
       <div id="sectionList" aria-live="polite" aria-atomic="false"></div>
+      <div id="foundBox" style="display:none;">
+        <div class="glabel">Found so far</div>
+        <div id="foundList"></div>
+      </div>
       <div class="ifneeded" id="ifNeeded" style="display:none;">
         <div class="glabel">If needed</div>
         <div id="chipList"></div>
@@ -16454,6 +16563,25 @@ function renderRun(jp){
   $('ifNeeded').style.display = anyOpt ? 'block' : 'none';
   if(typeof snap.draft_calls === 'number'){
     $('draftCalls').textContent = 'Draft calls: ' + snap.draft_calls + ' of ' + (snap.draft_cap || 4);
+  }
+  // v37.2: the pages found so far, published by the server
+  // the moment raw retrieval lands (before rerank and
+  // drafting finish), so a slow phase never looks like
+  // nothing was found. Titles only on screen; the url is
+  // the line's tooltip.
+  const fb = $('foundBox'), fl = $('foundList');
+  if(jp && jp.found && jp.found.length){
+    fb.style.display = 'block';
+    fl.innerHTML = '';
+    jp.found.forEach(function(f){
+      const d = document.createElement('div');
+      d.className = 'foundline';
+      d.textContent = f.t || f.u || '';
+      if(f.t && f.u) d.title = f.u;
+      fl.appendChild(d);
+    });
+  } else {
+    fb.style.display = 'none';
   }
 }
 function sectionRow(s, jp){
@@ -19889,6 +20017,12 @@ class Handler(BaseHTTPRequestHandler):
                     _secs = None
                 if _secs is not None:
                     out["sections"] = _secs
+                # v37.2: the pages found so far, published
+                # by the retrieval path the moment the raw
+                # pool exists (see _note_found_pages), so a
+                # slow rerank never looks like no retrieval.
+                if job.get("found"):
+                    out["found"] = job["found"]
                 if job["status"] in ("done", "cancelled"):
                     out["result"] = job["result"]
                 elif job["status"] == "error":
