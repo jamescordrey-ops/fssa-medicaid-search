@@ -1,6 +1,6 @@
 # Indiana FSSA, Medicaid, and Medicare Search
 
-[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 6,200](https://img.shields.io/badge/documents-6%2C200-blue) ![corpus: g0010 · Oct 18, 2026](https://img.shields.io/badge/corpus-g0010_%C2%B7_Oct_18%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue)
+[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 6,200](https://img.shields.io/badge/documents-6%2C200-blue) ![corpus: g0010 · Oct 18, 2026](https://img.shields.io/badge/corpus-g0010_%C2%B7_Oct_18%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue) [![Built with AI](https://img.shields.io/badge/Built_with-AI-blueviolet)](#the-server-sara-included-in-this-repo)
 
 An Indiana search tool for FSSA, Medicaid, and Medicare policy
 documents. One project with two faces, both working over the same
