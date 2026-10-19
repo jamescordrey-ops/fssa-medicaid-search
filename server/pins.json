@@ -581,6 +581,51 @@
    "reason": "v27: DDARS battery shape - SFC/LRI payment bars for parents, guardians and spouses (manual sections 6.9, 9.30)",
    "case_id": null,
    "source": "v27 DDARS enrichment (ddars_enrichment.jsonl)"
+  },
+  {
+   "id": "wheelchair-repair-replacement-rul",
+   "trigger_tokens": [
+    "wheelchair",
+    "wheelchairs"
+   ],
+   "trigger_texts": [
+    "power chair",
+    "powerchair"
+   ],
+   "require_tokens": [
+    "repair",
+    "repairs",
+    "repaired",
+    "repairing",
+    "replace",
+    "replaced",
+    "replacement",
+    "replacements",
+    "lifetime",
+    "worn"
+   ],
+   "require_texts": [
+    "reasonable useful lifetime",
+    "falling apart",
+    "new wheelchair",
+    "new one"
+   ],
+   "target": {
+    "phrases": [
+     {
+      "phrase": "replacement of equipment due to irreparable wear",
+      "pin_term": "covered medical and other health"
+     },
+     {
+      "phrase": "reasonable useful lifetime of the equipment",
+      "pin_term": "covered medical and other health"
+     }
+    ],
+    "program_scope": null
+   },
+   "reason": "v37.1 wheelchair retrieval fix: Medicare DME repair and replacement questions (repair of a patient-owned chair, replacement after the reasonable useful lifetime) must surface the Medicare Benefit Policy Manual Chapter 15 (DME repairs, maintenance, replacement), the governing source. On g0012 the chapter's single section ranks first in the synth-question channel for these questions but lands at fused positions 8 and 9, just below the served top 6, and the rerank seat does not rescue it. The pin fronts it for wheelchair repair/replacement intent questions only.",
+   "case_id": null,
+   "source": "v37.1"
   }
  ]
 }
