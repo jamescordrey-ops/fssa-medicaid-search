@@ -1,5 +1,22 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (service worker: fresh pages on open)
+
+- Page navigations are now network-first in the service worker:
+  online, opening any library page returns the newest published
+  page (the HTTP layer revalidates cheaply) instead of a cached
+  copy that could be a whole publish behind. The cached copy is
+  still there as the offline fallback, and a successful fetch
+  refreshes it, so offline use after a first visit is unchanged.
+  Other requests stay cache-first.
+- This fixes the stale main page: the search page could keep
+  showing an older design on a phone while the other pages had
+  already updated, because a cached page was always served first.
+- Service worker cache version bumped to 2026-10-23-g0013-p2g.
+- No page content or design changed. (The sub-pages' header rule
+  now names the navy sliver color directly instead of reaching
+  it through an override; the rendered pages are identical.)
+
 ## 2026-10-23 (silhouette fix)
 
 - The Indiana silhouette in the header is no longer hand-drawn.
