@@ -423,9 +423,9 @@ function search(qobj,tagStems){
     for(var pi=0;pi<qobj.phrases.length;pi++){ if(!hasPhrase(dnum,qobj.phrases[pi])){phok=false;break;} }
     if(!phok) continue;
     var score=cand[di];
-    var tset=TITLESTEMS[dnum], bonus=false;
-    for(var ci=0;ci<allc.length&&!bonus;ci++){ for(var cj=0;cj<allc[ci].length;cj++){ if(tset.indexOf(allc[ci][cj])>=0){bonus=true;break;} } }
-    if(bonus) score*=1.25;
+    var tset=TITLESTEMS[dnum], tmatch=0;
+    for(var ci=0;ci<allc.length;ci++){ for(var cj=0;cj<allc[ci].length;cj++){ if(tset.indexOf(allc[ci][cj])>=0){tmatch++;break;} } }
+    if(tmatch) score*=Math.min(1.6,1+0.10*tmatch);
     if(cit){ var cs=citScoreFor(dnum,cit); if(cs>0) score=cs; else score*=0.001; }
     hits.push({di:dnum, s:score});
   }

@@ -1,5 +1,22 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (search loop round 2: graded title bonus)
+
+- Search: the title bonus is now graded. A document title that
+  matches more of the question's key concepts earns a larger
+  bonus (0.10 per matched concept, capped at 1.6x), replacing the
+  flat 1.25 for any single match. Manual chapters and POMS
+  sections whose titles carry the question's terms now outrank
+  sibling landing pages that match fewer of them.
+- Measured on the loop's 124-pair set: the 34 audited pairs
+  improved from 14 to 17 at rank 1 (MRR 0.476 to 0.541); the 90
+  blind pairs improved from 24 to 29 at rank 1 (MRR 0.371 to
+  0.413). One documented swap: for "SNAP maximum allotment" the
+  FNS COLA allotments index page now ranks first and the
+  figure-bearing FY2027 memo second; both are the FNS's own
+  maximum-allotment documents.
+- Service worker cache version bumped to 2026-10-23-g0014-p3.
+
 ## 2026-10-23 (search loop round 1: quorum relaxation)
 
 - Search: long natural-language questions no longer require every
