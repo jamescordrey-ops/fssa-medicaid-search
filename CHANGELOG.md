@@ -1,5 +1,19 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (silhouette fix)
+
+- The Indiana silhouette in the header is no longer hand-drawn.
+  It is now the real state boundary from a referenced public
+  domain map (Wikimedia Commons, "Map of Indiana highlighting
+  Bartholomew County.svg", derived from U.S. Census Bureau
+  geography; the county polygons were unioned and the exterior
+  ring simplified to 151 points).
+- The sliver band behind it is now FSSA dark navy #001839, the
+  color FSSA's own agency-colors stylesheet gives its sliver,
+  so the white state sits on blue as it does on the FSSA site.
+  The base theme red #CC524F was the wrong band color.
+- Service worker cache version bumped to 2026-10-23-g0013-p2f.
+
 ## 2026-10-22 (FSSA-mirrored redesign)
 
 - The whole library now mirrors the layout and styling of
