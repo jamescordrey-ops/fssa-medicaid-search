@@ -1,5 +1,18 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (search loop round 4: title bigram bonus)
+
+- Search: a document whose title contains two of the
+  question's concepts side by side, in the same order as in
+  the question (for example "therapy services" or "home
+  health"), earns an extra 1.3x bonus on top of the graded
+  title bonus. This separates sibling documents whose titles
+  share the same single words in different arrangements.
+- Measured on the loop's 124-pair set: the 34 audited pairs
+  improved from 17 to 18 at rank 1 (MRR 0.541 to 0.566); the
+  90 blind pairs hold at 29 at rank 1 with MRR 0.435 to 0.438.
+- Service worker cache version bumped to 2026-10-23-g0014-p5.
+
 ## 2026-10-23 (search loop round 3: wider quorum relaxation)
 
 - Search: the quorum relaxation from round 1 now applies to
