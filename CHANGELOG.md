@@ -1,5 +1,19 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-22 (Phase 2 corrections)
+
+- One disclaimer in the whole site: it stays under the main title on
+  the search page only, and is removed from the Policy Manuals and
+  Am I Eligible pages. (This corrects the Phase 2 entry below, which
+  added it under the title on all pages.)
+- Less descriptive text under titles: the document-count line and
+  the search-tips line are gone from the search page, and topic
+  sections no longer carry a "Top articles on this topic" sub-line.
+- Bare link labels, no descriptions: the manuals link reads
+  "Policy Manuals" and the eligibility link and page read
+  "Am I Eligible" (formerly "Will I qualify?").
+- Service worker cache version bumped to 2026-10-23-g0013-p2c.
+
 ## 2026-10-22 (Phase 2)
 
 - Eligibility screens on their own page (screen.html): HIP and SNAP
