@@ -1,5 +1,17 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (search loop round 3: wider quorum relaxation)
+
+- Search: the quorum relaxation from round 1 now applies to
+  every question of four or more concepts, not only when the
+  strict result set is small. A document missing one concept of
+  a long question can now be found even when many other
+  documents match every word. Measured effect: documents that
+  were previously unreachable for their question dropped from
+  27 to 13 of the loop's 90 blind pairs; the 34 audited pairs
+  are unchanged (17 at rank 1, MRR 0.541).
+- Service worker cache version bumped to 2026-10-23-g0014-p4.
+
 ## 2026-10-23 (search loop round 2: graded title bonus)
 
 - Search: the title bonus is now graded. A document title that

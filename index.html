@@ -245,7 +245,7 @@ function conceptScore(cs){
 function branchScoresRelaxed(concepts){
   var strict=branchScores(concepts);
   var n=concepts.length;
-  if(n<=3||Object.keys(strict).length>=25) return strict;
+  if(n<=3) return strict;
   var quorum=Math.ceil(n*2/3), cnt={}, sum={};
   for(var i=0;i<n;i++){
     var cd=conceptScore(concepts[i]);
