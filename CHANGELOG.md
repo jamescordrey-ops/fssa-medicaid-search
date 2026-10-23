@@ -1,5 +1,37 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-22 (Phase 2)
+
+- Eligibility screens on their own page (screen.html): HIP and SNAP
+  screens from the staged corpus figures (boundary-tested at every
+  household size), and the Medicaid waiver screen ported from SARA's
+  five deterministic checks and validated against the 2,560-case
+  determinations bank (0 failures). The screens never say no:
+  over-limit or unclear results are worded as can't-tell with the
+  caseworker route (800-403-0864, fssabenefits.in.gov).
+- Policy Manuals page (manuals.html): 10 manuals, 795 documents,
+  grouped by manual with a dropdown; broad-subject chips compose
+  with the dropdown as one filter system with a live count.
+- Broad subjects only: the 20 topic tags collapsed to 7 (Medicaid,
+  HIP, SNAP and food help, Medicare, Disability and waivers,
+  Social Security, Child care and families). Program dropdown,
+  tags, and search text compose as one filter system; choosing a
+  program populates the list immediately; the result count updates
+  live. Disclaimer line added under the title on all pages.
+- Ranking: Indiana first on near-ties (same 2%-of-top-score bucket:
+  Indiana, then federal, then other states). Citation lookups are
+  exempt (exact occurrence count decides).
+- Single version: mobile build retired; small-index.html is now a
+  redirect stub. Source links show on every result and every
+  document view. Document text is reflowed into headings and
+  paragraphs in the reader; 404 documents that cannot be made
+  presentable show title, citation, and source link only.
+- Offline: service worker (cache version 2026-10-23-g0013-p2)
+  caches all pages on first visit. The full offline bundle (site
+  plus all 6,731 original source documents, links pointing at the
+  local files) ships as a dated GitHub Release.
+
+
 ## 2026-10-22 - Renamed to Indiana FSSA Policy Library; corpus g0013
 
 - Corpus: g0012 (6,697 indexed documents) -> g0013. The generation

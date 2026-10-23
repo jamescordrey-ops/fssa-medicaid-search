@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Will I qualify? | Indiana FSSA Policy Library</title>
+<style>
+:root{
+  --bg:#F8FAFC; --card:#FFFFFF; --surface-2:#F1F5F9;
+  --text:#0F172A; --muted:#64748B;
+  --accent:#2563EB; --accent-hover:#1D4ED8; --accent-soft:#DBEAFE;
+  --hl:#FEF08A; --border:#E2E8F0; --border-strong:#CBD5E1;
+  --badge-site:#16A34A; --badge-app:#D97706; --badge-waiver:#7C3AED; --badge-ref:#64748B;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#020617; --card:#0F172A; --surface-2:#1A1E2F;
+    --text:#F8FAFC; --muted:#94A3B8;
+    --accent:#3B82F6; --accent-hover:#60A5FA; --accent-soft:#172554;
+    --hl:#713F12; --border:#1E293B; --border-strong:#334155;
+    --badge-site:#22C55E; --badge-app:#F59E0B; --badge-waiver:#A78BFA; --badge-ref:#94A3B8;
+  }
+}
+*{box-sizing:border-box}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
+.hero{background:var(--accent);color:#fff;padding:32px 16px 64px}
+.hero-inner{max-width:880px;margin:0 auto;display:flex;gap:16px;align-items:center}
+.hero img{width:64px;height:64px;border-radius:16px;flex:none}
+.hero h1{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 4px;line-height:1.2}
+.hero p{margin:0;font-size:14px;opacity:.92;line-height:1.55}
+.wrap{max-width:880px;margin:-40px auto 0;padding:0 16px 64px}
+.search-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;z-index:2}
+#q{width:100%;font-size:17px;padding:12px 16px 12px 44px;border:1.5px solid var(--border-strong);border-radius:6px;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
+#q:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--muted);fill:none;stroke-width:2}
+.pills{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tags{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tag{font-size:13px;font-weight:600;padding:8px 16px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.tag:hover{border-color:var(--accent);color:var(--accent)}
+a.tag{text-decoration:none;display:inline-block}
+.thead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.tg{display:none}
+.topic-sec{display:none;flex-basis:100%;margin:16px 0 8px}
+.tg:checked+.tag+.topic-sec{display:block;animation:fadein .25s ease}
+.tg:checked+.tag{border-color:var(--accent);color:var(--accent)}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.topic-sec h2{font-size:20px;font-weight:600;letter-spacing:-.02em;margin:0 0 4px;line-height:1.25}
+.topic-sec .tsub{font-size:14px;color:var(--muted);margin:0 0 8px;line-height:1.55}
+.nshint{font-size:14px;color:var(--muted);margin:8px 2px 0;line-height:1.55}
+.acard{background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:16px;margin:12px 0}
+.acard h4{margin:0 0 8px;font-size:16px;font-weight:600;letter-spacing:-.02em;color:var(--accent);line-height:1.35}
+.acard p{margin:8px 0;font-size:15px;line-height:1.6}
+.csrc{font-size:13px!important;color:var(--muted);margin-top:8px!important}
+.csrc a{color:var(--accent)}
+#reader{position:fixed;top:0;right:0;bottom:0;left:0;height:100%;background:var(--bg);z-index:50;display:none;flex-direction:column}
+#rbody{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.tag,.pill{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.tag.on{background:var(--accent);border-color:var(--accent);color:#fff}
+#reader.open{display:flex}
+#reader .rbar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+#reader .rbar h2{font-size:16px;font-weight:600;margin:0;flex:1;line-height:1.35;letter-spacing:-.01em}
+#rx{font-size:14px;font-weight:600;padding:10px 20px;min-height:44px;border-radius:999px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;flex:none}
+#rx:hover{border-color:var(--accent);color:var(--accent)}
+#rbody{flex:1;overflow-y:auto;padding:24px 16px;max-width:880px;width:100%;margin:0 auto;font-size:16px;line-height:1.7;white-space:pre-wrap}
+.pill{font-size:13px;font-weight:600;padding:8px 16px;min-height:44px;border-radius:999px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+.pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.meta{font-size:13px;color:var(--muted);margin:16px 2px 0;font-feature-settings:"tnum"}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0}
+.card h3{margin:0 0 4px;font-size:16px;font-weight:600;line-height:1.35;letter-spacing:-.01em}
+.card h3 a{color:var(--accent);text-decoration:none}
+.card h3 a:hover{text-decoration:underline}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 12px;border-radius:999px;margin-bottom:8px;color:#fff}
+.b-site{background:var(--badge-site)} .b-app{background:var(--badge-app)}
+.b-waiver{background:var(--badge-waiver)} .b-ref{background:var(--badge-ref)}
+.b-fed{background:#0F766E} .b-other{background:#475569}
+.snip{font-size:15px;line-height:1.6;color:var(--text);opacity:.92;margin-top:8px}
+mark{background:var(--hl);color:inherit;padding:0 2px;border-radius:3px}
+.url{font-size:12px;color:var(--muted);word-break:break-all;margin-top:4px}
+.empty{text-align:center;color:var(--muted);padding:48px 16px;font-size:16px;line-height:1.6}
+.empty .big{font-size:40px;display:block;margin-bottom:12px}
+.foot{font-size:12px;color:var(--muted);margin-top:32px;text-align:center;line-height:1.6}
+.kbd-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+/*LIB2CSS2*/ .chapters{margin:12px 0} .chapters h2{font-size:16px;margin:8px 0} .chapters ul{columns:2;margin:0;padding-left:16px} .progrow{align-items:center;gap:8px} .progrow select{font-size:1em;padding:4px 8px;border-radius:6px} @media (max-width:768px){.chapters ul{columns:1}}
+/*P2CSS*/ .disc{font-size:16px;margin:8px 0 12px}
+.screen{margin:16px 0} .screen h2{font-size:16px;margin:8px 0}
+.scrow{display:flex;gap:16px;flex-wrap:wrap}
+.scbox{border:1px solid #B6BDC9;border-radius:6px;padding:12px;margin:8px 0;flex:1 1 260px}
+.scbox h3{font-size:16px;margin:0 0 8px}
+.scbox label{display:block;margin:8px 0;font-size:16px}
+.scbox input{font-size:16px;padding:4px 8px;border-radius:6px}
+.scbox input[type=number]{max-width:160px}
+.scbox button{font-size:16px;padding:4px 12px;border-radius:6px}
+.vout{margin:8px 0 0;font-weight:600}
+.wvlines p{margin:4px 0}
+.figline{font-size:16px;margin:8px 0}
+@media (max-width:768px){.scrow{flex-direction:column}}
+/*P2CSS2*/ .dhead{font-size:16px;margin:16px 0 8px}
+#rbody p{margin:8px 0}
+.rsrc{margin:8px 0}
+#mr-text p{margin:8px 0}
+
+/*P2CSS*/ .disc{font-size:16px;margin:8px 0 12px}
+.screen{margin:16px 0} .screen h2{font-size:16px;margin:8px 0}
+.scrow{display:flex;gap:16px;flex-wrap:wrap}
+.scbox{border:1px solid #B6BDC9;border-radius:6px;padding:12px;margin:8px 0;flex:1 1 260px}
+.scbox h3{font-size:16px;margin:0 0 8px}
+.scbox label{display:block;margin:8px 0;font-size:16px}
+.scbox input{font-size:16px;padding:4px 8px;border-radius:6px}
+.scbox input[type=number]{max-width:160px}
+.scbox button{font-size:16px;padding:4px 12px;border-radius:6px}
+.vout{margin:8px 0 0;font-weight:600}
+.wvlines p{margin:4px 0}
+.figline{font-size:16px;margin:8px 0}
+@media (max-width:768px){.scrow{flex-direction:column}}
+/*P2CSS2*/ .dhead{font-size:16px;margin:16px 0 8px}
+#rbody p{margin:8px 0}
+.rsrc{margin:8px 0}
+#mr-text p{margin:8px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a href="index.html">&larr; Back to search</a></p>
+<h1>Will I qualify?</h1>
+<p class="disc">Unofficial reference library. The policy text and figures here come from Indiana FSSA and federal (CMS, SSA, USDA) public documents, snapshot of Oct 19, 2026. Not an official FSSA product.</p>
+<div class="screen" id="qualscreen"><h2>Will I qualify? Rough screen</h2><div class="scrow"><div class="scbox"><h3>HIP</h3><label>Household size <input type="number" id="hip-n" min="1" max="40" value="2"></label><label>Monthly income $ <input type="number" id="hip-inc" min="0" step="any"></label><button type="button" id="hip-go">Check</button><p class="vout" id="hip-out"></p></div><div class="scbox"><h3>SNAP (food assistance)</h3><label>Household size <input type="number" id="snap-n" min="1" max="40" value="4"></label><label>Monthly income before deductions $ <input type="number" id="snap-inc" min="0" step="any"></label><button type="button" id="snap-go">Check</button><p class="vout" id="snap-out"></p></div></div><div class="scbox"><h3>Medicaid waiver (long-term care)</h3><label>Your monthly income $ <input type="number" id="wv-inc" min="0" step="any"></label><label><input type="checkbox" id="wv-qit"> Income over the cap goes through a Miller trust (Qualified Income Trust)</label><label>Countable assets $ <input type="number" id="wv-assets" min="0" step="any"></label><label><input type="checkbox" id="wv-married"> Married</label><label><input type="checkbox" id="wv-both"> Spouse is also applying</label><label>Spouse monthly income $ <input type="number" id="wv-spouse-inc" min="0" step="any"></label><label>Monthly shelter costs (rent or mortgage, taxes, insurance, utilities) $ <input type="number" id="wv-shelter" min="0" step="any"></label><label>Gave away or sold assets for less than they were worth in the last 5 years: amount $ <input type="number" id="wv-tr-amt" min="0" step="any"></label><label>Months ago <input type="number" id="wv-tr-months" min="0" step="any"></label><label>Home equity $ <input type="number" id="wv-equity" min="0" step="any"></label><label><input type="checkbox" id="wv-home-family"> Spouse or child lives in the home</label><button type="button" id="wv-go">Check</button><p class="vout" id="wv-out"></p><div class="wvlines" id="wv-lines"></div></div><p class="figline">Rough screen only, not a determination. The state makes the final decision. Figures as of the corpus snapshot, Oct 19, 2026.</p></div>
+<footer><p>Built 2026-10-23 from the SARA corpus (generation g0013, Oct 19, 2026 snapshot). Unofficial reference library: not an official FSSA product.</p></footer>
+</div>
+<script>
+'use strict';
+/*
+ * SARA waiver determinations screen, JavaScript port.
+ *
+ * Faithful port of the Python engine described in WAIVER_SPEC.md
+ * (engine_in_waiver_ltc.py, spliced into fssa_search_server.py).
+ * Verdict arithmetic is never rounded. Every comparison runs on raw
+ * IEEE-754 doubles, in the same operand order as the Python code.
+ * Margins are computed from their expressions at run time, not from
+ * rounded constants.
+ *
+ * Public entry: evaluate(input) (also exported as determine and
+ * screenWaiver). Input may be either:
+ *   - a payload object: {facts: {...}, asserted_figures: {...}}
+ *     (the exact shape run_bank.py facts_to_payload produces), or
+ *   - a plain facts object using the same field names, with an
+ *     optional asserted_figures field of its own.
+ * Returns:
+ *   {
+ *     program, overall, screens, screenResults, rows,
+ *     questions_back, refusal_reasons, closing_line
+ *   }
+ * where screens maps a screen id to its verdict string, for example
+ *   {income: 'likely_yes', assets: 'likely_yes',
+ *    mmmna: 'not_applicable', transfer: 'likely_yes',
+ *    home_equity: 'not_applicable'}
+ * Pre-check short circuits (validation, binding, jurisdiction)
+ * return a screens map with that single screen id, matching the
+ * Python evaluate() flow and the casegen reference. screenResults
+ * (also aliased as rows) carries the per-screen deciding info:
+ * deciding_fact, distance, citations, trace, question_back and
+ * refusal_reason.
+ *
+ * Works as a Node module (module.exports) and as a plain browser
+ * script (window.WaiverScreen). No dependencies.
+ */
+
+var WaiverScreen = (function () {
+  // Governing figures, 2026, from front_door_data.json rows.
+  // Copied character for character from the spec, section 2.
+  var INCOME_CAP = 2982.0; // row waiver_income_cap
+  var ASSET_LIMIT_SINGLE = 2000.0; // row asset_limit
+  var ASSET_LIMIT_COUPLE_BOTH_APPLY = 3000.0; // row asset_limit
+  var CSRA_FRACTION = 0.5; // row csra
+  var CSRA_MIN = 32532.0; // row csra
+  var CSRA_MAX = 162660.0; // row csra
+  var MMMNA_MIN = 2705.0; // row spousal_liability
+  var MMMNA_MAX = 4066.5; // row spousal_liability, shown as $4,067
+  var SHELTER_STANDARD = 811.5; // row spousal_liability, shown as $812
+  var TRANSFER_LOOKBACK_MONTHS = 60; // row transfer_penalty
+  var TRANSFER_DIVISOR = 8027.0; // row transfer_penalty, from 2026-07-01
+  var HOME_EQUITY_LIMIT = 752000.0; // row home_equity_limit
+
+  // Margin rule. A result inside the margin of its line is too
+  // close to call, never a guessed yes or no.
+  var MARGIN_FLAT = 100.0;
+  var MARGIN_PCT = 0.05;
+  var MARGIN_ASSETS_FLAT = 250.0;
+  var TRANSFER_TIMING_MARGIN_MONTHS = 2;
+  var MARGIN_OVERRIDES = {
+    home_equity: 0.05 // percent of the limit
+  };
+
+  var ASSET_TYPES = ['bank', 'retirement', 'property_non_home', 'vehicles', 'other'];
+
+  var HOME_EXEMPT_RESIDENTS = {
+    spouse: true,
+    minor_child: true,
+    disabled_child: true,
+    sibling_with_equity: true
+  };
+
+  var DET_STATE_NAMES = {
+    indiana: 'IN', ohio: 'OH', kentucky: 'KY',
+    illinois: 'IL', michigan: 'MI', pennsylvania: 'PA',
+    tennessee: 'TN', missouri: 'MO', iowa: 'IA',
+    wisconsin: 'WI', minnesota: 'MN', kansas: 'KS',
+    nebraska: 'NE', arkansas: 'AR', 'west virginia': 'WV',
+    virginia: 'VA', 'north carolina': 'NC', georgia: 'GA',
+    florida: 'FL', texas: 'TX', california: 'CA',
+    'new york': 'NY'
+  };
+
+  var Verdict = {
+    LIKELY_YES: 'likely_yes',
+    LIKELY_NO: 'likely_no',
+    TOO_CLOSE: 'too_close_to_call',
+    REFUSAL: 'refusal',
+    NOT_APPLICABLE: 'not_applicable',
+    NOT_SCREENED: 'not_screened'
+  };
+
+  var CIT = {
+    income: ['front_door_data row waiver_income_cap', '300% of SSI federal benefit rate, 2026'],
+    assets: ['front_door_data row asset_limit'],
+    csra: ['front_door_data row csra', 'CMS 2026 spousal impoverishment standards'],
+    mmmna: [
+      'front_door_data row spousal_liability',
+      'CMS 2026 spousal impoverishment standards',
+      'IHCPPM 3010.20.10'
+    ],
+    transfer: ['front_door_data row transfer_penalty', 'IHCPPM 3006.00.00'],
+    home_equity: ['front_door_data row home_equity_limit', 'IHCPPM 3005.10.05']
+  };
+
+  var BINDINGS = {
+    waiver_income_cap: { governing: [INCOME_CAP], nongoverning: [] },
+    asset_limit_single: { governing: [ASSET_LIMIT_SINGLE], nongoverning: [] },
+    transfer_divisor: { governing: [TRANSFER_DIVISOR], nongoverning: [7651.0] },
+    home_equity_limit: { governing: [HOME_EQUITY_LIMIT], nongoverning: [] },
+    mmmna_max: { governing: [MMMNA_MAX], nongoverning: [] },
+    csra_min: { governing: [CSRA_MIN], nongoverning: [] },
+    csra_max: { governing: [CSRA_MAX], nongoverning: [] }
+  };
+
+  var CLOSING_LINE = 'This is a screening estimate only. The state makes the final decision.';
+  var PROGRAM = 'indiana_waiver_ltc';
+
+  function marginFor(threshold, screen) {
+    if (screen === 'assets') {
+      return MARGIN_ASSETS_FLAT;
+    }
+    if (Object.prototype.hasOwnProperty.call(MARGIN_OVERRIDES, screen)) {
+      return Math.max(MARGIN_FLAT, MARGIN_OVERRIDES[screen] * threshold);
+    }
+    return Math.max(MARGIN_FLAT, MARGIN_PCT * threshold);
+  }
+
+  function csraAmount(totalCountableAssets) {
+    var half = CSRA_FRACTION * totalCountableAssets;
+    return Math.min(Math.max(half, CSRA_MIN), CSRA_MAX);
+  }
+
+  // Display money, port of _det_money. Half up by adding 0.5 and
+  // then truncating toward zero (Python int()). Display only; this
+  // is never used in verdict arithmetic.
+  function detMoney(value) {
+    var n = Math.trunc(Number(value) + 0.5);
+    var sign = n < 0 ? '-' : '';
+    var digits = String(Math.abs(n));
+    var grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '$' + sign + grouped;
+  }
+
+  // Trace formatting. Python uses f"{value:.2f}". JS toFixed(2) is
+  // close but not identical on every half-way value (Python format
+  // is round half even on the exact binary value). Traces are not
+  // graded by the bank; verdicts never read these strings.
+  function fmt2(value) {
+    return Number(value).toFixed(2);
+  }
+
+  function pythonFloatString(value) {
+    // Match str(float) for the values used in binding messages:
+    // integral doubles print with a trailing .0 in Python.
+    if (typeof value === 'number' && Number.isInteger(value) && Math.abs(value) < 1e16) {
+      return String(value) + '.0';
+    }
+    return String(value);
+  }
+
+  // ----------------------------------------------------------------
+  // Fact values and payload coercion (port of _det_facts_from_payload,
+  // _det_num and _det_bool).
+  // ----------------------------------------------------------------
+
+  function known(value) {
+    return { known: true, value: value };
+  }
+
+  function unknownFact() {
+    return { known: false, value: null };
+  }
+
+  function isKnown(fv) {
+    return Boolean(fv && fv.known && fv.value !== null && fv.value !== undefined);
+  }
+
+  function isPlainObject(v) {
+    return v !== null && typeof v === 'object' && !Array.isArray(v);
+  }
+
+  function detNum(raw) {
+    if (typeof raw === 'boolean') {
+      return null;
+    }
+    if (typeof raw === 'number') {
+      return raw;
+    }
+    if (typeof raw === 'string') {
+      var cleaned = raw.replace(/,/g, '').replace(/\$/g, '').trim();
+      if (cleaned === '') {
+        return null;
+      }
+      var n = Number(cleaned);
+      if (!Number.isNaN(n)) {
+        return n;
+      }
+      // Python float() also accepts digit underscores such as 1_000.
+      var underscored = Number(cleaned.replace(/_/g, ''));
+      if (cleaned.indexOf('_') !== -1 && !Number.isNaN(underscored)) {
+        return underscored;
+      }
+      return null;
+    }
+    return null;
+  }
+
+  function detBool(raw) {
+    if (typeof raw === 'boolean') {
+      return raw;
+    }
+    if (typeof raw === 'string') {
+      var low = raw.trim().toLowerCase();
+      if (low === 'true' || low === 'yes' || low === 'y' || low === '1') {
+        return true;
+      }
+      if (low === 'false' || low === 'no' || low === 'n' || low === '0') {
+        return false;
+      }
+    }
+    return null;
+  }
+
+  function normalizeFacts(input) {
+    var facts = {
+      state_of_residence: unknownFact(),
+      household_size: unknownFact(),
+      marital_status: unknownFact(),
+      spouse_applies: unknownFact(),
+      applicant_income_monthly: unknownFact(),
+      applicant_income_by_source: {},
+      spouse_income_monthly: unknownFact(),
+      assets_by_type: {},
+      home_owns: unknownFact(),
+      home_equity: unknownFact(),
+      home_residents: unknownFact(),
+      transfers: unknownFact(),
+      disability_or_waiver_need: unknownFact(),
+      current_coverage: unknownFact(),
+      shelter_costs_monthly: unknownFact(),
+      has_court_order: unknownFact(),
+      court_order_spousal_amount: unknownFact(),
+      has_miller_trust: unknownFact(),
+      burial_funds: unknownFact(),
+      has_irrevocable_burial_trust: unknownFact(),
+      asserted_figures: {}
+    };
+
+    var payload = isPlainObject(input) ? input : {};
+    var raw = {};
+    var assertedRaw = null;
+    if (Object.prototype.hasOwnProperty.call(payload, 'facts')) {
+      raw = isPlainObject(payload.facts) ? payload.facts : {};
+      if (isPlainObject(payload.asserted_figures)) {
+        assertedRaw = payload.asserted_figures;
+      } else if (isPlainObject(raw.asserted_figures)) {
+        assertedRaw = raw.asserted_figures;
+      }
+    } else {
+      raw = payload;
+      if (isPlainObject(payload.asserted_figures)) {
+        assertedRaw = payload.asserted_figures;
+      }
+    }
+
+    function has(name) {
+      return Object.prototype.hasOwnProperty.call(raw, name);
+    }
+
+    function putMoney(name) {
+      if (has(name)) {
+        var v = detNum(raw[name]);
+        if (v !== null) {
+          facts[name] = known(v);
+        }
+      }
+    }
+
+    function putBool(name) {
+      if (has(name)) {
+        var v = detBool(raw[name]);
+        if (v !== null) {
+          facts[name] = known(v);
+        }
+      }
+    }
+
+    if (typeof raw.state_of_residence === 'string' && raw.state_of_residence.trim() !== '') {
+      var sv = raw.state_of_residence.trim();
+      if (sv.length === 2) {
+        facts.state_of_residence = known(sv.toUpperCase());
+      } else if (Object.prototype.hasOwnProperty.call(DET_STATE_NAMES, sv.toLowerCase())) {
+        facts.state_of_residence = known(DET_STATE_NAMES[sv.toLowerCase()]);
+      } else {
+        facts.state_of_residence = known(sv.toUpperCase());
+      }
+    }
+    if (typeof raw.household_size === 'number') {
+      // Python int() truncates toward zero.
+      facts.household_size = known(Math.trunc(raw.household_size));
+    }
+    if (typeof raw.marital_status === 'string') {
+      var ms = raw.marital_status.trim().toLowerCase();
+      if (ms === 'single' || ms === 'married') {
+        facts.marital_status = known(ms);
+      }
+    }
+    putBool('spouse_applies');
+    putMoney('applicant_income_monthly');
+    putMoney('spouse_income_monthly');
+    putMoney('home_equity');
+    putMoney('shelter_costs_monthly');
+    putMoney('court_order_spousal_amount');
+    putMoney('burial_funds');
+    putBool('home_owns');
+    putBool('has_court_order');
+    putBool('has_miller_trust');
+    putBool('has_irrevocable_burial_trust');
+    putBool('disability_or_waiver_need');
+    if (typeof raw.current_coverage === 'string') {
+      facts.current_coverage = known(raw.current_coverage);
+    }
+
+    if (isPlainObject(raw.applicant_income_by_source)) {
+      var parts = {};
+      Object.keys(raw.applicant_income_by_source).forEach(function (src) {
+        var v = detNum(raw.applicant_income_by_source[src]);
+        if (v !== null) {
+          parts[String(src)] = known(v);
+        }
+      });
+      if (Object.keys(parts).length > 0) {
+        facts.applicant_income_by_source = parts;
+      }
+    }
+
+    if (isPlainObject(raw.assets_by_type)) {
+      var rows = {};
+      Object.keys(raw.assets_by_type).forEach(function (kind) {
+        if (ASSET_TYPES.indexOf(String(kind)) !== -1) {
+          var v = detNum(raw.assets_by_type[kind]);
+          rows[String(kind)] = v !== null ? known(v) : unknownFact();
+        }
+      });
+      if (Object.keys(rows).length > 0) {
+        facts.assets_by_type = rows;
+      }
+    }
+
+    if (Array.isArray(raw.home_residents)) {
+      facts.home_residents = known(raw.home_residents.map(function (r) { return String(r); }));
+    }
+
+    if (Array.isArray(raw.transfers)) {
+      var items = [];
+      var ok = true;
+      for (var i = 0; i < raw.transfers.length; i++) {
+        var t = raw.transfers[i];
+        if (!isPlainObject(t)) {
+          ok = false;
+          break;
+        }
+        var amount = detNum(t.amount);
+        var months = detNum(t.months_ago);
+        if (amount === null || months === null) {
+          ok = false;
+          break;
+        }
+        items.push({
+          amount: amount,
+          months_ago: Math.trunc(months),
+          recipient: t.recipient ? String(t.recipient) : ''
+        });
+      }
+      if (ok) {
+        facts.transfers = known(items);
+      }
+    }
+
+    if (isPlainObject(assertedRaw)) {
+      var figs = {};
+      Object.keys(assertedRaw).forEach(function (key) {
+        var v = detNum(assertedRaw[key]);
+        if (v !== null) {
+          figs[String(key)] = known(v);
+        }
+      });
+      if (Object.keys(figs).length > 0) {
+        facts.asserted_figures = figs;
+      }
+    }
+
+    return facts;
+  }
+
+  // ----------------------------------------------------------------
+  // Derived totals.
+  // ----------------------------------------------------------------
+
+  function applicantIncomeTotal(facts) {
+    var bySource = facts.applicant_income_by_source;
+    if (bySource && Object.keys(bySource).length > 0) {
+      var parts = Object.keys(bySource).map(function (k) { return bySource[k]; });
+      if (parts.some(function (p) { return !isKnown(p); })) {
+        return unknownFact();
+      }
+      var sum = 0;
+      parts.forEach(function (p) { sum += Number(p.value); });
+      return known(sum);
+    }
+    return facts.applicant_income_monthly;
+  }
+
+  function countableAssetsTotal(facts) {
+    var byType = facts.assets_by_type;
+    if (!byType || Object.keys(byType).length === 0) {
+      return unknownFact();
+    }
+    var parts = Object.keys(byType).map(function (k) { return byType[k]; });
+    if (parts.some(function (p) { return !isKnown(p); })) {
+      return unknownFact();
+    }
+    var sum = 0;
+    parts.forEach(function (p) { sum += Number(p.value); });
+    return known(sum);
+  }
+
+  // ----------------------------------------------------------------
+  // Validation (port of validate_factset).
+  // ----------------------------------------------------------------
+
+  function validateFactset(facts) {
+    var problems = [];
+
+    function checkMoney(name, fv) {
+      if (isKnown(fv) && Number(fv.value) < 0) {
+        problems.push(name + ' is negative');
+      }
+    }
+
+    checkMoney('applicant_income_monthly', facts.applicant_income_monthly);
+    checkMoney('spouse_income_monthly', facts.spouse_income_monthly);
+    checkMoney('home_equity', facts.home_equity);
+    checkMoney('shelter_costs_monthly', facts.shelter_costs_monthly);
+    Object.keys(facts.assets_by_type).forEach(function (kind) {
+      if (ASSET_TYPES.indexOf(kind) === -1) {
+        problems.push('unknown asset type: ' + kind);
+      }
+      checkMoney('assets.' + kind, facts.assets_by_type[kind]);
+    });
+    if (isKnown(facts.household_size) && Math.trunc(facts.household_size.value) < 1) {
+      problems.push('household_size is below 1');
+    }
+    if (isKnown(facts.marital_status)
+        && facts.marital_status.value !== 'single'
+        && facts.marital_status.value !== 'married') {
+      problems.push('marital_status must be single or married');
+    }
+    if (isKnown(facts.transfers)) {
+      facts.transfers.value.forEach(function (t) {
+        if (t.amount < 0) {
+          problems.push('transfer amount is negative');
+        }
+        if (t.months_ago < 0) {
+          problems.push('transfer months_ago is negative');
+        }
+      });
+    }
+    return problems;
+  }
+
+  // ----------------------------------------------------------------
+  // Binding conflict.
+  // ----------------------------------------------------------------
+
+  function bindingConflict(facts) {
+    var keys = Object.keys(facts.asserted_figures);
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var fv = facts.asserted_figures[key];
+      var binding = BINDINGS[key];
+      if (!binding || !isKnown(fv)) {
+        continue;
+      }
+      var value = Number(fv.value);
+      if (binding.nongoverning.indexOf(value) !== -1) {
+        return 'asserted ' + key + '=' + pythonFloatString(value) + ' is a non-governing value';
+      }
+      if (binding.governing.indexOf(value) === -1) {
+        var governing = binding.governing.map(pythonFloatString).join(', ');
+        return 'asserted ' + key + '=' + pythonFloatString(value)
+          + ' contradicts governing [' + governing + ']';
+      }
+    }
+    return '';
+  }
+
+  // ----------------------------------------------------------------
+  // Screen results.
+  // ----------------------------------------------------------------
+
+  function screenResult(screen, verdict, decidingFact, distance, citations, trace) {
+    return {
+      screen: screen,
+      verdict: verdict,
+      deciding_fact: decidingFact || '',
+      distance: distance === undefined ? null : distance,
+      citations: citations ? citations.slice() : [],
+      trace: trace ? trace.slice() : [],
+      question_back: '',
+      refusal_reason: ''
+    };
+  }
+
+  function refusal(screen, reason, question) {
+    var r = screenResult(screen, Verdict.REFUSAL, reason, null, [], []);
+    r.refusal_reason = reason;
+    r.question_back = question || '';
+    return r;
+  }
+
+  function screenIncome(facts) {
+    var income = applicantIncomeTotal(facts);
+    if (!isKnown(income)) {
+      return refusal('income', 'applicant income is unknown',
+        'What is the applicant monthly income, by source?');
+    }
+    var value = Number(income.value);
+    var distance = INCOME_CAP - value;
+    var trace = ['income ' + fmt2(value) + ' vs cap ' + fmt2(INCOME_CAP)
+      + ', distance ' + fmt2(distance)];
+    if (Math.abs(distance) <= marginFor(INCOME_CAP, 'income')) {
+      return screenResult('income', Verdict.TOO_CLOSE, 'applicant_income_monthly',
+        distance, CIT.income, trace);
+    }
+    if (value <= INCOME_CAP) {
+      return screenResult('income', Verdict.LIKELY_YES, 'applicant_income_monthly',
+        distance, CIT.income, trace);
+    }
+    var miller = facts.has_miller_trust;
+    if (!isKnown(miller)) {
+      return refusal('income',
+        'income is over the cap and Miller trust status is unknown',
+        'Is the income over the cap routed through a Qualified Income Trust (Miller trust)?');
+    }
+    if (miller.value === true) {
+      trace.push('Miller trust stated, over-cap income can be routed');
+      return screenResult('income', Verdict.LIKELY_YES, 'has_miller_trust',
+        distance, CIT.income, trace);
+    }
+    return screenResult('income', Verdict.LIKELY_NO, 'applicant_income_monthly',
+      distance, CIT.income, trace);
+  }
+
+  function assetAllowable(facts, total) {
+    var married = facts.marital_status.value === 'married';
+    if (married && isKnown(facts.spouse_applies) && facts.spouse_applies.value === false) {
+      var csra = csraAmount(total);
+      var allowable = ASSET_LIMIT_SINGLE + csra;
+      var trace = [
+        'couple, one applies: CSRA clamp(half of ' + fmt2(total) + ') = ' + fmt2(csra),
+        'allowable total = ' + fmt2(ASSET_LIMIT_SINGLE) + ' + ' + fmt2(csra)
+          + ' = ' + fmt2(allowable)
+      ];
+      return { allowable: allowable, citations: CIT.assets.concat(CIT.csra), trace: trace };
+    }
+    if (married) {
+      return { allowable: ASSET_LIMIT_COUPLE_BOTH_APPLY, citations: CIT.assets.slice(), trace: ['couple, both apply'] };
+    }
+    return { allowable: ASSET_LIMIT_SINGLE, citations: CIT.assets.slice(), trace: ['single applicant'] };
+  }
+
+  function screenAssets(facts) {
+    if (!isKnown(facts.marital_status)) {
+      return refusal('assets', 'marital status is unknown', 'Is the applicant single or married?');
+    }
+    if (facts.marital_status.value === 'married' && !isKnown(facts.spouse_applies)) {
+      return refusal('assets', 'spouse-applies flag is unknown', 'Is the spouse also applying?');
+    }
+    var totalFv = countableAssetsTotal(facts);
+    if (!isKnown(totalFv)) {
+      return refusal('assets', 'countable assets are incomplete',
+        'What are the countable assets by type: bank, retirement, other property, vehicles, other?');
+    }
+    var total = Number(totalFv.value);
+    var allowed = assetAllowable(facts, total);
+    var distance = allowed.allowable - total;
+    var trace = allowed.trace.slice();
+    trace.push('assets ' + fmt2(total) + ' vs allowable ' + fmt2(allowed.allowable)
+      + ', distance ' + fmt2(distance));
+    if (Math.abs(distance) <= marginFor(allowed.allowable, 'assets')) {
+      return screenResult('assets', Verdict.TOO_CLOSE, 'countable_assets_total',
+        distance, allowed.citations, trace);
+    }
+    var verdict = total <= allowed.allowable ? Verdict.LIKELY_YES : Verdict.LIKELY_NO;
+    return screenResult('assets', verdict, 'countable_assets_total',
+      distance, allowed.citations, trace);
+  }
+
+  function isCoupleOneApplies(facts) {
+    return isKnown(facts.marital_status)
+      && facts.marital_status.value === 'married'
+      && isKnown(facts.spouse_applies)
+      && facts.spouse_applies.value === false;
+  }
+
+  function screenMmmna(facts) {
+    if (!isCoupleOneApplies(facts)) {
+      return screenResult('mmmna', Verdict.NOT_APPLICABLE, 'marital_status',
+        null, CIT.mmmna, ['no community spouse']);
+    }
+    if (!isKnown(facts.spouse_income_monthly)) {
+      return refusal('mmmna', 'spouse income is unknown',
+        'What is the community spouse monthly income?');
+    }
+    var spouseIncome = Number(facts.spouse_income_monthly.value);
+    var trace = [];
+    var target;
+    if (isKnown(facts.has_court_order) && facts.has_court_order.value === true) {
+      if (!isKnown(facts.court_order_spousal_amount)) {
+        return refusal('mmmna',
+          'court order flag is set but the ordered amount is unknown',
+          'What monthly amount does the court or administrative order set for the spouse?');
+      }
+      target = Number(facts.court_order_spousal_amount.value);
+      trace.push('court or administrative order sets target ' + fmt2(target));
+    } else if (isKnown(facts.shelter_costs_monthly)) {
+      var shelter = Number(facts.shelter_costs_monthly.value);
+      var excess = Math.max(0.0, shelter - SHELTER_STANDARD);
+      var raw = MMMNA_MIN + excess;
+      trace.push('shelter ' + fmt2(shelter) + ', excess over standard ' + fmt2(excess)
+        + ', raw target ' + fmt2(raw));
+      if (raw > MMMNA_MAX && Math.abs(raw - MMMNA_MAX) <= marginFor(MMMNA_MAX, 'mmmna')) {
+        return screenResult('mmmna', Verdict.TOO_CLOSE, 'shelter_costs_monthly',
+          MMMNA_MAX - raw, CIT.mmmna, trace);
+      }
+      target = Math.min(raw, MMMNA_MAX);
+    } else {
+      if (spouseIncome < MMMNA_MAX) {
+        return refusal('mmmna',
+          'shelter costs are unknown and could change the MMMNA',
+          'What are the community spouse monthly shelter costs?');
+      }
+      target = MMMNA_MIN;
+      trace.push('spouse income at or above MMMNA maximum, shelter not decisive');
+    }
+    var allocation = Math.max(0.0, target - spouseIncome);
+    trace.push('MMMNA target ' + fmt2(target) + ', spouse income ' + fmt2(spouseIncome)
+      + ', allocation ' + fmt2(allocation));
+    return screenResult('mmmna', Verdict.LIKELY_YES, 'mmmna_target',
+      allocation, CIT.mmmna, trace);
+  }
+
+  function screenTransfer(facts) {
+    if (!isKnown(facts.transfers)) {
+      return refusal('transfer', 'transfer history is unknown',
+        'Were any assets given away, sold below value, or put in another name in the last 60 months?');
+    }
+    var transfers = facts.transfers.value.slice();
+    for (var i = 0; i < transfers.length; i++) {
+      var t = transfers[i];
+      if (Math.abs(t.months_ago - TRANSFER_LOOKBACK_MONTHS) <= TRANSFER_TIMING_MARGIN_MONTHS) {
+        return screenResult('transfer', Verdict.TOO_CLOSE, 'transfers',
+          Number(TRANSFER_LOOKBACK_MONTHS - t.months_ago), CIT.transfer,
+          ['transfer ' + fmt2(t.amount) + ' at ' + t.months_ago
+            + ' months sits on the 60 month line']);
+      }
+    }
+    var inWindow = transfers.filter(function (x) { return x.months_ago < TRANSFER_LOOKBACK_MONTHS; });
+    if (inWindow.length === 0) {
+      return screenResult('transfer', Verdict.LIKELY_YES, 'transfers',
+        null, CIT.transfer, ['no transfer inside 60 months']);
+    }
+    var total = 0;
+    inWindow.forEach(function (x) { total += x.amount; });
+    var penalty = total / TRANSFER_DIVISOR;
+    var trace = [
+      'transferred ' + fmt2(total) + ' inside 60 months',
+      'penalty frame: ' + fmt2(total) + ' / ' + fmt2(TRANSFER_DIVISOR)
+        + ' per month = ' + fmt2(penalty) + ' months'
+    ];
+    return screenResult('transfer', Verdict.LIKELY_NO, 'transfers',
+      -total, CIT.transfer, trace);
+  }
+
+  function screenHomeEquity(facts) {
+    if (!isKnown(facts.home_owns)) {
+      return refusal('home_equity', 'home ownership is unknown', 'Does the applicant own a home?');
+    }
+    if (facts.home_owns.value === false) {
+      return screenResult('home_equity', Verdict.NOT_APPLICABLE, 'home_owns',
+        null, CIT.home_equity, ['no home owned']);
+    }
+    if (!isKnown(facts.home_residents)) {
+      return refusal('home_equity',
+        'who lives in the home is unknown and decides whether the home counts',
+        'Who lives in the home?');
+    }
+    var residents = facts.home_residents.value;
+    var hasExempt = residents.some(function (r) {
+      return Object.prototype.hasOwnProperty.call(HOME_EXEMPT_RESIDENTS, r);
+    });
+    if (hasExempt) {
+      return screenResult('home_equity', Verdict.LIKELY_YES, 'home_residents',
+        null, CIT.home_equity,
+        ['an exempt resident lives in the home, the home equity screen does not count it']);
+    }
+    if (!isKnown(facts.home_equity)) {
+      return refusal('home_equity', 'home equity is unknown', 'What is the equity in the home?');
+    }
+    var equity = Number(facts.home_equity.value);
+    var distance = HOME_EQUITY_LIMIT - equity;
+    var trace = ['home equity ' + fmt2(equity) + ' vs limit ' + fmt2(HOME_EQUITY_LIMIT)
+      + ', distance ' + fmt2(distance)];
+    if (Math.abs(distance) <= marginFor(HOME_EQUITY_LIMIT, 'home_equity')) {
+      return screenResult('home_equity', Verdict.TOO_CLOSE, 'home_equity',
+        distance, CIT.home_equity, trace);
+    }
+    var verdict = equity <= HOME_EQUITY_LIMIT ? Verdict.LIKELY_YES : Verdict.LIKELY_NO;
+    return screenResult('home_equity', verdict, 'home_equity',
+      distance, CIT.home_equity, trace);
+  }
+
+  // ----------------------------------------------------------------
+  // Overall flow (port of evaluate).
+  // ----------------------------------------------------------------
+
+  function buildResult(overall, screens, questionsBack, refusalReasons) {
+    var map = {};
+    screens.forEach(function (s) { map[s.screen] = s.verdict; });
+    return {
+      program: PROGRAM,
+      overall: overall,
+      screens: map,
+      screenResults: screens,
+      rows: screens,
+      questions_back: questionsBack || [],
+      refusal_reasons: refusalReasons || [],
+      closing_line: CLOSING_LINE
+    };
+  }
+
+  function evaluate(input) {
+    var facts = normalizeFacts(input);
+
+    var problems = validateFactset(facts);
+    if (problems.length > 0) {
+      var validationScreen = refusal('validation', problems.join('; '));
+      return buildResult(Verdict.REFUSAL, [validationScreen], [], problems.slice());
+    }
+
+    var conflict = bindingConflict(facts);
+    if (conflict) {
+      var bindingScreen = refusal('binding', conflict);
+      return buildResult(Verdict.REFUSAL, [bindingScreen], [], [conflict]);
+    }
+
+    if (!isKnown(facts.state_of_residence)) {
+      var jurisdictionScreen = refusal('jurisdiction', 'state of residence is unknown',
+        'What state does the applicant live in?');
+      return buildResult(Verdict.REFUSAL, [jurisdictionScreen],
+        [jurisdictionScreen.question_back], [jurisdictionScreen.refusal_reason]);
+    }
+    if (String(facts.state_of_residence.value).toUpperCase() !== 'IN') {
+      var notScreened = screenResult('jurisdiction', Verdict.NOT_SCREENED,
+        'state_of_residence', null, [],
+        ['state is ' + String(facts.state_of_residence.value) + ', not IN']);
+      notScreened.refusal_reason = 'this engine screens Indiana only';
+      return buildResult(Verdict.REFUSAL, [notScreened], [],
+        ['out of scope jurisdiction: not Indiana']);
+    }
+
+    var screens = [
+      screenIncome(facts),
+      screenAssets(facts),
+      screenMmmna(facts),
+      screenTransfer(facts),
+      screenHomeEquity(facts)
+    ];
+    var questions = screens.filter(function (s) { return s.question_back; })
+      .map(function (s) { return s.question_back; });
+    var reasons = screens.filter(function (s) { return s.refusal_reason; })
+      .map(function (s) { return s.refusal_reason; });
+
+    var overall;
+    if (screens.some(function (s) { return s.verdict === Verdict.REFUSAL; })) {
+      overall = Verdict.REFUSAL;
+    } else if (screens.some(function (s) { return s.verdict === Verdict.TOO_CLOSE; })) {
+      overall = Verdict.TOO_CLOSE;
+    } else if (screens.some(function (s) { return s.verdict === Verdict.LIKELY_NO; })) {
+      overall = Verdict.LIKELY_NO;
+    } else {
+      overall = Verdict.LIKELY_YES;
+    }
+    return buildResult(overall, screens, questions, reasons);
+  }
+
+  var api = {
+    evaluate: evaluate,
+    determine: evaluate,
+    screenWaiver: evaluate,
+    marginFor: marginFor,
+    csraAmount: csraAmount,
+    detMoney: detMoney,
+    formatMoney: detMoney,
+    normalizeFacts: normalizeFacts,
+    Verdict: Verdict,
+    constants: {
+      INCOME_CAP: INCOME_CAP,
+      ASSET_LIMIT_SINGLE: ASSET_LIMIT_SINGLE,
+      ASSET_LIMIT_COUPLE_BOTH_APPLY: ASSET_LIMIT_COUPLE_BOTH_APPLY,
+      CSRA_FRACTION: CSRA_FRACTION,
+      CSRA_MIN: CSRA_MIN,
+      CSRA_MAX: CSRA_MAX,
+      MMMNA_MIN: MMMNA_MIN,
+      MMMNA_MAX: MMMNA_MAX,
+      SHELTER_STANDARD: SHELTER_STANDARD,
+      TRANSFER_LOOKBACK_MONTHS: TRANSFER_LOOKBACK_MONTHS,
+      TRANSFER_DIVISOR: TRANSFER_DIVISOR,
+      HOME_EQUITY_LIMIT: HOME_EQUITY_LIMIT,
+      MARGIN_FLAT: MARGIN_FLAT,
+      MARGIN_PCT: MARGIN_PCT,
+      MARGIN_ASSETS_FLAT: MARGIN_ASSETS_FLAT,
+      TRANSFER_TIMING_MARGIN_MONTHS: TRANSFER_TIMING_MARGIN_MONTHS,
+      MARGIN_OVERRIDES: MARGIN_OVERRIDES
+    }
+  };
+  return api;
+})();
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = WaiverScreen;
+}
+if (typeof window !== 'undefined') {
+  window.WaiverScreen = WaiverScreen;
+}
+if (typeof globalThis !== 'undefined') {
+  globalThis.WaiverScreen = WaiverScreen;
+}
+
+</script>
+<script>/*SCREEN1*/(function(){
+function $(i){return document.getElementById(i);}
+function cents(x){return Math.round(x*100);}
+function money(c){return "$"+(c/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function money0(c){return "$"+(c/100).toLocaleString("en-US");}
+function cls(inc,lim){var d=inc-lim;if(Math.abs(d)<=Math.round(lim*0.01))return "close";return d<0?"likely":"canttell";}
+var CANT="This screen can\u2019t tell. A caseworker can run the full rules: call 800-403-0864 or apply at fssabenefits.in.gov.";
+var HIP={1:183550,2:248920,3:314188,4:379550,5:444920,6:510185,7:575550,8:640820};
+function hipLim(n){return n<=8?HIP[n]:HIP[8]+(n-8)*65250;}
+$("hip-go").addEventListener("click",function(){
+var n=parseInt($("hip-n").value,10),inc=parseFloat($("hip-inc").value),o=$("hip-out");
+if(!(n>=1)||!(inc>=0)){o.textContent="Enter a household size and a monthly income.";return;}
+var lim=hipLim(n),v=cls(cents(inc),lim);
+o.textContent=v==="likely"?("Likely yes: "+money(cents(inc))+"/mo is under the "+money(lim)+"/mo HIP limit for a household of "+n+".")
+:v==="close"?("Too close to call: the HIP limit for a household of "+n+" is "+money(lim)+"/mo. "+CANT)
+:("The HIP limit for a household of "+n+" is "+money(lim)+"/mo. "+CANT);});
+var GROSS={1:172900,2:234500,3:296000,4:357500,5:419100,6:480600,7:542100,8:603700};
+var ALLOT={1:30600,2:56200,3:80800,4:102300,5:121700,6:146300,7:161600,8:184100};
+function snapLim(n){return n<=8?GROSS[n]:GROSS[8]+(n-8)*61600;}
+function snapAllot(n){if(n>=18)return 388700;return n<=8?ALLOT[n]:ALLOT[8]+(n-8)*22500;}
+$("snap-go").addEventListener("click",function(){
+var n=parseInt($("snap-n").value,10),inc=parseFloat($("snap-inc").value),o=$("snap-out");
+if(!(n>=1)||!(inc>=0)){o.textContent="Enter a household size and a monthly income.";return;}
+var lim=snapLim(n),al=snapAllot(n),v=cls(cents(inc),lim);
+o.textContent=v==="likely"?("Likely yes: "+money0(cents(inc))+"/mo is under the "+money0(lim)+"/mo gross limit for a household of "+n+". The most SNAP pays that household is "+money0(al)+"/mo.")
+:v==="close"?("Too close to call: the gross limit for a household of "+n+" is "+money0(lim)+"/mo, and SNAP also checks income after deductions. "+CANT)
+:("The gross limit for a household of "+n+" is "+money0(lim)+"/mo, and SNAP also checks income after deductions. "+CANT);});
+})();</script>
+<script>/*SCREEN2*/(function(){
+function $(i){return document.getElementById(i);}
+function num(i){var v=parseFloat($(i).value);return isNaN(v)?null:v;}
+var CANT="This screen can\u2019t tell. A caseworker can run the full rules: call 800-403-0864 or apply at fssabenefits.in.gov.";
+var TITLES={income:"Income vs the waiver income cap",assets:"Countable assets vs the limit",mmmna:"Spouse income allowance (MMMNA)",transfer:"Transfers in the last 60 months",home_equity:"Home equity"};
+var WORDS={likely_yes:"within the limit on these figures",too_close_to_call:"too close to call",likely_no:"over the limit on these figures",not_applicable:"does not apply",refusal:"needs another answer",not_screened:"not screened"};
+$("wv-go").addEventListener("click",function(){
+var inc=num("wv-inc"),assets=num("wv-assets"),o=$("wv-out"),lines=$("wv-lines");
+if(inc===null||assets===null){o.textContent="Enter your monthly income and countable assets.";lines.innerHTML="";return;}
+var married=$("wv-married").checked;
+var facts={state_of_residence:"IN",household_size:married?2:1,marital_status:married?"married":"single",spouse_applies:$("wv-both").checked,applicant_income_monthly:inc,has_miller_trust:$("wv-qit").checked,disability_or_waiver_need:true,current_coverage:"none",assets_by_type:{bank:assets},transfers:[],home_owns:false,home_residents:["applicant"],has_court_order:false};
+if(married){var si=num("wv-spouse-inc");if(si!==null)facts.spouse_income_monthly=si;var sh=num("wv-shelter");if(sh!==null)facts.shelter_costs_monthly=sh;}
+var ta=num("wv-tr-amt"),tm=num("wv-tr-months");
+if(ta!==null&&tm!==null&&ta>0)facts.transfers=[{amount:ta,months_ago:tm,recipient:"other"}];
+var eq=num("wv-equity");
+if(eq!==null){facts.home_owns=true;facts.home_equity=eq;if($("wv-home-family").checked)facts.home_residents.push(married?"spouse":"minor_child");}
+var r=WaiverScreen.evaluate(facts);
+if(r.overall==="likely_yes")o.textContent="Likely yes on these figures (waiver cap $2,982/mo; asset limit $2,000 single, $3,000 for a couple both applying).";
+else if(r.overall==="too_close_to_call")o.textContent="Too close to call (waiver cap $2,982/mo). "+CANT;
+else if(r.overall==="refusal")o.textContent=(r.questions_back&&r.questions_back.length)?("More answers needed: "+r.questions_back.join(" ")):CANT;
+else o.textContent="Waiver cap is $2,982/mo. "+CANT;
+var html="";
+(r.screenResults||[]).forEach(function(s){
+if(!TITLES[s.screen])return;
+var fig="";
+if(s.screen==="income")fig=" ($2,982/mo cap)";
+else if(s.screen==="home_equity"&&s.verdict!=="not_applicable")fig=" ($752,000 limit)";
+else if(s.screen==="mmmna"&&s.verdict!=="not_applicable")fig=" (allowance $2,705 to $4,067/mo)";
+html+="<p>"+TITLES[s.screen]+": "+(WORDS[s.verdict]||s.verdict)+fig+".</p>";});
+lines.innerHTML=html;});
+})();</script>
+<script>/*SWREG*/if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body>
+</html>

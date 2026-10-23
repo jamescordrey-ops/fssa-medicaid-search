@@ -31,6 +31,13 @@ exclusions, community spouse allowances, disaster payments, and the
 5-year lookback can be checked against the actual policy text in
 seconds.
 
+## Phase 2 (Oct 22, 2026)
+
+- **Will I qualify?** (screen.html): rough screens for HIP, SNAP, and Medicaid waivers. The waiver screen is a port of SARA's five deterministic checks, validated against the 2,560-case determinations bank with zero failures. The screen never says no: unclear or over-limit results point to a caseworker.
+- **Policy Manuals page** (manuals.html): all 10 policy manuals in the corpus (795 documents), by chapter.
+- **Single version**: the separate mobile build is retired; small-index.html redirects here. Search is Indiana-first on near-ties, results always show their source link, and document text is reflowed for reading (documents that cannot be made readable show title and source link only).
+- **Offline**: a service worker makes the site work offline after a first visit. The full library, including local copies of all 6,731 original source documents, is a GitHub Release: "Download the full library for offline use."
+
 ## What's inside
 
 **6,697 documents** (rebuilt October 22, 2026), drawn from the
