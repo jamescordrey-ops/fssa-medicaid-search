@@ -1,5 +1,22 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-22 (FAQ page + more cards)
+
+- New FAQ page (faq.html): 50 plain-language questions grouped under
+  the seven broad subjects, each answer in a click-to-expand item
+  with its citation and a link to the source document. Linked from
+  the search page with the bare label "FAQ". No disclaimer on the
+  FAQ page; the site's one disclaimer stays on the search page.
+- Info cards are half width: topic/browse cards and document result
+  cards render two-across on desktop and tablet widths, stacking to
+  one column on narrow screens.
+- More cards shown: topic sections show 16 cards (was 8), search
+  and program lists show 100 result cards (was 50), and up to 8
+  answer cards can appear per search (was 2).
+- Service worker cache version bumped to 2026-10-23-g0013-p2d;
+  faq.html added to the cached pages and the offline zip.
+
+
 ## 2026-10-22 (Phase 2 corrections)
 
 - One disclaimer in the whole site: it stays under the main title on
