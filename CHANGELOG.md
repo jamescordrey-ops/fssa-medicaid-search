@@ -1,5 +1,17 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (main page big header)
+
+- The main page top is now one tall navy header: the real
+  Indiana silhouette (the referenced Census outline) large at
+  the left, filling the header's height, with the library name
+  large beside it. The old hero block is gone, including the
+  app icon and the duplicate title it carried.
+- The one disclaimer stays on the main page, directly under
+  the header. The other pages keep the slim navy sliver
+  header, unchanged.
+- Service worker cache version bumped to 2026-10-23-g0013-p2h.
+
 ## 2026-10-23 (service worker: fresh pages on open)
 
 - Page navigations are now network-first in the service worker:
