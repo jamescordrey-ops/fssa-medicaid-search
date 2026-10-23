@@ -1,5 +1,23 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (search loop round 8: weighted quorum)
+
+- Search: the relaxed matching from rounds 1, 3, and 5 now
+  weighs each word in a question by how rare it is in the
+  library, instead of counting words. Filler words (get,
+  work, help) carry little weight, so a document is no
+  longer kept out of the results for missing them; missing
+  a rare, load-bearing word still keeps a document out.
+- Measured on the loop's 124-pair set: combined frozen
+  rank 1 0.456 to 0.481, MRR 0.545 to 0.562; unreachable
+  expected documents fell from 8 to 7 of 90 blind pairs;
+  the 34 audited pairs hold at 18 at rank 1.
+- Two loop rounds were tried and reverted since round 5
+  (a stemmer rule and a stronger title bigram bonus); the
+  loop log in SEARCH_LOOP.md carries the numbers. Neither
+  shipped.
+- Service worker cache version bumped to 2026-10-23-g0014-p9.
+
 ## 2026-10-23 (search loop round 5: half quorum for long questions)
 
 - Search: for questions of seven or more concepts, the

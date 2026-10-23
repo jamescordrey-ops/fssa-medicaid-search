@@ -246,13 +246,15 @@ function branchScoresRelaxed(concepts){
   var strict=branchScores(concepts);
   var n=concepts.length;
   if(n<=3) return strict;
-  var quorum=n>=7?Math.ceil(n/2):Math.ceil(n*2/3), cnt={}, sum={};
+  var frac=n>=7?0.5:2/3, cw=[], tot=0;
+  for(var ci=0;ci<n;ci++){ var mx=0; for(var cj=0;cj<concepts[ci].length;cj++){ var iv=idf[concepts[ci][cj]]||0; if(iv>mx)mx=iv; } cw.push(mx); tot+=mx; }
+  var need=frac*tot, wsum={}, sum={};
   for(var i=0;i<n;i++){
     var cd=conceptScore(concepts[i]);
-    for(var d in cd){ cnt[d]=(cnt[d]||0)+1; sum[d]=(sum[d]||0)+cd[d]; }
+    for(var d in cd){ wsum[d]=(wsum[d]||0)+cw[i]; sum[d]=(sum[d]||0)+cd[d]; }
   }
   var out={};
-  for(var d2 in cnt){ if(cnt[d2]>=quorum) out[d2]=sum[d2]*(cnt[d2]/n); }
+  for(var d2 in sum){ if((wsum[d2]||0)>=need) out[d2]=sum[d2]*((wsum[d2]||0)/tot); }
   return Object.keys(out).length?out:strict;
 }
 function branchScores(concepts){
