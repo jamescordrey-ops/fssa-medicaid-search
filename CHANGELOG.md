@@ -1,5 +1,35 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (corpus v2, generation g0014)
+
+- 694 link-only entries added (title, citation, and source link,
+  no body text): 595 eCFR sections and subparts via the eCFR
+  versioner API (42 CFR 435/440/441/447, 20 CFR 404/416
+  subparts, 7 CFR 273, 45 CFR 260-265); 52 CMS Pub 100-01,
+  100-04, and 100-05 chapters; Medicare & You 2026; the
+  Medicare Coverage Database; 460 IAC (17 articles) and Indiana
+  Code Title 12; the ASPE poverty guidelines page and 2026
+  Federal Register notice (91 FR 1797); the SSA 2026 COLA fact
+  sheet; Medicaid.gov spousal impoverishment; HUD and IHCDA
+  housing vouchers; VA pension and Aid and Attendance; Indiana
+  SHIP; Indiana 211; and all 15 Indiana Area Agencies on Aging.
+- Seven candidate pages were already in the library with full
+  text (the Medicare.gov savings programs, drug costs, appeals,
+  and sign-up pages, the SHIP Medicare costs page, IHCDA
+  vouchers, and SSA SSI payment amounts), so no duplicates
+  were added.
+- Search quality on the 34-pair eval set: rank 1 improved from
+  13/34 to 14/34 and MRR from 0.462 to 0.476 (medicaid appeals
+  moved to rank 1; two deep ranks slipped, 20 to 23 and 13 to
+  17). The other-states audit stands at 29 top-10 slots across
+  7 queries with 4 in the top 3, top-3 exposure unchanged; the
+  Phase 1 demotion stays unapplied because its eval gate
+  failed at every factor tested.
+- All 694 new source URLs were registered and fingerprinted
+  (live fetch, Wayback snapshot, or the eCFR API) for the
+  weekly update loop. Service worker version
+  2026-10-23-g0014-p1.
+
 ## 2026-10-23 (review rounds fix build)
 
 - Search: real phrase matching over ordered tokens; citation ranking

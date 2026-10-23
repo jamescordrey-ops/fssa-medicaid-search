@@ -2,7 +2,7 @@
 
 *Unofficial reference library: not an official FSSA product.*
 
-[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 6,697](https://img.shields.io/badge/documents-6%2C697-blue) ![corpus: g0013 · Oct 19, 2026](https://img.shields.io/badge/corpus-g0013_%C2%B7_Oct_19%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue) [![Built with AI](https://img.shields.io/badge/Built_with-AI-blueviolet)](#the-server-sara-included-in-this-repo)
+[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 7,391](https://img.shields.io/badge/documents-7%2C391-blue) ![corpus: g0014 · Oct 23, 2026](https://img.shields.io/badge/corpus-g0014_%C2%B7_Oct_23%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue) [![Built with AI](https://img.shields.io/badge/Built_with-AI-blueviolet)](#the-server-sara-included-in-this-repo)
 
 An Indiana search tool for FSSA, Medicaid, and Medicare policy
 documents. One project with two faces, both working over the same
@@ -38,11 +38,19 @@ seconds.
 - **Single version**: the separate mobile build is retired; small-index.html redirects here. Search is Indiana-first on near-ties, results always show their source link, and document text is reflowed for reading (documents that cannot be made readable show title and source link only).
 - **Offline**: a service worker makes the site work offline after a first visit. The full library, including local copies of all 6,731 original source documents, is a GitHub Release: "Download the full library for offline use."
 
+## Corpus v2 (Oct 23, 2026)
+
+- **Federal regulations**: 595 Code of Federal Regulations sections and subparts as link-only entries, taken from the eCFR versioner API: Medicaid state plan and services rules (42 CFR 435, 440, 441, 447), Social Security and SSI (20 CFR 404, 416, at subpart level), SNAP (7 CFR 273), and TANF (45 CFR 260-265).
+- **Medicare manuals**: the CMS Pub 100-01, 100-04, and 100-05 chapter PDFs (52 chapters), Medicare & You 2026, and the Medicare Coverage Database as link-only entries.
+- **Indiana law**: all 17 articles of 460 IAC and Indiana Code Title 12 as link-only entries (405 and 470 IAC were already in the library in full text).
+- **Yearly figures and neighbors**: the HHS poverty guidelines page and the 2026 Federal Register notice, the SSA 2026 COLA fact sheet, Medicaid.gov spousal impoverishment, HUD and IHCDA housing vouchers, VA Aid and Attendance, Indiana SHIP, Indiana 211, and all 15 Indiana Area Agencies on Aging.
+
 ## What's inside
 
-**6,697 documents** (rebuilt October 22, 2026), drawn from the
-6,742 source documents of the 6,797-document SARA server corpus,
-generation g0013. The corpus also holds 55 synthetic verified-answer
+**7,391 documents** (rebuilt October 23, 2026): the 6,742 source
+documents of the 6,797-document SARA server corpus, generation
+g0013, plus 694 link-only entries added in generation g0014
+(title, citation, and source link, no body text). The corpus also holds 55 synthetic verified-answer
 records; those are baked answers, not source documents, and the
 library does not publish them. 45 very short documents are excluded
 from the page index. The pages now carry a
