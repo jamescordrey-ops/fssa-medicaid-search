@@ -19,7 +19,7 @@
 // projects, whose caches are not ours to delete). The fetch
 // strategy is unchanged: navigations network-first with
 // revalidation, the rest cache-first.
-var CACHE = "fssa-library-2026-10-23-g0014-p1";
+var CACHE = "fssa-library-2026-10-23-g0014-p2";
 var PAGES = ["index.html", "manuals.html", "screen.html",
              "faq.html", "small-index.html"];
 function keyFor(url) {

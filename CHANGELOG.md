@@ -1,5 +1,21 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (search loop round 1: quorum relaxation)
+
+- Search: long natural-language questions no longer require every
+  query word to appear in a document before the document can be
+  found. A document matching at least two thirds of the concepts
+  in a long question now enters the results, scored in proportion
+  to how many concepts it matches; documents matching every
+  concept keep their exact previous scores and order. Short
+  questions (three concepts or fewer) and questions that already
+  return plenty of results are unchanged. One vocabulary gap in a
+  person's question no longer hides the right document entirely.
+- Measured on the loop's 124-pair set: the 34 audited pairs are
+  unchanged (14 at rank 1, MRR 0.476); the 90 blind pairs improved
+  from 17 to 24 at rank 1, MRR 0.251 to 0.371.
+- Service worker cache version bumped to 2026-10-23-g0014-p2.
+
 ## 2026-10-23 (corpus v2, generation g0014)
 
 - 694 link-only entries added (title, citation, and source link,

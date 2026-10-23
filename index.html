@@ -241,6 +241,20 @@ function conceptScore(cs){
   for(var i=0;i<cs.length;i++){ var p=post(cs[i]); if(!p)continue; for(var d in p){ out[d]=(out[d]||0)+bm25(+d,cs[i],p[d]); } }
   return out;
 }
+
+function branchScoresRelaxed(concepts){
+  var strict=branchScores(concepts);
+  var n=concepts.length;
+  if(n<=3||Object.keys(strict).length>=25) return strict;
+  var quorum=Math.ceil(n*2/3), cnt={}, sum={};
+  for(var i=0;i<n;i++){
+    var cd=conceptScore(concepts[i]);
+    for(var d in cd){ cnt[d]=(cnt[d]||0)+1; sum[d]=(sum[d]||0)+cd[d]; }
+  }
+  var out={};
+  for(var d2 in cnt){ if(cnt[d2]>=quorum) out[d2]=sum[d2]*(cnt[d2]/n); }
+  return Object.keys(out).length?out:strict;
+}
 function branchScores(concepts){
   var acc=null;
   for(var i=0;i<concepts.length;i++){
@@ -379,7 +393,7 @@ function search(qobj,tagStems){
   var cand={};
   if(qobj.branches.length){
     for(var bi=0;bi<qobj.branches.length;bi++){
-      var bs=branchScores(qobj.branches[bi]);
+      var bs=branchScoresRelaxed(qobj.branches[bi]);
       for(var d in bs){ if(!has(cand,d)||bs[d]>cand[d]) cand[d]=bs[d]; }
     }
   } else if(qobj.phrases.length){
