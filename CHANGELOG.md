@@ -1,5 +1,29 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (review rounds fix build)
+
+- Search: real phrase matching over ordered tokens; citation ranking
+  for dotted, CFR, IAC, and POMS forms with a heading tier; the
+  stopword leak is closed on both the builder and page sides; curly
+  quotes are normalized; hyphen and comma tokenization is unified;
+  negated quoted phrases now exclude; a lowercase "not" mid-question
+  is no longer an operator; zero-result pages suggest nearest terms
+  instead of silently correcting.
+- Screen: result lines report facts only and the headline carries the
+  cannot-tell meaning; WAIVER_SPEC section 9 amended (spouse and
+  blind or disabled child transfer exemptions, verified in the corpus
+  first); blank items are named as treated as none; figures render
+  from one constants source; the Miller trust question gains a
+  "not sure" answer; the MMMNA line is rephrased.
+- Reader: swipe between documents, ported into the builder; page-level
+  swipe-back added on all four pages.
+- Service worker: normalized cache keys, ETag-aware revalidation,
+  status checks before caching, cleanup scoped to the library cache
+  prefix; strategy unchanged; version 2026-10-23-g0013-p2i.
+- 838 document titles cleaned; the index footer sentence is removed;
+  manuals tag-filtered search no longer stems every document on the
+  first click.
+
 ## 2026-10-23 (main page big header)
 
 - The main page top is now one tall navy header: the real

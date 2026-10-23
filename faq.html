@@ -145,6 +145,10 @@ footer p{margin:0}
 @media (max-width:768px){#sliver.bighead .sliver-in{min-height:104px;padding-top:12px;padding-bottom:12px}
 #sliver.bighead svg{height:72px}
 #sliver.bighead h1{font-size:28px}}
+/*SWIPECSS*/ .rnav{min-height:44px;min-width:44px;padding:6px 12px;font-size:16px}
+#reader.bump{animation:rdbump .18s ease-out}
+@keyframes rdbump{0%{transform:translateX(0)}35%{transform:translateX(6px)}100%{transform:translateX(0)}}
+@media (prefers-reduced-motion: reduce){#reader.bump{animation:none}}
 
 /*P2CSS*/ .disc{font-size:16px;margin:8px 0 12px}
 .screen{margin:16px 0} .screen h2{font-size:16px;margin:8px 0}
@@ -218,5 +222,34 @@ details.faq .fans p{margin:8px 0;line-height:1.55}
 <footer><p>Built 2026-10-23 from the SARA corpus (generation g0013, Oct 19, 2026 snapshot). Unofficial reference library: not an official FSSA product.</p></footer>
 </div>
 <script>/*SWREG*/if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+<script>/*SWIPEBACK*/(function(){
+"use strict";
+var sx=0, sy=0, st=0, ok=false;
+function blocked(tg){
+  var rd=document.getElementById("reader");
+  if(rd&&rd.classList&&rd.classList.contains("open"))return true;
+  var mr=document.getElementById("mreader");
+  if(mr&&!mr.hidden)return true;
+  if(tg&&tg.closest&&tg.closest("input,select,textarea,button,label"))return true;
+  return false;
+}
+document.addEventListener("touchstart",function(ev){
+  ok=false;
+  if(ev.touches.length!==1)return;
+  var t=ev.touches[0];
+  if(t.clientX>24)return;
+  if(blocked(ev.target))return;
+  sx=t.clientX; sy=t.clientY; st=Date.now(); ok=true;
+},{passive:true});
+document.addEventListener("touchcancel",function(){ok=false;},{passive:true});
+document.addEventListener("touchend",function(ev){
+  if(!ok)return;
+  ok=false;
+  var t=ev.changedTouches[0]; if(!t)return;
+  var dx=t.clientX-sx, dy=t.clientY-sy;
+  if(dx>=64&&Math.abs(dy)<=Math.abs(dx)/2&&(Date.now()-st)<=800)history.back();
+},{passive:true});
+})();
+</script>
 </body>
 </html>
