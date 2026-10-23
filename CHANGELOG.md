@@ -1,5 +1,20 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (search loop round 10: unscaled quorum scores)
+
+- Search: documents admitted by the weighted quorum are
+  now ranked by their plain match score. The earlier
+  share-scaling double-penalized partial matches (the score
+  already reflects only the words that matched), which
+  pushed good documents below noise.
+- Measured on the loop's 124-pair set: combined frozen
+  rank 1 0.481 to 0.519, MRR 0.562 to 0.586. A held-out
+  fresh set of 36 new blind questions, written after all
+  tuning, also improved (MRR 0.557 to 0.572), so the gain
+  is not tuning-set fit.
+- Service worker cache version bumped to
+  2026-10-23-g0014-p10.
+
 ## 2026-10-23 (search loop round 8: weighted quorum)
 
 - Search: the relaxed matching from rounds 1, 3, and 5 now

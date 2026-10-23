@@ -254,7 +254,7 @@ function branchScoresRelaxed(concepts){
     for(var d in cd){ wsum[d]=(wsum[d]||0)+cw[i]; sum[d]=(sum[d]||0)+cd[d]; }
   }
   var out={};
-  for(var d2 in sum){ if((wsum[d2]||0)>=need) out[d2]=sum[d2]*((wsum[d2]||0)/tot); }
+  for(var d2 in sum){ if((wsum[d2]||0)>=need) out[d2]=sum[d2]; }
   return Object.keys(out).length?out:strict;
 }
 function branchScores(concepts){
