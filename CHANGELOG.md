@@ -1,5 +1,23 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-22 (FSSA-mirrored redesign)
+
+- The whole library now mirrors the layout and styling of
+  in.gov/fssa (studied from the live site, reimplemented in our
+  own CSS in the builder; no state seal, no IN.gov logo, no
+  copied assets or stylesheets): a thin red sliver band (#CC524F)
+  with a white Indiana silhouette drawn for this library, a white
+  title band with the page title in navy (#002E6C) over a navy
+  rule, navy links and primary buttons, white cards with a light
+  border and 10px radius, slate secondary text, and a near-black
+  footer band. Same header, type scale, colors, and card/button
+  language on the search, Policy Manuals, Am I Eligible, and FAQ
+  pages and in the document reader.
+- Content, figures, screen logic, and wording are unchanged; the
+  one disclaimer stays under the title on the search page only.
+- Service worker cache version bumped to 2026-10-23-g0013-p2e.
+
+
 ## 2026-10-22 (FAQ page + more cards)
 
 - New FAQ page (faq.html): 50 plain-language questions grouped under

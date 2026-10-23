@@ -100,6 +100,13 @@ mark{background:var(--hl);color:inherit;padding:0 2px;border-radius:3px}
 #rbody p{margin:8px 0}
 .rsrc{margin:8px 0}
 #mr-text p{margin:8px 0}
+/*CARDGRID*/ #res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+#res .card{margin:0}
+#res .empty,#res .acard{grid-column:1/-1}
+.tg:checked+.tag+.topic-sec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.topic-sec .thead{grid-column:1/-1}
+.topic-sec .card{margin:0}
+@media (max-width:768px){#res{grid-template-columns:1fr}.tg:checked+.tag+.topic-sec{grid-template-columns:1fr}}
 
 /*P2CSS*/ .disc{font-size:16px;margin:8px 0 12px}
 .screen{margin:16px 0} .screen h2{font-size:16px;margin:8px 0}
@@ -118,9 +125,41 @@ mark{background:var(--hl);color:inherit;padding:0 2px;border-radius:3px}
 #rbody p{margin:8px 0}
 .rsrc{margin:8px 0}
 #mr-text p{margin:8px 0}
+/*FSSATHEME*/ :root{--bg:#FEFEFE;--card:#FFFFFF;--surface-2:#F4F4F4;--text:#1C1C1C;--muted:#637688;--accent:#002E6C;--accent-hover:#003780;--accent-soft:#E5E9EF;--border:#E6E6E6;--border-strong:#A7B3C4;--hl:#FCE9A8}
+html,body{overflow-x:clip}
+body{font-family:"Readex Pro","Open Sans","Helvetica",Arial,sans-serif}
+a{color:#002E6C}
+a:hover{color:#003780}
+#sliver{background:#CC524F;color:#FEFEFE}
+.sliver-in{max-width:880px;margin:0 auto;padding:0 16px;height:32px;display:flex;align-items:center}
+#sliver a{color:#FEFEFE;text-decoration:none;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:.02em}
+#sliver svg{height:20px;width:auto;flex:none}
+.hero{background:#FEFEFE;color:#002E6C;border-bottom:2px solid #002E6C;padding:24px 16px 20px}
+.hero h1{color:#002E6C}
+h1{font-size:30px;letter-spacing:-.01em;line-height:1.25}
+.disc{color:#637688}
+.wrap{margin-top:0}
+.wrap>h1{color:#002E6C;border-bottom:2px solid #002E6C;padding-bottom:12px}
+.card{border-radius:10px}
+details.faq{border-radius:10px}
+.search-card{border-radius:10px}
+button{font-family:inherit}
+.scbox button,#rx{background:#002E6C;color:#FEFEFE;border:1px solid #002E6C;border-radius:6px;padding:6px 16px;cursor:pointer}
+.scbox button:hover,#rx:hover{background:#003780}
+.scbox{border-color:#A7B3C4;border-radius:10px}
+input,select{font-family:inherit;border:1px solid #A7B3C4}
+.tag{border-color:#002E6C;color:#002E6C}
+.tg:checked+.tag{background:#002E6C;color:#FEFEFE;border-color:#002E6C}
+.rbar{border-bottom:2px solid #002E6C}
+#rtitle,#mr-title{color:#002E6C}
+.msec h2,.fgroup,.topic-sec h2{color:#002E6C}
+.foot,footer{background:#1C1C1C;color:#CCCCCC;width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding:24px max(16px,calc((100vw - 880px)/2 + 16px));box-sizing:border-box;text-align:left}
+.foot a,footer a{color:#FEFEFE}
+footer p{margin:0}
 </style>
 </head>
 <body>
+<div id="sliver"><div class="sliver-in"><a href="index.html"><svg id="in-state" viewBox="0 0 96 152" aria-hidden="true"><path fill="#FEFEFE" d="M26 4 L86 6 L87 60 L88 116 L80 112 L74 120 L66 114 L60 122 L52 118 L46 126 L38 121 L32 129 L24 124 L18 131 L10 127 L11 90 L13 55 L14 22 Z"/></svg><span>Indiana FSSA Policy Library</span></a></div></div>
 <div class="wrap">
 <p><a href="index.html">&larr; Back to search</a></p>
 <h1>Am I Eligible</h1>

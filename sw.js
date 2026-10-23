@@ -4,7 +4,7 @@
 // sink the rest); fetches are cache-first with a network fallback
 // that refreshes the cache. The offline zip is deliberately not
 // cached (it would double the storage).
-var CACHE = "fssa-library-2026-10-23-g0013-p2d";
+var CACHE = "fssa-library-2026-10-23-g0013-p2e";
 var PAGES = ["./", "index.html", "manuals.html", "screen.html",
              "faq.html", "small-index.html"];
 self.addEventListener("install", function (e) {
