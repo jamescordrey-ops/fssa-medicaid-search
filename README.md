@@ -1,6 +1,8 @@
-# Indiana FSSA, Medicaid, and Medicare Search
+# Indiana FSSA Policy Library
 
-[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 6,697](https://img.shields.io/badge/documents-6%2C697-blue) ![corpus: g0012 · Oct 19, 2026](https://img.shields.io/badge/corpus-g0012_%C2%B7_Oct_19%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue) [![Built with AI](https://img.shields.io/badge/Built_with-AI-blueviolet)](#the-server-sara-included-in-this-repo)
+*Unofficial reference library: not an official FSSA product.*
+
+[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 6,752](https://img.shields.io/badge/documents-6%2C752-blue) ![corpus: g0013 · Oct 19, 2026](https://img.shields.io/badge/corpus-g0013_%C2%B7_Oct_19%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue) [![Built with AI](https://img.shields.io/badge/Built_with-AI-blueviolet)](#the-server-sara-included-in-this-repo)
 
 An Indiana search tool for FSSA, Medicaid, and Medicare policy
 documents. One project with two faces, both working over the same
@@ -31,9 +33,12 @@ seconds.
 
 ## What's inside
 
-**6,200 documents** (rebuilt October 19, 2026), drawn from the
-6,242-document SARA server corpus, generation g0010 (42 very short
-documents are excluded from the page index):
+**6,752 documents** (rebuilt October 22, 2026), drawn from the
+6,797-document SARA server corpus, generation g0013 (45 very short
+documents are excluded from the page index). The pages now carry a
+BM25-ranked search with stemming, synonyms, quoted-phrase, OR and
+-exclusion operators, direct manual section-number lookup, a program
+filter, and an IHCPPM chapter browse list:
 
 - **Indiana FSSA and Medicaid** - FSSA and DFR policy manuals
   (including the DFR chapter PDFs), Medicaid program and member pages,
@@ -56,8 +61,8 @@ documents are excluded from the page index):
 
 ## Pages
 
-- **index.html** (about 66MB) - full version with complete document text
-- **small-index.html** (about 28MB) - lighter build for phones, same
+- **index.html** (about 89MB) - full version with complete document text
+- **small-index.html** (about 31MB) - lighter build for phones, same
   document set and the same full-text search index (the on-page reader
   shows a capped excerpt of each document)
 
@@ -85,5 +90,5 @@ caches may hold the previous build for about 10 minutes).
 
 ## Limits
 
-The documents are a snapshot from October 18, 2026. Anything affecting
+The documents are a snapshot from October 19, 2026 (corpus generation g0013). Anything affecting
 benefits or eligibility should be confirmed with a caseworker or FSSA.
