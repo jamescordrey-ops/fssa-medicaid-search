@@ -246,7 +246,7 @@ function branchScoresRelaxed(concepts){
   var strict=branchScores(concepts);
   var n=concepts.length;
   if(n<=3) return strict;
-  var quorum=Math.ceil(n*2/3), cnt={}, sum={};
+  var quorum=n>=7?Math.ceil(n/2):Math.ceil(n*2/3), cnt={}, sum={};
   for(var i=0;i<n;i++){
     var cd=conceptScore(concepts[i]);
     for(var d in cd){ cnt[d]=(cnt[d]||0)+1; sum[d]=(sum[d]||0)+cd[d]; }

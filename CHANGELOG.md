@@ -1,5 +1,18 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-23 (search loop round 5: half quorum for long questions)
+
+- Search: for questions of seven or more concepts, the
+  relaxed quorum from rounds 1 and 3 drops from two thirds to
+  one half of the concepts. The last unreachable documents
+  sat in long questions whose wording shares barely half its
+  concepts with the document itself.
+- Measured: unreachable expected documents fell from 13 to 8
+  of the loop's 90 blind pairs; combined frozen MRR 0.528 to
+  0.545, rank 1 0.443 to 0.456; the 34 audited pairs are
+  unchanged (18 at rank 1, MRR 0.566).
+- Service worker cache version bumped to 2026-10-23-g0014-p6.
+
 ## 2026-10-23 (search loop round 4: title bigram bonus)
 
 - Search: a document whose title contains two of the
