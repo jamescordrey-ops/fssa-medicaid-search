@@ -1,0 +1,34 @@
+/* Search-page layers: best-bet pins + figure cards.
+   House design tokens (DESIGN.md): 4px spacing scale, 12px card
+   radius, 4px chips, hairline borders, one accent. Colors come from
+   the search page's own token variables so light/dark both work. */
+.bb-layer{margin:0 0 16px}
+.bb-card,.fc-card{border:1px solid var(--border-strong);border-radius:12px;
+  padding:16px;margin:0 0 12px;background:var(--card)}
+.bb-card{border-left:4px solid var(--accent)}
+.fc-card{background:var(--surface-2)}
+.bb-label,.fc-label{display:inline-block;font-size:12px;font-weight:600;
+  letter-spacing:.05em;text-transform:uppercase;padding:4px 12px;
+  border-radius:4px;margin:0 0 8px}
+.bb-label{background:var(--accent);color:#fff}
+.fc-label{background:var(--card);color:var(--accent);
+  border:1px solid var(--accent)}
+.bb-card h3,.fc-card h3{font-size:20px;font-weight:600;letter-spacing:-.02em;
+  line-height:1.25;margin:0 0 4px}
+.bb-card h3 a{color:var(--text);text-decoration:none}
+.bb-card h3 a:hover,.bb-card h3 a:focus{color:var(--accent)}
+.bb-meta{font-size:14px;color:var(--muted);margin:0 0 8px}
+.bb-why{font-size:14px;color:var(--muted);line-height:1.55;margin:8px 0 0}
+.fc-row{display:flex;justify-content:space-between;gap:16px;
+  padding:8px 0;border-bottom:1px solid var(--border)}
+.fc-row:last-of-type{border-bottom:none}
+.fc-flabel{font-size:16px;color:var(--text)}
+.fc-fval{font-size:16px;font-weight:600;color:var(--text);
+  font-feature-settings:"tnum";text-align:right;white-space:nowrap}
+.fc-note{font-size:14px;color:var(--muted);line-height:1.55;margin:12px 0 0}
+.fc-src{font-size:14px;color:var(--muted);line-height:1.55;margin:12px 0 0}
+@media (max-width:768px){
+  .fc-row{flex-direction:column;gap:4px}
+  .fc-fval{text-align:left}
+  .bb-card h3,.fc-card h3{font-size:20px}
+}

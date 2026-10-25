@@ -1,5 +1,11 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-25 (search layers: best-bet pins + figure answer cards)
+
+- Best-bet pins: 18 curated pins (redesigned rule set v2) surface a labeled "Pinned answer" card above the regular results for unambiguous searches, landing on reviewed policy sections. Gate: canonical 18/18, regression 64/64, 0 false fires on the 208 evaluation queries.
+- Figure answer cards: 10 labeled cards (waiver income cap, asset limits, SNAP allotments and income limits, SNAP resource limit, spousal standards, QMB limits, and others) show figures pulled from the library figures registry; every displayed figure is asserted against the registry during the build (32 figures), and the build gate re-checks them.
+- Both layers are additive and emitted by the phase-one builder (build-p1) on every build; ordinary search results are unchanged (hit lists identical on all 208 evaluation queries).
+
 ## 2026-10-25 (rewrite phase one: document pages + section anchors)
 
 - Site rebuilt as one page per document (7,263 document pages plus search, manuals, screens, and FAQ) instead of single-file pages; every document now has its own URL for linking and search engines.
