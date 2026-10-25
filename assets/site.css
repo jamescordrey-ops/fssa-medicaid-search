@@ -1,0 +1,52 @@
+/* Phase-one shared stylesheet for document pages.
+   Tokens and component rules are the library site's own (extracted
+   from the v2 page templates, which follow the house design
+   tokens), shared by every doc page instead of inlined per page. */
+:root{
+  --bg:#F8FAFC; --card:#FFFFFF; --surface-2:#F1F5F9;
+  --text:#0F172A; --muted:#64748B;
+  --accent:#2563EB; --accent-hover:#1D4ED8; --accent-soft:#DBEAFE;
+  --hl:#FEF08A; --border:#E2E8F0; --border-strong:#CBD5E1;
+  --badge-site:#16A34A; --badge-app:#D97706; --badge-waiver:#7C3AED; --badge-ref:#64748B;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#020617; --card:#0F172A; --surface-2:#1A1E2F;
+    --text:#F8FAFC; --muted:#94A3B8;
+    --accent:#3B82F6; --accent-hover:#60A5FA; --accent-soft:#172554;
+    --hl:#713F12; --border:#1E293B; --border-strong:#334155;
+    --badge-site:#22C55E; --badge-app:#F59E0B; --badge-waiver:#A78BFA; --badge-ref:#94A3B8;
+  }
+}
+*{box-sizing:border-box}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
+#sliver{background:#001839;color:#FEFEFE}
+#sliver .sliver-in{max-width:880px;margin:0 auto;padding:0 16px;height:40px;display:flex;align-items:center}
+#sliver a{color:#FEFEFE;text-decoration:none;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:.02em}
+#sliver img{height:20px;width:auto;flex:none}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 64px}
+.crumbs{font-size:13px;color:var(--muted);margin:0 0 16px}
+.crumbs a{color:var(--accent);text-decoration:none}
+h1{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 12px;line-height:1.25}
+.badges{margin:0 0 8px}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 12px;border-radius:999px;color:#fff}
+.b-site{background:var(--badge-site)} .b-app{background:var(--badge-app)}
+.b-waiver{background:var(--badge-waiver)} .b-ref{background:var(--badge-ref)}
+.b-fed{background:#0369A1} .b-other{background:#475569}
+.jbdg{background:var(--surface-2);color:var(--text);border:1px solid var(--border-strong)}
+.meta{font-size:13px;color:var(--muted);margin:8px 2px 0}
+.src{font-size:14px;margin:8px 2px 0}
+.src a,.stub-src a{color:var(--accent)}
+.secindex{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin:20px 0}
+.secindex h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 8px}
+.secindex ul{margin:0;padding-left:20px;columns:2}
+@media (max-width:768px){.secindex ul{columns:1}}
+.secindex li{margin:4px 0;break-inside:avoid}
+.secindex a{color:var(--accent);text-decoration:none;font-size:14px}
+.dbody{font-size:16px;line-height:1.65;margin-top:16px}
+.dbody p{margin:8px 0}
+.dhead{font-size:16px;margin:16px 0 8px;color:#002E6C}
+@media (prefers-color-scheme: dark){.dhead{color:#93C5FD}}
+.stub-note{font-size:16px}
+.stub-src{font-size:16px}
+.foot{font-size:12px;color:var(--muted);margin-top:32px;text-align:center;line-height:1.6}

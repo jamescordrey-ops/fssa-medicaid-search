@@ -1,5 +1,14 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-25 (rewrite phase one: document pages + section anchors)
+
+- Site rebuilt as one page per document (7,263 document pages plus search, manuals, screens, and FAQ) instead of single-file pages; every document now has its own URL for linking and search engines.
+- Manual chapters carry section anchors (3,427 anchored sections across 62 TOC-validated chapters), so links can land on an exact section, e.g. #2805-05-00.
+- Search engine ported unchanged with its data in JSON files: hit lists identical to the previous (v2) build on all 208 evaluation queries (gate 208/208). Figures gate 49/49.
+- 1,090 citation-stub pages (link-only and unpresentable documents: title, citation, and source link only).
+- sitemap.xml covers all 7,267 pages; redirects.json maps the 97 hygiene alias URLs to their kept twins.
+- small-index.html removed (nothing in the new build references it; it was a redirect stub to index.html). sw.js removed: the retired service worker's kill switch completed its job in the v2 cycle and no page registers a service worker.
+
 ## 2026-10-24 (v2 clean builder)
 
 - Rebuilt with the new clean builder (build-v2): pages render from templates plus the corpus export on every build instead of being patched forward from the last build.
