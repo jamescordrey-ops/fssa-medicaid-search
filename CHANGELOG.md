@@ -1,5 +1,11 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-25 (fix: toggle highlight could stick on Both from a cached old script)
+
+- Every asset and data URL the site loads now carries a content-hash version stamp (?v=...) derived from the file's own bytes, injected by the builder on every page (search, manuals, and all document pages) and inside the loader for the data files and the search engine script.
+- Root cause of the report: a browser holding a cached copy of the pre-toggle search engine script could pair it with the new search page. The old script has no toggle handler, so Both kept its highlight and a tap showed only a focus outline. The toggle itself was verified working in a fresh browser; with version stamps, a new publish can never be paired with a cached older asset again.
+- Gate: the toggle gate now also asserts that after every State/Fed/Both click exactly one pill is highlighted and it is the clicked pill. Both-view hit lists still identical on all 208 evaluation queries; State/Fed views still leak-free; figures 49/49.
+
 ## 2026-10-25 (jurisdiction toggle: State / Fed / Both)
 
 - Search page now has a 3-way jurisdiction toggle labeled State, Fed, and Both, defaulting to Both.
