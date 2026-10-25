@@ -1,5 +1,8 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-24 (mobile overflow hardening)
+
+- Topic-view cards could still run off the right edge on a phone (screenshot from James). The topic grid's single-column rule now uses minmax(0,1fr) like the search results, and cards carry min-width:0 with break-word wrapping, so no card can force the column wider than the screen. Service worker bumped to 2026-10-24-g0014-p12.
 ## 2026-10-24 (search results back to a single column)
 
 - Layout: document search results now render in one
