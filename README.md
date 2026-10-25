@@ -2,7 +2,7 @@
 
 *Unofficial reference library: not an official FSSA product.*
 
-[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 7,391](https://img.shields.io/badge/documents-7%2C391-blue) ![corpus: g0014 · Oct 23, 2026](https://img.shields.io/badge/corpus-g0014_%C2%B7_Oct_23%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue) [![Built with AI](https://img.shields.io/badge/Built_with-AI-blueviolet)](#the-server-sara-included-in-this-repo)
+[![site: live](https://img.shields.io/badge/site-live-brightgreen)](https://jamescordrey-ops.github.io/fssa-medicaid-search/) ![documents: 7,263](https://img.shields.io/badge/documents-7%2C263-blue) ![corpus: g0014 · Oct 23, 2026](https://img.shields.io/badge/corpus-g0014_%C2%B7_Oct_23%2C_2026-informational) ![server: included in this repo](https://img.shields.io/badge/server-included_in_this_repo-blue) [![Built with AI](https://img.shields.io/badge/Built_with-AI-blueviolet)](#the-server-sara-included-in-this-repo)
 
 An Indiana search tool for FSSA, Medicaid, and Medicare policy
 documents. One project with two faces, both working over the same
@@ -47,13 +47,14 @@ seconds.
 
 ## What's inside
 
-**7,391 documents** (rebuilt October 23, 2026): the 6,742 source
+**7,263 documents indexed** (rebuilt October 24, 2026): the 6,742 source
 documents of the 6,797-document SARA server corpus, generation
 g0013, plus 694 link-only entries added in generation g0014
 (title, citation, and source link, no body text). The corpus also holds 55 synthetic verified-answer
 records; those are baked answers, not source documents, and the
-library does not publish them. 45 very short documents are excluded
-from the page index. The pages now carry a
+library does not publish them. The v2 build’s hygiene pass removed dead
+pages and exact duplicates (7,391 corpus documents, 7,263
+indexed). The pages now carry a
 BM25-ranked search with stemming, synonyms, quoted-phrase, OR and
 -exclusion operators, direct manual section-number lookup, a program
 filter, and an IHCPPM chapter browse list:

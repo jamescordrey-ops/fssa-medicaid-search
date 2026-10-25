@@ -1,5 +1,15 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-24 (v2 clean builder)
+
+- Rebuilt with the new clean builder (build-v2): pages render from templates plus the corpus export on every build instead of being patched forward from the last build.
+- Corpus hygiene at build time: dead pages and exact duplicates removed (7,391 corpus documents, 7,263 indexed); federal sources mislabeled as other states relabeled.
+- Program dropdown rendered fresh from the corpus on every build, counts matching the indexed set; TANF (80 documents) appears for the first time.
+- Figures gate: all 48 dollar figures the pages show are verified against the figures registry during the build; the build stops on any disagreement with the source documents.
+- Screens: HIP and SNAP positive results now state what was checked ("Under the gross income limit for a household of N") and what was not checked, instead of "Likely yes".
+- Search: zero-hit searches show a "Did you mean" line with up to two suggested corrections; nothing is auto-substituted.
+- Service worker retired: pages no longer register one, and sw.js is now a kill switch that deletes the old caches and unregisters itself on a visitor's next visit. The downloadable offline bundle remains the offline route.
+
 ## 2026-10-24 (mobile overflow hardening)
 
 - Topic-view cards could still run off the right edge on a phone (screenshot from James). The topic grid's single-column rule now uses minmax(0,1fr) like the search results, and cards carry min-width:0 with break-word wrapping, so no card can force the column wider than the screen. Service worker bumped to 2026-10-24-g0014-p12.
