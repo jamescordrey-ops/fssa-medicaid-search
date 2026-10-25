@@ -1,5 +1,19 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-24 (search results back to a single column)
+
+- Layout: document search results now render in one
+  full-width column at every screen width. The two-across
+  card layout from 2026-10-22 was getting cut off on
+  mobile (James's report). Topic/browse cards are
+  unchanged: two-across on desktop, one column on small
+  screens.
+- Builder: the card-grid style block is now migrated on
+  rebuild, so this change survives future rebuilds
+  instead of being skipped as already present.
+- Service worker cache version bumped to
+  2026-10-24-g0014-p11.
+
 ## 2026-10-23 (search loop round 10: unscaled quorum scores)
 
 - Search: documents admitted by the weighted quorum are

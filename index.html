@@ -98,13 +98,13 @@ mark{background:var(--hl);color:inherit;padding:0 2px;border-radius:3px}
 #rbody p{margin:8px 0}
 .rsrc{margin:8px 0}
 #mr-text p{margin:8px 0}
-/*CARDGRID*/ #res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+/*CARDGRID*/ #res{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
 #res .card{margin:0}
 #res .empty,#res .acard{grid-column:1/-1}
 .tg:checked+.tag+.topic-sec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
 .topic-sec .thead{grid-column:1/-1}
 .topic-sec .card{margin:0}
-@media (max-width:768px){#res{grid-template-columns:1fr}.tg:checked+.tag+.topic-sec{grid-template-columns:1fr}}
+@media (max-width:768px){.tg:checked+.tag+.topic-sec{grid-template-columns:1fr}}
 /*FSSATHEME*/ :root{--bg:#FEFEFE;--card:#FFFFFF;--surface-2:#F4F4F4;--text:#1C1C1C;--muted:#637688;--accent:#002E6C;--accent-hover:#003780;--accent-soft:#E5E9EF;--border:#E6E6E6;--border-strong:#A7B3C4;--hl:#FCE9A8}
 html,body{overflow-x:clip}
 body{font-family:"Readex Pro","Open Sans","Helvetica",Arial,sans-serif}
@@ -167,7 +167,7 @@ footer p{margin:0}
 <div class="meta" id="count"></div>
 <div id="res"></div>
 
-<div class="foot">Built 2026-10-23 from the SARA corpus (generation g0014, Oct 23, 2026 snapshot). Unofficial reference library: not an official FSSA product.</div>
+<div class="foot">Built 2026-10-24 from the SARA corpus (generation g0014, Oct 23, 2026 snapshot). Unofficial reference library: not an official FSSA product.</div>
 </div>
 <div id="reader"><div class="rbar"><h2 id="rtitle"></h2><button type="button" class="rnav" id="rprev">&#8249; Prev</button><button type="button" class="rnav" id="rnext">Next &#8250;</button><button id="rx">Close</button></div><p class="rsrc"><a id="rsrc" href="#" target="_blank" rel="noopener"></a></p><div id="rbody"></div></div>
 <script>
