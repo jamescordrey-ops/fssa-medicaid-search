@@ -1,5 +1,12 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-25 (jurisdiction toggle: State / Fed / Both)
+
+- Search page now has a 3-way jurisdiction toggle labeled State, Fed, and Both, defaulting to Both.
+- State shows Indiana documents only, Fed shows Federal documents only, and Both shows all documents including other states. Result ordering is unchanged; the toggle is a filter, not a new sort.
+- Best-bet pins respect the selected view; figure answer cards continue to fire in all views.
+- Gate: Both-view hit lists identical on all 208 evaluation queries; State and Fed views had 0 jurisdiction leaks; filter composition and live counts verified.
+
 ## 2026-10-25 (search layers: best-bet pins + figure answer cards)
 
 - Best-bet pins: 18 curated pins (redesigned rule set v2) surface a labeled "Pinned answer" card above the regular results for unambiguous searches, landing on reviewed policy sections. Gate: canonical 18/18, regression 64/64, 0 false fires on the 208 evaluation queries.

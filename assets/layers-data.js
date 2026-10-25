@@ -33,6 +33,7 @@ window.BB_PINS = [
    "url": "https://secure.ssa.gov/poms.nsf/lnx/0501130620",
    "program": "Social Security",
    "source": "Federal",
+   "j": 1,
    "path": "doc/ssa-poms-si-01130-620-disaster-assistance-09-09-2022/"
   }
  },
@@ -97,6 +98,7 @@ window.BB_PINS = [
    "url": "https://secure.in.gov/fssa/dfr/files/2600.pdf",
    "program": "SNAP & cash assistance",
    "source": "Policy manuals",
+   "j": 0,
    "path": "doc/dfr-policy-manual-ch-2600-resources/#2615-65-00"
   }
  },
@@ -144,6 +146,7 @@ window.BB_PINS = [
    "url": "https://secure.ssa.gov/poms.nsf/lnx/0501130200",
    "program": "Social Security",
    "source": "Federal",
+   "j": 1,
    "path": "doc/ssa-poms-si-01130-200-automobiles-and-other-vehicles-used-for-transportation-12/"
   }
  },
@@ -201,6 +204,7 @@ window.BB_PINS = [
    "url": "https://in.gov/fssa/ompp/files/Medicaid_PM_3000.pdf#3010.20.10",
    "program": "Medicaid",
    "source": "Policy manuals",
+   "j": 0,
    "path": "doc/ihcppm-3010-20-10-and-3455-15-10-10-spousal-impoverishment-standards-and-excess/"
   }
  },
@@ -258,6 +262,7 @@ window.BB_PINS = [
    "url": "https://www.in.gov/dA/a5ba6ec6c2/Medicaid_PM_2000.pdf?language_id=1",
    "program": "Medicaid",
    "source": "Policy manuals",
+   "j": 0,
    "path": "doc/ihcppm-chapter-2000-application-processing/#2035-60-00"
   }
  },
@@ -369,6 +374,7 @@ window.BB_PINS = [
    "url": "https://www.in.gov/dA/0080ff1385/Medicaid_PM_2800.pdf?language_id=1",
    "program": "Medicaid",
    "source": "Policy manuals",
+   "j": 0,
    "path": "doc/ihcppm-chapter-2800-income/#2810-55-00"
   }
  },
@@ -403,6 +409,7 @@ window.BB_PINS = [
    "url": "https://www.medicare.gov/basics/costs/help/medicare-savings-programs",
    "program": "Medicare",
    "source": "Other states",
+   "j": 1,
    "path": "doc/medicare-savings-programs-medicare/"
   }
  },
@@ -432,6 +439,7 @@ window.BB_PINS = [
    "url": "https://secure.ssa.gov/poms.nsf/lnx/0501130740",
    "program": "Social Security",
    "source": "Federal",
+   "j": 1,
    "path": "doc/ssa-poms-si-01130-740-achieving-a-better-life-experience-able-accounts-02-26-202/"
   }
  },
@@ -476,6 +484,7 @@ window.BB_PINS = [
    "url": "https://www.in.gov/fssa/ompp/miller-trust",
    "program": "Medicaid",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/medicaid-policy-miller-trust-in-gov/"
   }
  },
@@ -545,6 +554,7 @@ window.BB_PINS = [
    "url": "https://www.in.gov/medicaid/providers/files/vision-services.pdf",
    "program": "General",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ihcp-provider-reference-module-vision-services-promod00051/"
   }
  },
@@ -580,6 +590,7 @@ window.BB_PINS = [
    "url": "https://www.in.gov/fssa/ddars/resources/individuals/hcbs-waiver-waiting-list-information",
    "program": "Disability & waivers",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ddars-hcbs-medicaid-waiver-waiting-list-information-in-gov/"
   }
  },
@@ -616,6 +627,7 @@ window.BB_PINS = [
    "url": "http://www.in.gov/medicaid/providers/files/modules/ddrs-hcbs-waivers.pdf",
    "program": "General",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ddrs-hcbs-waivers-provider-module/"
   }
  },
@@ -650,6 +662,7 @@ window.BB_PINS = [
    "url": "http://www.in.gov/medicaid/providers/files/modules/ddrs-hcbs-waivers.pdf",
    "program": "General",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ddrs-hcbs-waivers-provider-module/"
   }
  },
@@ -688,6 +701,7 @@ window.BB_PINS = [
    "url": "https://www.in.gov/fssa/ddars/resources/individuals/hcbs-waiver-waiting-list-information",
    "program": "Disability & waivers",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ddars-hcbs-medicaid-waiver-waiting-list-information-in-gov/"
   }
  },
@@ -729,6 +743,7 @@ window.BB_PINS = [
    "url": "http://www.in.gov/medicaid/providers/files/modules/ddrs-hcbs-waivers.pdf",
    "program": "General",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ddrs-hcbs-waivers-provider-module/"
   }
  },
@@ -767,6 +782,7 @@ window.BB_PINS = [
    "url": "http://www.in.gov/medicaid/providers/files/modules/ddrs-hcbs-waivers.pdf",
    "program": "General",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ddrs-hcbs-waivers-provider-module/"
   }
  },
@@ -827,6 +843,7 @@ window.BB_PINS = [
    "url": "http://www.in.gov/medicaid/providers/files/modules/ddrs-hcbs-waivers.pdf",
    "program": "General",
    "source": "FSSA website",
+   "j": 0,
    "path": "doc/ddrs-hcbs-waivers-provider-module/"
   }
  },
@@ -888,6 +905,7 @@ window.BB_PINS = [
    "url": "https://www.cms.gov/regulations-and-guidance/guidance/manuals/downloads/bp102c15.pdf",
    "program": "Medicaid (federal)",
    "source": "Policy manuals",
+   "j": 1,
    "path": "doc/medicare-benefit-policy-manual-chapter-15-covered-medical-and-other-health-servi/#110-2"
   }
  }

@@ -12,6 +12,14 @@
 // phrase vetoes the rule. A pin fires when any of its rules
 // matches. At most 3 pins, in file order.
 //
+// Jurisdiction toggle (engine edit E5): a pin points at one
+// specific document, so it fires only when that document's
+// jurisdiction is inside the view the toggle selects (the engine's
+// curJur global: "" = Both, 0 = State/Indiana, 1 = Fed). In Both
+// every pin behaves as before. Figure cards are NOT filtered:
+// they are labeled figure answers whose figures come from the
+// registry, not documents in a jurisdiction view.
+//
 // Figure cards (SARA _fd_triggers_match semantics): the query is
 // normalized to " " + lowercased, whitespace-collapsed + " ". Any
 // exclude phrase vetoes the row; every group in triggers_all must
@@ -76,10 +84,15 @@
     var toks = tokenSet(q);
     return (pin.rules || []).some(function (r) { return ruleMatches(r, qn, toks); });
   }
+  function pinInView(pin) {
+    var jv = root.curJur;
+    if (jv === "" || jv === undefined || jv === null) return true;
+    return !!pin.doc && pin.doc.j === jv;
+  }
   function matchPins(q) {
     var out = [];
     for (var i = 0; i < PINS.length && out.length < 3; i++) {
-      if (pinMatches(PINS[i], q)) out.push(PINS[i]);
+      if (pinInView(PINS[i]) && pinMatches(PINS[i], q)) out.push(PINS[i]);
     }
     return out;
   }

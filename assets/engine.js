@@ -8,6 +8,7 @@ var idf={}; for(var t in idx){idf[t]=Math.log(1+N/idx[t].length);}
 var DL=DB.dl||[], AVGDL=1; (function(){var s=0;for(var i=0;i<DL.length;i++)s+=DL[i]; if(DL.length)AVGDL=s/DL.length;})();
 var TITLESTEMS=docs.map(function(d){return terms(d.t);});
 var curProg="", RAWQ="";
+var curJur="";
 function conceptStems(w){var s=stem(w), out=[s]; var ex=SYN[w]||SYN[s]||[]; for(var i=0;i<ex.length;i++){var e=stem(ex[i]); if(out.indexOf(e)<0)out.push(e);} return out;}
 function phraseTerms(p){return ordTerms(p);}
 function ordTerms(q){return toksOf(q).map(stem);}
@@ -280,6 +281,7 @@ function search(qobj,tagStems){
     var dnum=+di;
     if(curSrc && docs[dnum].s!==curSrc) continue;
     if(curProg && (docs[dnum].g||"")!==curProg) continue;
+    if(curJur!=="" && (docs[dnum].j==null?2:docs[dnum].j)!==curJur) continue;
     var bad=false;
     for(var ei=0;ei<qobj.excl.length;ei++){ var ep=post(qobj.excl[ei]); if(ep&&has(ep,di)){bad=true;break;} }
     if(bad) continue;
@@ -416,6 +418,8 @@ document.addEventListener("click",function(e){
 });
 /*LIB2D*/var progSel=document.getElementById("progsel");
 if(progSel){ progSel.addEventListener("change",function(){curProg=progSel.value; run();}); }
+var jurEl=document.getElementById("jurpills");
+if(jurEl){ jurEl.addEventListener("click",function(e){ var b=closestEl(e.target,".pill"); if(!b) return; var all=jurEl.querySelectorAll(".pill"); for(var i=0;i<all.length;i++) all[i].classList.remove("active"); b.classList.add("active"); var jv=b.getAttribute("data-j"); curJur=(jv==="")?"":+jv; run(); }); }
 var chapEl=document.getElementById("chapters");
 if(chapEl){ chapEl.addEventListener("click",function(e){ var a=closestEl(e.target,"[data-chap]"); if(!a)return; e.preventDefault(); openReader(+a.getAttribute("data-chap"),[]); }); }
 var RAWQ2="";
@@ -429,9 +433,9 @@ function run(){
   var tt=selTag?rawTerms(selTag).filter(function(t){return !COMMON[t];}).map(stem):[];
   lastTerms=ts.concat(tt); lastHi=rawTerms(typed).concat(selTag?rawTerms(selTag):[]);
   if(!ts.length&&!tt.length){
-    if(curProg){
+    if(curProg||curJur!==""){
       var pd=[];
-      for(var pdi=0;pdi<docs.length;pdi++){ if(docs[pdi].g===curProg) pd.push(pdi); }
+      for(var pdi=0;pdi<docs.length;pdi++){ if((!curProg||docs[pdi].g===curProg)&&(curJur===""||(docs[pdi].j==null?2:docs[pdi].j)===curJur)) pd.push(pdi); }
       cnt.textContent=pd.length+" result"+(pd.length===1?"":"s");
       res.innerHTML=pd.slice(0,100).map(function(di){
         var d=docs[di], ei=extInfo(d);
