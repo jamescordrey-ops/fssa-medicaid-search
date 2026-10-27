@@ -28,7 +28,7 @@ window.BB_PINS = [
   ],
   "target_section_label": null,
   "doc": {
-   "di": 4739,
+   "di": 3690,
    "title": "SSA - POMS: SI 01130.620 - Disaster Assistance - 09/09/2022",
    "url": "https://secure.ssa.gov/poms.nsf/lnx/0501130620",
    "program": "Social Security",
@@ -141,7 +141,7 @@ window.BB_PINS = [
   ],
   "target_section_label": null,
   "doc": {
-   "di": 4711,
+   "di": 3662,
    "title": "SSA - POMS: SI 01130.200 - Automobiles and Other Vehicles Used For Transportation - 12/11/2025",
    "url": "https://secure.ssa.gov/poms.nsf/lnx/0501130200",
    "program": "Social Security",
@@ -257,7 +257,7 @@ window.BB_PINS = [
   ],
   "target_section_label": null,
   "doc": {
-   "di": 6080,
+   "di": 5029,
    "title": "IHCPPM Chapter 2000: Application Processing",
    "url": "https://www.in.gov/dA/a5ba6ec6c2/Medicaid_PM_2000.pdf?language_id=1",
    "program": "Medicaid",
@@ -369,7 +369,7 @@ window.BB_PINS = [
   ],
   "target_section_label": null,
   "doc": {
-   "di": 6075,
+   "di": 5024,
    "title": "IHCPPM Chapter 2800: Income",
    "url": "https://www.in.gov/dA/0080ff1385/Medicaid_PM_2800.pdf?language_id=1",
    "program": "Medicaid",
@@ -404,7 +404,7 @@ window.BB_PINS = [
   ],
   "target_section_label": null,
   "doc": {
-   "di": 3405,
+   "di": 2363,
    "title": "Medicare Savings Programs | Medicare",
    "url": "https://www.medicare.gov/basics/costs/help/medicare-savings-programs",
    "program": "Medicare",
@@ -434,7 +434,7 @@ window.BB_PINS = [
   ],
   "target_section_label": null,
   "doc": {
-   "di": 4766,
+   "di": 3717,
    "title": "SSA - POMS: SI 01130.740 - Achieving a Better Life Experience (ABLE) Accounts - 02/26/2026",
    "url": "https://secure.ssa.gov/poms.nsf/lnx/0501130740",
    "program": "Social Security",
@@ -900,7 +900,7 @@ window.BB_PINS = [
   ],
   "target_section_label": "Section 110.2: Repairs, Maintenance, Replacement, and Delivery",
   "doc": {
-   "di": 5992,
+   "di": 4941,
    "title": "Medicare Benefit Policy Manual Chapter 15: Covered Medical and Other Health Services",
    "url": "https://www.cms.gov/regulations-and-guidance/guidance/manuals/downloads/bp102c15.pdf",
    "program": "Medicaid (federal)",

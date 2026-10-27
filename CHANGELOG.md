@@ -359,3 +359,22 @@
   the footer carries the corpus generation stamp and an
   unofficial-reference line.
 - Previous live version: commit baa6d2ca (corpus g0012 build).
+
+## 2026-10-27 - Generation g0018: junk pass + g0017 fold-in
+
+- Corpus: g0014 minus 1,051 junk documents (other-state program and
+  waiver pages, thin per-state SNAP popup/retailer stubs), exported
+  as g0018. One mislabeled federal regulation (7 CFR 273.9) caught
+  and kept. 6,213 documents published.
+- Search index: g0017 book-doctor boilerplate patterns stripped from
+  the index copy only (91 patterns, 27,586 occurrences); page text
+  and snippets unchanged.
+- Sections: one Medicare Program Integrity Manual chapter gained 18
+  sections from verified g0017 cuts (fallback for chapters the
+  heading extractor cannot section). 63 chapters, 3,445 sections.
+- Pins: all 18 best-bet pins remapped to the new document indexes
+  (targets verified by title and URL); layers gate 18/18, 64/64.
+- Figures gate 49/49. Functional probes and did-you-mean all pass.
+- Accepted eval losses (James, 2026-10-27): two golden queries about
+  South Carolina and Idaho Section 1135 COVID waivers, whose source
+  pages the junk pass removed on purpose.
