@@ -1,5 +1,12 @@
 # Change log - Indiana FSSA Policy Library (offline pages)
 
+## 2026-10-28 (generation g0019: weekly source update)
+
+- Weekly source check of all 7,425 registered sources against the October 22-23 baseline fingerprints. 109 documents refreshed with their current source text (verified by like-for-like text comparison against the archived originals): IHCP provider reference modules republished October 27 (Dental Services, Obstetrical and Gynecological Services, FQHC and Rural Health Clinics), the revised CCDF Policy Manual, HIP work-requirements pages, Medicare DME coverage pages, Head Start pages, and other small edits.
+- Figures gate 49/49: no figure in the registry moved. The byte-changed figure pages (Medicaid eligibility guide, SNAP broad-based categorical eligibility, Medicare Savings Programs) verified text-identical to the archived originals.
+- Housekeeping: 1,052 stale document pages from the g0014-era build that lingered in the staging tree were removed; the site is now exactly the current 6,213-document build (6,249 files).
+- Probes: functional 85/85, did-you-mean 14/14, pins 18/18 and 64/64, figure cards 32/32, jurisdiction toggle clean on all 208 evaluation queries, HIP and SNAP boundary suites 90/90 each. Evaluation hit lists at parity or better versus the g0018 build on every set, with no new rank-1 losses.
+
 ## 2026-10-25 (fix: toggle highlight could stick on Both from a cached old script)
 
 - Every asset and data URL the site loads now carries a content-hash version stamp (?v=...) derived from the file's own bytes, injected by the builder on every page (search, manuals, and all document pages) and inside the loader for the data files and the search engine script.
